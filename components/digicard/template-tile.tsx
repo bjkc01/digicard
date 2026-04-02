@@ -4,7 +4,7 @@ import { DigiCardTemplate } from "@/lib/data";
 export function TemplateTile({ template }: { template: DigiCardTemplate }) {
   return (
     <Link
-      href="/create-card"
+      href={`/create-card?template=${template.id}`}
       className="group subtle-panel block overflow-hidden p-4 transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(15,23,42,0.08)]"
     >
       <div className={`rounded-[26px] ${template.tone} p-4`}>

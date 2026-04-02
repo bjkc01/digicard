@@ -26,9 +26,9 @@ export type DigiCard = {
 
 export const navigationItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "My Cards", href: "/dashboard#cards" },
+  { label: "My Cards", href: "/dashboard" },
   { label: "Templates", href: "/templates" },
-  { label: "Settings", href: "/dashboard#settings" },
+  { label: "Settings", href: "/settings" },
 ];
 
 export const featureItems = [

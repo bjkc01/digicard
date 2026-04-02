@@ -21,7 +21,11 @@ export function Sidebar({ activePath }: SidebarProps) {
 
       <nav className="flex flex-col gap-2">
         {navigationItems.map((item) => {
-          const isActive = activePath === item.href;
+          // "My Cards" shares href with Dashboard — only highlight Dashboard for /dashboard
+          const isActive =
+            item.label === "My Cards"
+              ? false
+              : activePath === item.href;
 
           return (
             <Link

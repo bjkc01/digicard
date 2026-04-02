@@ -7,6 +7,8 @@ type ButtonProps = {
   href?: string;
   variant?: "primary" | "secondary" | "ghost";
   type?: "button" | "submit" | "reset";
+  onClick?: () => void;
+  disabled?: boolean;
 };
 
 const buttonStyles = {
@@ -22,6 +24,8 @@ export function Button({
   href,
   variant = "primary",
   type = "button",
+  onClick,
+  disabled,
 }: ButtonProps) {
   const classes = cn(
     "inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition duration-200",
@@ -38,7 +42,7 @@ export function Button({
   }
 
   return (
-    <button type={type} className={classes}>
+    <button type={type} onClick={onClick} disabled={disabled} className={classes}>
       {children}
     </button>
   );

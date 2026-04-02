@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { QRCode } from "@/components/ui/qr-code";
 import { featureItems, templates } from "@/lib/data";
 
 export default function LandingPage() {
@@ -85,8 +86,8 @@ export default function LandingPage() {
                         </p>
                         <p className="mt-1 text-sm text-slate-500">DigiCard</p>
                       </div>
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-xs font-semibold tracking-[0.22em] text-slate-500">
-                        QR
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 p-1.5">
+                        <QRCode value="https://digicard.app/view/sofia-bennett" size={44} />
                       </div>
                     </div>
 

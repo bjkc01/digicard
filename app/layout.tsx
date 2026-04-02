@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -19,7 +20,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={manrope.variable}>{children}</body>
+      <body className={manrope.variable}>
+        {children}
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              borderRadius: "16px",
+              fontFamily: "var(--font-manrope)",
+              fontSize: "14px",
+            },
+          }}
+        />
+      </body>
     </html>
   );
 }

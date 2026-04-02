@@ -1,58 +1,49 @@
-import { LivePreview } from "@/components/digicard/live-preview";
+import { Suspense } from "react";
 import { Sidebar } from "@/components/layout/sidebar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { formDefaults } from "@/lib/data";
+import { CreateCardForm } from "./create-card-form";
+
+function FormSkeleton() {
+  return (
+    <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+      <div className="panel animate-pulse p-6 md:p-8">
+        <div className="h-3 w-24 rounded-full bg-slate-200" />
+        <div className="mt-5 h-8 w-64 rounded-2xl bg-slate-200" />
+        <div className="mt-5 h-4 w-full rounded-full bg-slate-100" />
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} className={`space-y-2 ${i === 6 ? "md:col-span-2" : ""}`}>
+              <div className="h-3 w-16 rounded-full bg-slate-200" />
+              <div className="h-12 rounded-2xl bg-slate-100" />
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 h-32 rounded-[28px] bg-slate-100" />
+        <div className="mt-6 flex gap-3">
+          <div className="h-12 w-28 rounded-xl bg-slate-200" />
+          <div className="h-12 w-36 rounded-xl bg-slate-100" />
+        </div>
+      </div>
+      <div className="panel animate-pulse p-5">
+        <div className="mb-5 flex items-center justify-between">
+          <div className="space-y-2">
+            <div className="h-3 w-24 rounded-full bg-slate-200" />
+            <div className="h-3 w-36 rounded-full bg-slate-100" />
+          </div>
+          <div className="h-6 w-12 rounded-full bg-slate-100" />
+        </div>
+        <div className="h-[320px] rounded-[28px] bg-slate-100" />
+      </div>
+    </section>
+  );
+}
 
 export default function CreateCardPage() {
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
       <Sidebar activePath="/create-card" />
-
-      <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <div className="panel p-6 md:p-8">
-          <p className="eyebrow">Create card</p>
-          <h1 className="section-title mt-4">Build a polished professional card</h1>
-          <p className="section-copy mt-5">
-            Add contact details, choose a template, and review the final profile before
-            publishing it for your team or clients.
-          </p>
-
-          <form className="mt-10 space-y-6">
-            <div className="grid gap-5 md:grid-cols-2">
-              <Input label="Name" defaultValue={formDefaults.name} />
-              <Input label="Title" defaultValue={formDefaults.title} />
-              <Input label="Company" defaultValue={formDefaults.company} />
-              <Input label="Email" type="email" defaultValue={formDefaults.email} />
-              <Input label="Phone" defaultValue={formDefaults.phone} />
-              <Input label="LinkedIn" defaultValue={formDefaults.linkedin} />
-              <Input label="Website" defaultValue={formDefaults.website} className="md:col-span-2" />
-            </div>
-
-            <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-              Profile Image
-              <div className="flex min-h-32 items-center justify-center rounded-[28px] border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-                <div>
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
-                    <span className="text-xl text-slate-400">+</span>
-                  </div>
-                  <p className="text-sm font-medium text-slate-700">Upload profile image</p>
-                  <p className="mt-1 text-sm text-slate-500">PNG, JPG up to 5MB</p>
-                </div>
-              </div>
-            </label>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button type="submit">Save Card</Button>
-              <Button href="/templates" variant="secondary">
-                Change Template
-              </Button>
-            </div>
-          </form>
-        </div>
-
-        <LivePreview />
-      </section>
+      <Suspense fallback={<FormSkeleton />}>
+        <CreateCardForm />
+      </Suspense>
     </main>
   );
 }

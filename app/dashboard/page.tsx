@@ -1,8 +1,8 @@
-import { CardTile } from "@/components/digicard/card-tile";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Sidebar } from "@/components/layout/sidebar";
+import { QuickActions } from "@/components/layout/quick-actions";
+import { CardsSection } from "@/components/digicard/cards-section";
 import { Button } from "@/components/ui/button";
-import { cards } from "@/lib/data";
 
 export default function DashboardPage() {
   return (
@@ -27,11 +27,7 @@ export default function DashboardPage() {
               <Button href="/create-card">Create New Card</Button>
             </div>
 
-            <div id="cards" className="mt-8 grid gap-5 md:grid-cols-2">
-              {cards.map((card) => (
-                <CardTile key={card.id} card={card} />
-              ))}
-            </div>
+            <CardsSection />
           </div>
 
           <div className="space-y-6">
@@ -52,7 +48,10 @@ export default function DashboardPage() {
                   ["214", "QR scans"],
                   ["56", "New saves"],
                 ].map(([value, label]) => (
-                  <div key={label} className="flex items-center justify-between rounded-2xl bg-slate-50 p-4">
+                  <div
+                    key={label}
+                    className="flex items-center justify-between rounded-2xl bg-slate-50 p-4"
+                  >
                     <p className="text-sm font-medium text-slate-600">{label}</p>
                     <p className="text-xl font-semibold text-slate-900">{value}</p>
                   </div>
@@ -60,24 +59,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div id="settings" className="panel p-6">
-              <p className="eyebrow">Quick actions</p>
-              <div className="mt-5 space-y-3">
-                {[
-                  "Update company branding",
-                  "Generate new QR assets",
-                  "Invite a team member",
-                ].map((action) => (
-                  <button
-                    key={action}
-                    className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
-                  >
-                    {action}
-                    <span className="text-slate-400">-&gt;</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+            <QuickActions />
           </div>
         </div>
       </section>
