@@ -2,7 +2,6 @@ import { LivePreview } from "@/components/digicard/live-preview";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SectionBadge } from "@/components/ui/section-badge";
 import { formDefaults } from "@/lib/data";
 
 export default function CreateCardPage() {
@@ -12,11 +11,11 @@ export default function CreateCardPage() {
 
       <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
         <div className="panel p-6 md:p-8">
-          <SectionBadge>Create card</SectionBadge>
-          <h1 className="section-title mt-6">Build a polished professional card</h1>
+          <p className="eyebrow">Create card</p>
+          <h1 className="section-title mt-4">Build a polished professional card</h1>
           <p className="section-copy mt-5">
-            Add your contact details, upload a profile image, and preview the final
-            business card before publishing.
+            Add contact details, choose a template, and review the final profile before
+            publishing it for your team or clients.
           </p>
 
           <form className="mt-10 space-y-6">
@@ -34,7 +33,7 @@ export default function CreateCardPage() {
               Profile Image
               <div className="flex min-h-32 items-center justify-center rounded-[28px] border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
                 <div>
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-soft">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
                     <span className="text-xl text-slate-400">+</span>
                   </div>
                   <p className="text-sm font-medium text-slate-700">Upload profile image</p>

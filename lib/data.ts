@@ -35,17 +35,17 @@ export const featureItems = [
   {
     title: "QR code sharing",
     description:
-      "Make in-person networking effortless with instant scans that open your professional card on any device.",
+      "Share a professional card in seconds with a QR code that works across phones, tablets, and desktops.",
   },
   {
-    title: "Polished templates",
+    title: "Flexible templates",
     description:
-      "Start from refined layouts designed for consultants, founders, recruiters, and modern teams.",
+      "Start from restrained templates that suit consulting, sales, recruiting, and client-facing teams.",
   },
   {
     title: "Instant updates",
     description:
-      "Keep your contact details current across every share link without reprinting or resending.",
+      "Update one profile and keep every shared card current without reprinting or sending a new link.",
   },
 ];
 
@@ -53,42 +53,42 @@ export const templates: DigiCardTemplate[] = [
   {
     id: "executive",
     name: "Executive Slate",
-    description: "Minimal contrast with a crisp professional hierarchy.",
+    description: "Clean and structured for teams that want a formal, polished look.",
     accent: "from-slate-900 to-slate-700",
     tone: "bg-slate-100",
   },
   {
     id: "studio",
     name: "Studio Ivory",
-    description: "Editorial spacing with a warm, creative finish.",
+    description: "A softer editorial layout for creative professionals and consultants.",
     accent: "from-stone-800 to-stone-500",
     tone: "bg-stone-100",
   },
   {
     id: "blueprint",
     name: "Blueprint",
-    description: "A refined SaaS-inspired card with a vivid accent edge.",
+    description: "Balanced modern styling with a calm accent and clear information layout.",
     accent: "from-blue-700 to-cyan-500",
     tone: "bg-blue-50",
   },
   {
     id: "signal",
     name: "Signal Mono",
-    description: "Sharp monochrome styling for product and tech teams.",
+    description: "Monochrome and understated for product, operations, and technical teams.",
     accent: "from-zinc-950 to-zinc-700",
     tone: "bg-zinc-100",
   },
   {
     id: "crest",
     name: "Crest",
-    description: "Elegant spacing with calm neutrals and subtle depth.",
+    description: "Neutral, spacious, and suited for professional service firms.",
     accent: "from-slate-800 to-slate-500",
     tone: "bg-slate-50",
   },
   {
     id: "horizon",
     name: "Horizon",
-    description: "Bright premium gradients tailored for modern operators.",
+    description: "A brighter option with controlled color for modern startup teams.",
     accent: "from-indigo-700 to-sky-500",
     tone: "bg-indigo-50",
   },

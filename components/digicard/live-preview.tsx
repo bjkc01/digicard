@@ -7,10 +7,10 @@ export function LivePreview() {
       <div className="mb-5 flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold text-slate-900">Live preview</p>
-          <p className="text-sm text-slate-500">Updates as your team member edits fields.</p>
+          <p className="text-sm text-slate-500">Preview the public-facing card before publishing.</p>
         </div>
-        <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
-          Auto-saved
+        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+          Draft
         </span>
       </div>
       <CardPreview
