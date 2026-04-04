@@ -151,28 +151,28 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-7xl px-6 pb-20 pt-16 lg:pt-20">
-        <div className="grid items-center gap-16 lg:grid-cols-[1fr_0.95fr]">
+      <section className="mx-auto max-w-7xl px-6 pb-10 pt-10 lg:pt-12">
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.96fr]">
           <div className="anim-1">
             <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white/90 px-4 py-2 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_24px_rgba(21,32,58,0.05)]">
               <Sparkles className="h-4 w-4 text-[var(--brand)]" />
               Made for career fairs, campus events, and networking meetups
             </div>
 
-            <h1 className="mt-7 max-w-3xl text-[3.35rem] font-semibold leading-[0.98] tracking-[-0.06em] text-[var(--ink)] sm:text-[4.35rem] lg:text-[5rem]">
+            <h1 className="mt-5 max-w-[34rem] text-[2.7rem] font-semibold leading-[0.96] tracking-[-0.065em] text-[var(--ink)] sm:text-[3.5rem] lg:text-[4rem]">
               Your professional profile, ready to share with one QR scan.
             </h1>
 
-            <p className="mt-7 max-w-xl text-[1.05rem] leading-8 text-[var(--muted)] sm:text-[1.12rem]">
+            <p className="mt-5 max-w-[32rem] text-[0.98rem] leading-7 text-[var(--muted)] sm:text-[1.02rem]">
               Create a digital networking card that opens instantly and lets recruiters, alumni, speakers,
               and professionals view your LinkedIn, portfolio, resume, and contact details in one place.
             </p>
 
-            <div className="mt-8 grid gap-3 text-sm text-[var(--ink)]">
+            <div className="mt-6 grid gap-2.5 text-sm text-[var(--ink)]">
               {quickPoints.map((item) => (
                 <div
                   key={item}
-                  className="flex items-center gap-3 rounded-2xl border border-[rgba(25,35,61,0.06)] bg-white/88 px-4 py-3 shadow-[0_10px_24px_rgba(21,32,58,0.04)]"
+                  className="flex items-center gap-3 rounded-2xl border border-[rgba(25,35,61,0.06)] bg-white/88 px-4 py-2.5 shadow-[0_10px_24px_rgba(21,32,58,0.04)]"
                 >
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(82,103,217,0.12)]">
                     <Check className="h-4 w-4 text-[var(--brand)]" />
@@ -182,17 +182,17 @@ export default function LandingPage() {
               ))}
             </div>
 
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-7 py-4 text-sm font-semibold text-[var(--ink)] shadow-[0_16px_34px_rgba(255,141,87,0.24)] transition hover:bg-[#ff9a67]"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-7 py-3.5 text-sm font-semibold text-[var(--ink)] shadow-[0_16px_34px_rgba(255,141,87,0.24)] transition hover:bg-[#ff9a67]"
               >
                 Create my card
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-[rgba(25,35,61,0.14)] bg-white/88 px-7 py-4 text-sm font-semibold text-[var(--ink)] transition hover:border-[rgba(82,103,217,0.3)] hover:text-[var(--brand)]"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-[rgba(25,35,61,0.14)] bg-white/88 px-7 py-3.5 text-sm font-semibold text-[var(--ink)] transition hover:border-[rgba(82,103,217,0.3)] hover:text-[var(--brand)]"
               >
                 See how it works
                 <SquareArrowOutUpRight className="h-4 w-4" />
@@ -204,10 +204,10 @@ export default function LandingPage() {
             <div className="absolute -left-8 top-12 hidden h-32 w-32 rounded-full bg-[rgba(255,141,87,0.16)] blur-3xl lg:block" />
             <div className="absolute -right-6 bottom-2 hidden h-36 w-36 rounded-full bg-[rgba(82,103,217,0.16)] blur-3xl lg:block" />
 
-            <div className="relative rounded-[2rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.92),_rgba(244,247,255,0.94))] p-5 shadow-[0_30px_80px_rgba(18,31,66,0.14)]">
-              <div className="rounded-[1.75rem] border border-[rgba(25,35,61,0.08)] bg-[#eef3ff] p-4">
-                <div className="grid gap-4 lg:grid-cols-[0.84fr_1.06fr]">
-                  <div className="rounded-[1.5rem] bg-[linear-gradient(165deg,_#172340_0%,_#2d4177_48%,_#5267d9_100%)] p-5 text-white shadow-[0_20px_40px_rgba(49,69,127,0.22)]">
+            <div className="relative rounded-[1.8rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.92),_rgba(244,247,255,0.94))] p-3 shadow-[0_24px_60px_rgba(18,31,66,0.1)] lg:p-4">
+              <div className="rounded-[1.55rem] border border-[rgba(25,35,61,0.08)] bg-[#eef3ff] p-3">
+                <div className="grid gap-3 lg:grid-cols-[minmax(260px,0.86fr)_minmax(240px,1.14fr)]">
+                  <div className="rounded-[1.35rem] bg-[linear-gradient(165deg,_#172340_0%,_#2d4177_48%,_#5267d9_100%)] p-4 text-white shadow-[0_16px_30px_rgba(49,69,127,0.18)]">
                     <div className="flex items-center justify-between">
                       <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">
                         <GraduationCap className="h-3.5 w-3.5" />
@@ -216,89 +216,87 @@ export default function LandingPage() {
                       <ScanLine className="h-4 w-4 text-white/72" />
                     </div>
 
-                    <div className="mt-9">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/14">
-                        <UserRound className="h-7 w-7 text-white" />
+                    <div className="mt-6">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/14">
+                        <UserRound className="h-5.5 w-5.5 text-white" />
                       </div>
-                      <h2 className="mt-5 text-2xl font-semibold tracking-[-0.04em]">Jordan Lee</h2>
-                      <p className="mt-1 text-sm text-white/74">Computer Science Student</p>
-                      <p className="mt-1 text-sm text-white/68">University of Maryland</p>
-                      <p className="mt-4 max-w-[16rem] text-sm leading-6 text-white/74">
+                      <h2 className="mt-3.5 text-[1.7rem] font-semibold tracking-[-0.04em]">Jordan Lee</h2>
+                      <p className="mt-1 text-[0.92rem] text-white/74">Computer Science Student</p>
+                      <p className="mt-1 text-[0.92rem] text-white/68">University of Maryland</p>
+                      <p className="mt-3 max-w-[15rem] text-[0.92rem] leading-6 text-white/74">
                         Looking for software engineering internships and student networking opportunities.
                       </p>
                     </div>
 
-                    <div className="mt-8 rounded-[1.35rem] border border-white/12 bg-white/8 p-4">
+                    <div className="mt-6 rounded-[1.25rem] border border-white/12 bg-white/8 p-3.5">
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/62">
                         Quick share
                       </p>
-                      <div className="mt-3 flex items-center gap-4">
-                        <div className="rounded-2xl bg-white p-3">
-                          <QRCode value="https://digicard.app/jordan-lee" size={72} fgColor="#172340" />
+                      <div className="mt-3 flex items-center gap-3">
+                        <div className="rounded-2xl bg-white p-2.5">
+                          <QRCode value="https://digicard.app/jordan-lee" size={54} fgColor="#172340" />
                         </div>
-                        <p className="max-w-[9rem] text-sm leading-6 text-white/74">
+                        <p className="max-w-[8rem] text-[0.92rem] leading-6 text-white/74">
                           Scan to open Jordan&apos;s profile instantly.
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="rounded-[1.45rem] border border-[rgba(25,35,61,0.08)] bg-white p-5 shadow-[0_16px_35px_rgba(21,32,58,0.06)]">
+                  <div className="space-y-3">
+                    <div className="rounded-[1.35rem] border border-[rgba(25,35,61,0.08)] bg-white p-4 shadow-[0_12px_24px_rgba(21,32,58,0.05)]">
                       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                         Live profile preview
                       </p>
-                      <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[var(--ink)]">
+                      <h3 className="mt-2.5 max-w-[13rem] text-[1.5rem] font-semibold leading-[1.06] tracking-[-0.05em] text-[var(--ink)]">
                         Everything someone needs after a quick conversation
                       </h3>
-                      <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
+                      <p className="mt-2.5 max-w-[16rem] text-[0.9rem] leading-6 text-[var(--muted)]">
                         Open one profile with your core information already organized and ready to review.
                       </p>
                     </div>
 
-                    <div className="rounded-[1.45rem] border border-[rgba(25,35,61,0.08)] bg-white p-5 shadow-[0_16px_35px_rgba(21,32,58,0.06)]">
+                    <div className="rounded-[1.35rem] border border-[rgba(25,35,61,0.08)] bg-white p-4 shadow-[0_12px_24px_rgba(21,32,58,0.05)]">
                       <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-4">
+                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-3">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                             Email
                           </p>
-                          <p className="mt-2 text-sm font-medium text-[var(--ink)]">jordanlee@umaryland.edu</p>
+                          <p className="mt-1.5 break-all pr-1 text-[0.9rem] font-medium leading-6 text-[var(--ink)]">
+                            jordanlee@umaryland.edu
+                          </p>
                         </div>
-                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-4">
+                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-3">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                             Focus
                           </p>
-                          <p className="mt-2 text-sm font-medium text-[var(--ink)]">Software Engineering</p>
+                          <p className="mt-1.5 max-w-[7rem] text-[0.9rem] font-medium leading-6 text-[var(--ink)]">
+                            Software Engineering
+                          </p>
                         </div>
                       </div>
 
-                      <div className="mt-4 grid gap-3">
-                        {profileLinks.map((item) => (
+                      <div className="mt-3 grid gap-2.5">
+                        {profileLinks.slice(0, 2).map((item) => (
                           <div
                             key={item.label}
-                            className="flex items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.07)] px-4 py-3"
+                            className="flex items-center justify-between gap-3 rounded-2xl border border-[rgba(25,35,61,0.07)] px-4 py-3"
                           >
-                            <div>
+                            <div className="min-w-0">
                               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                                 {item.label}
                               </p>
-                              <p className="mt-1 text-sm font-medium text-[var(--ink)]">{item.value}</p>
+                              <p className="mt-1 break-words pr-2 text-[0.9rem] font-medium leading-6 text-[var(--ink)]">
+                                {item.value}
+                              </p>
                             </div>
-                            <Link2 className="h-4 w-4 text-[var(--brand)]" />
+                            <Link2 className="h-4 w-4 flex-shrink-0 text-[var(--brand)]" />
                           </div>
                         ))}
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="absolute -left-8 bottom-10 hidden w-48 rounded-[1.5rem] border border-[rgba(25,35,61,0.08)] bg-white/96 p-4 shadow-[0_18px_32px_rgba(21,32,58,0.1)] xl:block">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Event ready</p>
-                <p className="mt-3 text-xl font-semibold tracking-[-0.04em] text-[var(--ink)]">No awkward searching</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                  Share one clean profile instead of spelling everything out.
-                </p>
               </div>
             </div>
           </div>

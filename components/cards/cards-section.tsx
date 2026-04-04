@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DigiCard, cards as initialCards } from "@/lib/data";
-import { CardTile } from "@/components/cards/card-tile";
+import { DashboardCardTile } from "@/components/cards/dashboard-card-tile";
 import { Button } from "@/components/ui/button";
 
 export function CardsSection() {
@@ -14,10 +14,13 @@ export function CardsSection() {
 
   if (cards.length === 0) {
     return (
-      <div className="mt-8 flex min-h-48 flex-col items-center justify-center rounded-[28px] border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
-        <p className="text-sm font-semibold text-slate-700">No cards yet</p>
-        <p className="mt-2 text-sm text-slate-500">Create your first digital card to get started.</p>
-        <Button href="/create-card" className="mt-5">
+      <div className="mt-8 flex min-h-48 flex-col items-center justify-center rounded-[28px] border border-dashed border-[rgba(82,103,217,0.22)] bg-[var(--soft)] p-8 text-center">
+        <p className="text-sm font-semibold text-[var(--ink)]">No cards yet</p>
+        <p className="mt-2 text-sm text-[var(--muted)]">Create your first digital card to get started.</p>
+        <Button
+          href="/create-card"
+          className="mt-5 rounded-full bg-[var(--brand)] px-5 py-3 text-white hover:bg-[#4459cb]"
+        >
           Create card
         </Button>
       </div>
@@ -27,7 +30,7 @@ export function CardsSection() {
   return (
     <div className="mt-8 grid gap-5 md:grid-cols-2">
       {cards.map((card) => (
-        <CardTile key={card.id} card={card} onDelete={handleDelete} />
+        <DashboardCardTile key={card.id} card={card} onDelete={handleDelete} />
       ))}
     </div>
   );

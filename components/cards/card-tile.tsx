@@ -15,29 +15,23 @@ export function CardTile({ card, onDelete }: CardTileProps) {
 
   return (
     <>
-      <div className="subtle-panel overflow-hidden p-4">
+      <div className="subtle-panel overflow-hidden border-[rgba(82,103,217,0.08)] bg-white p-4">
         <CardPreview card={card} compact />
         <div className="mt-4 flex items-center justify-between px-1">
           <div>
-            <p className="font-semibold text-slate-900">{card.name}</p>
-            <p className="text-sm text-slate-500">{card.template}</p>
+            <p className="font-semibold text-[var(--ink)]">{card.name}</p>
+            <p className="text-sm text-[var(--muted)]">{card.template}</p>
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+            className="rounded-full border border-[rgba(82,103,217,0.12)] px-4 py-2 text-sm font-medium text-[var(--muted)] transition hover:border-[rgba(82,103,217,0.22)] hover:bg-[var(--soft)] hover:text-[var(--ink)]"
           >
             Manage
           </button>
         </div>
       </div>
 
-      {showModal && (
-        <ManageModal
-          card={card}
-          onClose={() => setShowModal(false)}
-          onDelete={onDelete}
-        />
-      )}
+      {showModal && <ManageModal card={card} onClose={() => setShowModal(false)} onDelete={onDelete} />}
     </>
   );
 }
