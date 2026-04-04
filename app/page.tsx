@@ -129,6 +129,12 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-3">
             <Link
+              href="/login"
+              className="hidden rounded-full px-4 py-2 text-sm font-semibold text-[var(--muted)] transition hover:bg-[var(--soft)] hover:text-[var(--ink)] sm:inline-flex"
+            >
+              Sign in
+            </Link>
+            <Link
               href="/dashboard"
               className="hidden rounded-full bg-[var(--brand)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(82,103,217,0.2)] transition hover:bg-[#4459cb] sm:inline-flex"
             >
