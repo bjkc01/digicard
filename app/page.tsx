@@ -74,6 +74,12 @@ const quickPoints = [
   "Give recruiters and professionals an easy way to remember you",
 ];
 
+const networkingQuote = {
+  line: "If you're not networking, you're not working.",
+  source: "A reminder students hear for a reason",
+  body: "DigiCard helps you turn that idea into something practical by making it easier to share your profile in the moment, not after the opportunity has passed.",
+};
+
 const profileLinks = [
   { label: "LinkedIn", value: "linkedin.com/in/jordan-lee" },
   { label: "Portfolio", value: "jordanlee.design" },
@@ -314,6 +320,16 @@ export default function LandingPage() {
               Students and early professionals already do the hard part by showing up. The problem is making
               the connection feel easy while the moment is still there.
             </p>
+          </div>
+
+          <div className="mt-10 rounded-[1.9rem] border border-[rgba(82,103,217,0.12)] bg-[linear-gradient(135deg,_rgba(82,103,217,0.08),_rgba(255,255,255,0.96))] p-7 shadow-[0_18px_40px_rgba(21,32,58,0.05)] sm:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">
+              {networkingQuote.source}
+            </p>
+            <blockquote className="mt-3 max-w-3xl text-2xl font-semibold leading-tight tracking-[-0.04em] text-[var(--ink)] sm:text-[2rem]">
+              &ldquo;{networkingQuote.line}&rdquo;
+            </blockquote>
+            <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--muted)]">{networkingQuote.body}</p>
           </div>
 
           <div className="mt-14 grid gap-5 lg:grid-cols-3">
