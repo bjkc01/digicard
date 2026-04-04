@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const icons = require\\('lucide-react'\\); const keys = Object.keys\\(icons\\).filter\\(k => k.toLowerCase\\(\\).includes\\('link'\\)\\); console.log\\(keys\\);\")",
+      "WebFetch(domain:www.canva.com)",
+      "WebSearch",
+      "WebFetch(domain:colorpickercode.com)",
+      "WebFetch(domain:brandcolors.net)",
+      "WebFetch(domain:mobbin.com)",
+      "WebFetch(domain:www.canva.dev)"
+    ]
+  }
+}

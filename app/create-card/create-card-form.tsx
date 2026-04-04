@@ -1,12 +1,23 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import {
+  AtSign,
+  BriefcaseBusiness,
+  Camera,
+  Check,
+  Globe,
+  Mail,
+  Phone,
+  ShieldCheck,
+  Sparkles,
+  SwatchBook,
+} from "lucide-react";
 import { toast } from "sonner";
 import { templates, formDefaults, DigiCardTemplate } from "@/lib/data";
 import { CardPreview } from "@/components/digicard/card-preview";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 type FormData = {
   name: string;
@@ -18,6 +29,28 @@ type FormData = {
   website: string;
 };
 
+type FieldConfig = {
+  key: keyof FormData;
+  label: string;
+  placeholder: string;
+  type?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  span?: "full";
+};
+
+const profileFields: FieldConfig[] = [
+  { key: "name", label: "Full name", placeholder: "Sofia Bennett", icon: Sparkles },
+  { key: "title", label: "Role", placeholder: "Founder & Growth Advisor", icon: BriefcaseBusiness },
+  { key: "company", label: "Company", placeholder: "DigiCard", icon: ShieldCheck },
+];
+
+const contactFields: FieldConfig[] = [
+  { key: "email", label: "Email", placeholder: "you@company.com", type: "email", icon: Mail },
+  { key: "phone", label: "Phone", placeholder: "+1 (555) 000-0000", icon: Phone },
+  { key: "linkedin", label: "LinkedIn", placeholder: "linkedin.com/in/yourname", icon: AtSign },
+  { key: "website", label: "Website", placeholder: "yourwebsite.com", icon: Globe, span: "full" },
+];
+
 export function CreateCardForm() {
   const searchParams = useSearchParams();
   const templateParam = searchParams.get("template") ?? "blueprint";
@@ -26,7 +59,6 @@ export function CreateCardForm() {
   const [formData, setFormData] = useState<FormData>(formDefaults);
   const [selectedTemplate, setSelectedTemplate] = useState<DigiCardTemplate>(initial);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [showTemplatePicker, setShowTemplatePicker] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -56,77 +88,121 @@ export function CreateCardForm() {
     setIsSaving(true);
     await new Promise((resolve) => setTimeout(resolve, 900));
     setIsSaving(false);
-    toast.success("Card saved!", {
-      description: "Your card is ready to share with a link or QR code.",
+    toast.success("Card saved", {
+      description: "Your card is polished, sharable, and ready to publish.",
     });
   };
 
   return (
-    <>
-      <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        {/* ── Form panel ── */}
-        <div className="panel p-6 md:p-8">
-          <p className="eyebrow">Create card</p>
-          <h1 className="section-title mt-4">Build a polished professional card</h1>
-          <p className="section-copy mt-5">
-            Add contact details, pick a template, and review the live preview before publishing.
-          </p>
+    <section className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(420px,0.92fr)]">
 
-          <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
-            <div className="grid gap-5 md:grid-cols-2">
-              <Input
-                label="Name"
-                value={formData.name}
-                onChange={handleChange("name")}
-                placeholder="Your full name"
-              />
-              <Input
-                label="Title"
-                value={formData.title}
-                onChange={handleChange("title")}
-                placeholder="e.g. Product Manager"
-              />
-              <Input
-                label="Company"
-                value={formData.company}
-                onChange={handleChange("company")}
-                placeholder="Your company name"
-              />
-              <Input
-                label="Email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange("email")}
-                placeholder="you@company.com"
-              />
-              <Input
-                label="Phone"
-                value={formData.phone}
-                onChange={handleChange("phone")}
-                placeholder="+1 (555) 000-0000"
-              />
-              <Input
-                label="LinkedIn"
-                value={formData.linkedin}
-                onChange={handleChange("linkedin")}
-                placeholder="linkedin.com/in/yourname"
-              />
-              <Input
-                label="Website"
-                value={formData.website}
-                onChange={handleChange("website")}
-                placeholder="yourwebsite.com"
-                className="md:col-span-2"
-              />
+      {/* ── Left: Form ── */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+
+        {/* Header */}
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#00C4CC]/10 px-4 py-2 text-xs font-semibold text-[#00C4CC]">
+              <Sparkles className="h-3.5 w-3.5" />
+              Create Your Signature Card
+            </div>
+            <h1 className="mt-5 text-4xl font-bold tracking-tight text-[#0E1318] md:text-5xl">
+              Build a card that feels premium at first glance.
+            </h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-[#293039]">
+              Refine the details, dial in the tone, and ship something that looks like a sharp brand presentation.
+            </p>
+          </div>
+
+          <div className="grid min-w-[220px] gap-3 sm:grid-cols-3 xl:grid-cols-1">
+            {[
+              { label: "Profile ready", value: "06", note: "Core touchpoints filled" },
+              { label: "Share feel", value: "NFC", note: "Modern first impression" },
+              { label: "Brand tone", value: "Live", note: selectedTemplate.name },
+            ].map((item) => (
+              <div key={item.label} className="rounded-xl border border-gray-100 bg-[#F8F9F9] px-4 py-4">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#293039]">
+                  {item.label}
+                </p>
+                <p className="mt-2 text-xl font-bold text-[#0E1318]">{item.value}</p>
+                <p className="mt-0.5 text-xs text-[#293039]">{item.note}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+
+          {/* Identity section */}
+          <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5">
+            <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-4">
+              <div>
+                <p className="text-sm font-bold text-[#0E1318]">Identity</p>
+                <p className="mt-0.5 text-sm text-[#293039]">Make the first line feel credible.</p>
+              </div>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-[#00C4CC]/10 px-3 py-1.5 text-xs font-semibold text-[#00C4CC]">
+                <Check className="h-3.5 w-3.5" />
+                Clean layout
+              </div>
+            </div>
+            <div className="mt-5 grid gap-4 md:grid-cols-3">
+              {profileFields.map((field) => (
+                <Field
+                  key={field.key}
+                  label={field.label}
+                  placeholder={field.placeholder}
+                  value={formData[field.key]}
+                  onChange={handleChange(field.key)}
+                  icon={field.icon}
+                  type={field.type}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Contact + Portrait */}
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
+            <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5">
+              <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-4">
+                <div>
+                  <p className="text-sm font-bold text-[#0E1318]">Contact</p>
+                  <p className="mt-0.5 text-sm text-[#293039]">Keep every tap destination useful.</p>
+                </div>
+                <span className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-[#293039]">
+                  Instant preview
+                </span>
+              </div>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {contactFields.map((field) => (
+                  <Field
+                    key={field.key}
+                    label={field.label}
+                    placeholder={field.placeholder}
+                    value={formData[field.key]}
+                    onChange={handleChange(field.key)}
+                    icon={field.icon}
+                    type={field.type}
+                    className={field.span === "full" ? "md:col-span-2" : undefined}
+                  />
+                ))}
+              </div>
             </div>
 
-            {/* Image upload */}
-            <div className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-              Profile Image
+            <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00C4CC]/10">
+                  <Camera className="h-4 w-4 text-[#00C4CC]" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-[#0E1318]">Portrait</p>
+                  <p className="text-xs text-[#293039]">Optional, but strong for recall.</p>
+                </div>
+              </div>
+
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex min-h-32 w-full items-center justify-center rounded-[28px] border border-dashed border-slate-300 bg-slate-50 p-6 text-center transition hover:border-slate-400 hover:bg-slate-100"
+                className="mt-4 flex min-h-52 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-white px-5 text-center transition hover:border-[#00C4CC] hover:bg-[#00C4CC]/5"
               >
                 {imagePreview ? (
                   <div className="flex flex-col items-center gap-3">
@@ -134,20 +210,24 @@ export function CreateCardForm() {
                     <img
                       src={imagePreview}
                       alt="Profile preview"
-                      className="h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-md"
+                      className="h-20 w-20 rounded-2xl object-cover shadow-sm"
                     />
-                    <p className="text-xs text-slate-500">Click to change</p>
+                    <div>
+                      <p className="text-sm font-semibold text-[#0E1318]">Portrait updated</p>
+                      <p className="mt-0.5 text-xs text-[#293039]">Click to swap.</p>
+                    </div>
                   </div>
                 ) : (
                   <div>
-                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
-                      <span className="text-xl text-slate-400">+</span>
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#EDF0F2]">
+                      <Camera className="h-5 w-5 text-[#293039]" />
                     </div>
-                    <p className="text-sm font-medium text-slate-700">Upload profile image</p>
-                    <p className="mt-1 text-sm text-slate-500">PNG, JPG up to 5MB</p>
+                    <p className="mt-4 text-sm font-semibold text-[#0E1318]">Add a profile image</p>
+                    <p className="mt-1 text-xs text-[#293039]">PNG, JPG, or WEBP up to 5MB</p>
                   </div>
                 )}
               </button>
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -157,127 +237,190 @@ export function CreateCardForm() {
                 aria-label="Upload profile image"
               />
             </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button type="submit" className="relative">
-                {isSaving ? (
-                  <span className="flex items-center gap-2">
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    Saving…
-                  </span>
-                ) : (
-                  "Save Card"
-                )}
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setShowTemplatePicker(true)}
-              >
-                Change Template
-              </Button>
-            </div>
-          </form>
-        </div>
-
-        {/* ── Live preview panel ── */}
-        <div className="panel p-5">
-          <div className="mb-5 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-slate-900">Live preview</p>
-              <p className="text-sm text-slate-500">Updates as you type</p>
-            </div>
-            <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
-              Draft
-            </span>
           </div>
-          <CardPreview
-            card={{
-              id: 99,
-              ...formData,
-              template: selectedTemplate.name,
-              color: selectedTemplate.accent,
-            }}
-            imageUrl={imagePreview ?? undefined}
-          />
 
-          <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-3">
-            <p className="text-xs font-medium text-slate-500">
-              Template:{" "}
-              <span className="text-slate-800">{selectedTemplate.name}</span>
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Template picker modal ── */}
-      {showTemplatePicker && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
-          onClick={(e) => e.target === e.currentTarget && setShowTemplatePicker(false)}
-        >
-          <div className="panel max-h-[85vh] w-full max-w-3xl overflow-y-auto p-6">
-            <div className="mb-6 flex items-center justify-between">
+          {/* Template picker */}
+          <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 pb-4">
               <div>
-                <p className="eyebrow">Templates</p>
-                <h2 className="mt-1 text-xl font-semibold text-slate-900">
-                  Choose a template
-                </h2>
+                <p className="text-sm font-bold text-[#0E1318]">Visual direction</p>
+                <p className="mt-0.5 text-sm text-[#293039]">Pick a template that feels professional.</p>
               </div>
-              <button
-                onClick={() => setShowTemplatePicker(false)}
-                aria-label="Close"
-                className="flex h-8 w-8 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-              >
-                ✕
-              </button>
+              <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-[#293039]">
+                <SwatchBook className="h-3.5 w-3.5" />
+                {selectedTemplate.name}
+              </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
-              {templates.map((t) => {
-                const isSelected = t.id === selectedTemplate.id;
+            <div className="mt-5 grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
+              {templates.map((template) => {
+                const isActive = template.id === selectedTemplate.id;
                 return (
                   <button
-                    key={t.id}
+                    key={template.id}
                     type="button"
-                    onClick={() => {
-                      setSelectedTemplate(t);
-                      setShowTemplatePicker(false);
-                    }}
-                    className={`group rounded-[24px] border-2 p-4 text-left transition ${
-                      isSelected
-                        ? "border-slate-900 bg-slate-50"
-                        : "border-transparent bg-slate-50 hover:border-slate-300"
-                    }`}
+                    onClick={() => setSelectedTemplate(template)}
+                    className={cn(
+                      "group relative overflow-hidden rounded-xl border p-4 text-left transition",
+                      isActive
+                        ? "border-[#00C4CC] bg-white shadow-sm"
+                        : "border-gray-200 bg-white hover:border-gray-300",
+                    )}
                   >
-                    <div
-                      className={`h-36 rounded-[20px] bg-gradient-to-br ${t.accent} p-4`}
-                    >
-                      <div className="flex h-full flex-col justify-between rounded-[16px] border border-white/15 bg-black/10 p-3 text-white">
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.2em]">
-                          DigiCard
-                        </span>
-                        <p className="text-sm font-semibold">{t.name}</p>
+                    <div className={cn("h-24 rounded-lg bg-gradient-to-br p-[1px]", template.accent)}>
+                      <div className="flex h-full flex-col justify-between rounded-[7px] bg-slate-950/90 p-3">
+                        <span className="text-[9px] uppercase tracking-widest text-white/40">DigiCard</span>
+                        <div>
+                          <p className="text-sm font-bold text-white">{template.name}</p>
+                          <p className="mt-0.5 text-[10px] text-white/40">{template.description}</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="mt-3 flex items-center justify-between px-1">
-                      <p className="text-sm font-semibold text-slate-900">{t.name}</p>
-                      {isSelected && (
-                        <span className="rounded-full bg-slate-900 px-2 py-0.5 text-[10px] font-semibold text-white">
+                    <div className="mt-3 flex items-center justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-semibold text-[#0E1318]">{template.name}</p>
+                        <p className="mt-0.5 text-xs text-[#293039]">{template.id}</p>
+                      </div>
+                      {isActive ? (
+                        <span className="rounded-full bg-[#00C4CC]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#00C4CC]">
                           Active
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-400 transition group-hover:text-[#293039]">
+                          Select
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 px-1 text-xs leading-5 text-slate-500">
-                      {t.description}
-                    </p>
                   </button>
                 );
               })}
             </div>
           </div>
+
+          {/* Submit bar */}
+          <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-[#F8F9F9] p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-bold text-[#0E1318]">Ready to publish</p>
+              <p className="mt-0.5 text-sm text-[#293039]">
+                The live preview updates as you refine every detail.
+              </p>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="inline-flex min-w-[200px] items-center justify-center gap-2 rounded-full bg-[#7D2AE8] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#6d22d0] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSaving ? (
+                <>
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  Save card
+                  <Check className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* ── Right: Preview ── */}
+      <div className="relative">
+        <div className="sticky top-6 overflow-hidden rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5 shadow-sm">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#00C4CC]">
+                Live preview
+              </p>
+              <h2 className="mt-1 text-lg font-bold text-[#0E1318]">Presentation preview</h2>
+            </div>
+            <span className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-[#293039]">
+              Updates instantly
+            </span>
+          </div>
+
+          <div className="mt-5 rounded-xl border border-gray-200 bg-white p-3">
+            <CardPreview
+              card={{
+                id: 99,
+                ...formData,
+                template: selectedTemplate.name,
+                color: selectedTemplate.accent,
+              }}
+              imageUrl={imagePreview ?? undefined}
+            />
+          </div>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            {[
+              { label: "Template", value: selectedTemplate.name },
+              { label: "Contact points", value: "4 linked" },
+              { label: "Card mood", value: "Premium" },
+            ].map((item) => (
+              <div key={item.label} className="rounded-xl border border-gray-100 bg-white px-4 py-3">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#293039]">
+                  {item.label}
+                </p>
+                <p className="mt-1.5 text-sm font-semibold text-[#0E1318]">{item.value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 rounded-xl border border-gray-100 bg-white p-4">
+            <p className="text-sm font-bold text-[#0E1318]">Finish with confidence</p>
+            <p className="mt-1 text-sm text-[#293039]">
+              The card stays sharper, calmer, and more credible than anything paper.
+            </p>
+            <div className="mt-4 space-y-2.5">
+              {[
+                "Stronger contrast and spacing for a premium first impression.",
+                "Integrated template choices so the flow feels deliberate.",
+                "Live preview matches the page tone at all times.",
+              ].map((point) => (
+                <div key={point} className="flex items-start gap-2.5 rounded-lg bg-[#F8F9F9] px-3 py-2.5">
+                  <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#00C4CC]/10">
+                    <Check className="h-3 w-3 text-[#00C4CC]" />
+                  </div>
+                  <p className="text-xs leading-5 text-[#293039]">{point}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      )}
-    </>
+      </div>
+    </section>
+  );
+}
+
+type FieldProps = {
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  icon: React.ComponentType<{ className?: string }>;
+  type?: string;
+  className?: string;
+};
+
+function Field({ label, placeholder, value, onChange, icon: Icon, type = "text", className }: FieldProps) {
+  return (
+    <label className={cn("group flex flex-col gap-1.5", className)}>
+      <span className="text-xs font-semibold text-[#293039]">{label}</span>
+      <div className="relative">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition group-focus-within:text-[#00C4CC]">
+          <Icon className="h-4 w-4" />
+        </div>
+        <input
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition focus:border-[#00C4CC] focus:ring-2 focus:ring-[#00C4CC]/20"
+        />
+      </div>
+    </label>
   );
 }
