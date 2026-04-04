@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DigiCard, cards as initialCards } from "@/lib/data";
-import { CardTile } from "@/components/digicard/card-tile";
+import { CardTile } from "@/components/cards/card-tile";
 import { Button } from "@/components/ui/button";
 
 export function CardsSection() {

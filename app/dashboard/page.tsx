@@ -1,7 +1,7 @@
-import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { Sidebar } from "@/components/layout/sidebar";
-import { QuickActions } from "@/components/layout/quick-actions";
-import { CardsSection } from "@/components/digicard/cards-section";
+import { CardsSection } from "@/components/cards/cards-section";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { QuickActions } from "@/components/dashboard/quick-actions";
+import { Sidebar } from "@/components/dashboard/sidebar";
 import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {

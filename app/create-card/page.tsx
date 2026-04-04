@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { Sidebar } from "@/components/layout/sidebar";
-import { CreateCardForm } from "./create-card-form";
+import { CreateCardForm } from "@/components/create-card/create-card-form";
+import { Sidebar } from "@/components/dashboard/sidebar";
 
 function FormSkeleton() {
   return (

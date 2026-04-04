@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { DigiCard } from "@/lib/data";
-import { CardPreview } from "@/components/digicard/card-preview";
-import { ManageModal } from "@/components/digicard/manage-modal";
+import { CardPreview } from "@/components/cards/card-preview";
+import { ManageModal } from "@/components/cards/manage-modal";
 
 type CardTileProps = {
   card: DigiCard;

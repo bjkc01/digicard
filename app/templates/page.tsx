@@ -1,6 +1,6 @@
-import { Sidebar } from "@/components/layout/sidebar";
+import { Sidebar } from "@/components/dashboard/sidebar";
 import { Button } from "@/components/ui/button";
-import { TemplateTile } from "@/components/digicard/template-tile";
+import { TemplateTile } from "@/components/cards/template-tile";
 import { templates } from "@/lib/data";
 
 export default function TemplatesPage() {

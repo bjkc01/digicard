@@ -1,5 +1,5 @@
 import { formDefaults } from "@/lib/data";
-import { CardPreview } from "@/components/digicard/card-preview";
+import { CardPreview } from "@/components/cards/card-preview";
 
 export function LivePreview() {
   return (

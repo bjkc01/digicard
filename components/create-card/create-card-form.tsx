@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { templates, formDefaults, DigiCardTemplate } from "@/lib/data";
-import { CardPreview } from "@/components/digicard/card-preview";
+import { CardPreview } from "@/components/cards/card-preview";
 import { cn } from "@/lib/utils";
 
 type FormData = {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { DigiCard, templates } from "@/lib/data";
-import { CardPreview } from "@/components/digicard/card-preview";
+import { CardPreview } from "@/components/cards/card-preview";
 import { Button } from "@/components/ui/button";
 
 type ManageModalProps = {
