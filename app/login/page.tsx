@@ -2,7 +2,6 @@ import Link from "next/link";
 import { signInWithGoogle } from "./actions";
 import {
   ArrowLeft,
-  CircleAlert,
   CreditCard,
   GraduationCap,
   Link2,
@@ -14,8 +13,27 @@ import {
 } from "lucide-react";
 
 const previewItems = ["LinkedIn", "Portfolio", "Resume", "Email"];
+const comingSoonOptions = [
+  { label: "Continue with LinkedIn", icon: Link2 },
+  { label: "Continue with email", icon: Mail },
+] as const;
 
 export default function LoginPage() {
+  const googleAuthConfigured = Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
+  const isPreviewMode = !googleAuthConfigured;
+  const badgeLabel = isPreviewMode ? "Preview access" : "Welcome back";
+  const title = isPreviewMode ? "Open the DigiCard workspace preview." : "Log in or sign up in seconds.";
+  const description = isPreviewMode
+    ? "Authentication is still being connected for this build, so you can continue directly to the dashboard, cards, and settings previews."
+    : "Sign in to manage your DigiCard, refresh your profile, and stay ready for the next career fair, meetup, or campus event.";
+  const primarySupportCopy = isPreviewMode
+    ? "Jump into the dashboard and keep reviewing the product."
+    : "Use your Google account for the fastest sign-in experience.";
+  const secondaryPanelTitle = isPreviewMode ? "What you can review" : "Why sign in?";
+  const secondaryPanelBody = isPreviewMode
+    ? "Explore the dashboard, card templates, create-card flow, and settings experience without getting blocked by local auth setup."
+    : "Save your profile, update your resume link anytime, and make sure your card is always ready before an important event.";
+
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
       <div className="mx-auto grid min-h-screen max-w-[1600px] lg:grid-cols-[minmax(420px,540px)_1fr]">
@@ -44,70 +62,93 @@ export default function LoginPage() {
             <div className="mt-14 max-w-md">
               <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.12)] bg-[var(--soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
                 <GraduationCap className="h-4 w-4" />
-                Welcome back
+                {badgeLabel}
               </div>
 
               <h1 className="mt-6 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
-                Log in or sign up in seconds.
+                {title}
               </h1>
               <p className="mt-5 text-lg leading-8 text-[var(--muted)]">
-                Sign in to manage your DigiCard, refresh your profile, and stay ready for the next career fair, meetup, or campus event.
+                {description}
               </p>
 
               <div className="mt-10 space-y-4">
-                <form action={signInWithGoogle}>
-                  <button
-                    type="submit"
+                {googleAuthConfigured ? (
+                  <form action={signInWithGoogle}>
+                    <button
+                      type="submit"
+                      className="flex w-full items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.1)] bg-white px-5 py-4 text-left shadow-[0_12px_30px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:shadow-[0_16px_34px_rgba(21,32,58,0.06)]"
+                    >
+                      <span className="flex items-center gap-4">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--soft)]">
+                          <span className="text-xl font-bold leading-none text-[#4285F4]">G</span>
+                        </span>
+                        <span>
+                          <span className="block text-base font-semibold text-[var(--ink)]">
+                            Continue with Google
+                          </span>
+                          <span className="mt-1 block text-xs text-[var(--muted)]">
+                            {primarySupportCopy}
+                          </span>
+                        </span>
+                      </span>
+                      <MoveRight className="h-4 w-4 text-[var(--muted)]" />
+                    </button>
+                  </form>
+                ) : (
+                  <Link
+                    href="/dashboard"
                     className="flex w-full items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.1)] bg-white px-5 py-4 text-left shadow-[0_12px_30px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:shadow-[0_16px_34px_rgba(21,32,58,0.06)]"
                   >
                     <span className="flex items-center gap-4">
-                      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--soft)]">
-                        <span className="text-xl font-bold leading-none text-[#4285F4]">G</span>
-                      </span>
-                      <span className="text-base font-semibold text-[var(--ink)]">Continue with Google</span>
-                    </span>
-                    <MoveRight className="h-4 w-4 text-[var(--muted)]" />
-                  </button>
-                </form>
-
-                {[
-                  { label: "Continue with LinkedIn", icon: Link2 },
-                  { label: "Continue with email", icon: Mail },
-                ].map(({ label, icon: Icon }) => (
-                  <button
-                    key={label}
-                    type="button"
-                    disabled
-                    className="flex w-full items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.08)] bg-white/70 px-5 py-4 text-left opacity-75"
-                  >
-                    <span className="flex items-center gap-4">
                       <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--soft)] text-[var(--brand)]">
-                        <Icon className="h-5 w-5" />
+                        <CreditCard className="h-5 w-5" />
                       </span>
                       <span>
-                        <span className="block text-base font-semibold text-[var(--ink)]">{label}</span>
-                        <span className="block text-xs text-[var(--muted)]">Coming soon</span>
+                        <span className="block text-base font-semibold text-[var(--ink)]">
+                          Open workspace preview
+                        </span>
+                        <span className="mt-1 block text-xs text-[var(--muted)]">
+                          {primarySupportCopy}
+                        </span>
                       </span>
                     </span>
-                  </button>
-                ))}
+                    <MoveRight className="h-4 w-4 text-[var(--muted)]" />
+                  </Link>
+                )}
+
+                {googleAuthConfigured
+                  ? comingSoonOptions.map(({ label, icon: Icon }) => (
+                      <button
+                        key={label}
+                        type="button"
+                        disabled
+                        className="flex w-full items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.08)] bg-white/70 px-5 py-4 text-left opacity-75"
+                      >
+                        <span className="flex items-center gap-4">
+                          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--soft)] text-[var(--brand)]">
+                            <Icon className="h-5 w-5" />
+                          </span>
+                          <span>
+                            <span className="block text-base font-semibold text-[var(--ink)]">{label}</span>
+                            <span className="block text-xs text-[var(--muted)]">Coming soon</span>
+                          </span>
+                        </span>
+                      </button>
+                    ))
+                  : null}
               </div>
 
               <p className="mt-8 text-sm leading-7 text-[var(--muted)]">
-                By continuing, you agree to DigiCard&apos;s Terms of Use and Privacy Policy.
+                {isPreviewMode
+                  ? "Preview mode is enabled here so you can keep reviewing the product without getting blocked by local sign-in setup."
+                  : "By continuing, you agree to DigiCard&apos;s Terms of Use and Privacy Policy."}
               </p>
 
-              <div className="mt-6 flex items-start gap-3 rounded-[1.35rem] border border-[rgba(82,103,217,0.1)] bg-[rgba(82,103,217,0.05)] p-4">
-                <CircleAlert className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--brand)]" />
-                <p className="text-sm leading-7 text-[var(--muted)]">
-                  Google sign-in works after you add your Google OAuth credentials to `.env.local`.
-                </p>
-              </div>
-
               <div className="mt-10 rounded-[1.6rem] border border-[rgba(25,35,61,0.08)] bg-[var(--soft)] p-5">
-                <p className="text-sm font-semibold text-[var(--ink)]">Why sign in?</p>
+                <p className="text-sm font-semibold text-[var(--ink)]">{secondaryPanelTitle}</p>
                 <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
-                  Save your profile, update your resume link anytime, and make sure your card is always ready before an important event.
+                  {secondaryPanelBody}
                 </p>
               </div>
             </div>
