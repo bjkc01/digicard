@@ -212,7 +212,7 @@ export default function LandingPage() {
 
             <div className="relative rounded-[1.8rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.92),_rgba(244,247,255,0.94))] p-3 shadow-[0_24px_60px_rgba(18,31,66,0.1)] lg:p-4">
               <div className="rounded-[1.55rem] border border-[rgba(25,35,61,0.08)] bg-[#eef3ff] p-3">
-                <div className="grid gap-3 lg:grid-cols-[minmax(260px,0.86fr)_minmax(240px,1.14fr)]">
+                <div className="grid gap-3 lg:grid-cols-[minmax(244px,0.8fr)_minmax(300px,1.2fr)]">
                   <div className="rounded-[1.35rem] bg-[linear-gradient(165deg,_#172340_0%,_#2d4177_48%,_#5267d9_100%)] p-4 text-white shadow-[0_16px_30px_rgba(49,69,127,0.18)]">
                     <div className="flex items-center justify-between">
                       <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">
@@ -254,21 +254,21 @@ export default function LandingPage() {
                       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                         Live profile preview
                       </p>
-                      <h3 className="mt-2.5 max-w-[13rem] text-[1.5rem] font-semibold leading-[1.06] tracking-[-0.05em] text-[var(--ink)]">
+                      <h3 className="mt-2.5 max-w-[16rem] text-[1.28rem] font-semibold leading-[1.08] tracking-[-0.05em] text-[var(--ink)] sm:text-[1.36rem] xl:text-[1.46rem]">
                         Everything someone needs after a quick conversation
                       </h3>
-                      <p className="mt-2.5 max-w-[16rem] text-[0.9rem] leading-6 text-[var(--muted)]">
+                      <p className="mt-2.5 max-w-[17rem] text-[0.88rem] leading-6 text-[var(--muted)] sm:text-[0.9rem]">
                         Open one profile with your core information already organized and ready to review.
                       </p>
                     </div>
 
                     <div className="rounded-[1.35rem] border border-[rgba(25,35,61,0.08)] bg-white p-4 shadow-[0_12px_24px_rgba(21,32,58,0.05)]">
-                      <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="grid gap-3 sm:grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)]">
                         <div className="rounded-2xl bg-[var(--soft)] px-4 py-3">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                             Email
                           </p>
-                          <p className="mt-1.5 break-all pr-1 text-[0.9rem] font-medium leading-6 text-[var(--ink)]">
+                          <p className="mt-1.5 break-all text-[0.78rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.82rem]">
                             jordanlee@umaryland.edu
                           </p>
                         </div>
@@ -276,7 +276,7 @@ export default function LandingPage() {
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                             Focus
                           </p>
-                          <p className="mt-1.5 max-w-[7rem] text-[0.9rem] font-medium leading-6 text-[var(--ink)]">
+                          <p className="mt-1.5 max-w-[9.5rem] text-[0.8rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.84rem]">
                             Software Engineering
                           </p>
                         </div>
