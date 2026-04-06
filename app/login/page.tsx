@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { googleAuthEnabled } from "@/auth";
 import { signInWithGoogle } from "./actions";
 import {
   ArrowLeft,
@@ -18,21 +19,54 @@ const comingSoonOptions = [
   { label: "Continue with email", icon: Mail },
 ] as const;
 
-export default function LoginPage() {
-  const googleAuthConfigured = Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
-  const isPreviewMode = !googleAuthConfigured;
-  const badgeLabel = isPreviewMode ? "Preview access" : "Welcome back";
-  const title = isPreviewMode ? "Open the DigiCard workspace preview." : "Log in or sign up in seconds.";
-  const description = isPreviewMode
-    ? "Authentication is still being connected for this build, so you can continue directly to the dashboard, cards, and settings previews."
-    : "Sign in to manage your DigiCard, refresh your profile, and stay ready for the next career fair, meetup, or campus event.";
-  const primarySupportCopy = isPreviewMode
-    ? "Jump into the dashboard and keep reviewing the product."
-    : "Use your Google account for the fastest sign-in experience.";
-  const secondaryPanelTitle = isPreviewMode ? "What you can review" : "Why sign in?";
-  const secondaryPanelBody = isPreviewMode
-    ? "Explore the dashboard, card templates, create-card flow, and settings experience without getting blocked by local auth setup."
-    : "Save your profile, update your resume link anytime, and make sure your card is always ready before an important event.";
+type LoginPageProps = {
+  searchParams?: Promise<{
+    callbackUrl?: string;
+    error?: string;
+  }>;
+};
+
+function getSafeCallbackUrl(value?: string) {
+  return value && value.startsWith("/") ? value : "/dashboard";
+}
+
+function getDestinationLabel(callbackUrl: string) {
+  if (callbackUrl === "/dashboard") return "your dashboard";
+  if (callbackUrl.startsWith("/create-card")) return "the create-card flow";
+  if (callbackUrl.startsWith("/settings")) return "settings";
+  if (callbackUrl.startsWith("/templates")) return "template selection";
+  return "your workspace";
+}
+
+function getLoginErrorMessage(error?: string) {
+  switch (error) {
+    case "AccessDenied":
+      return "Google sign-in was canceled before it finished. Please try again.";
+    case "Configuration":
+    case "GoogleOAuthNotConfigured":
+      return "Google sign-in is not configured for this deployment yet.";
+    default:
+      return error ? "We couldn't complete sign-in. Please try again." : null;
+  }
+}
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const callbackUrl = getSafeCallbackUrl(resolvedSearchParams.callbackUrl);
+  const loginErrorMessage = getLoginErrorMessage(resolvedSearchParams.error);
+  const isGoogleConfigured = googleAuthEnabled;
+  const badgeLabel = isGoogleConfigured ? "Welcome back" : "Setup needed";
+  const title = isGoogleConfigured ? "Log in or sign up in seconds." : "Google sign-in is not configured yet.";
+  const description = isGoogleConfigured
+    ? "Sign in to manage your DigiCard, refresh your profile, and stay ready for the next career fair, meetup, or campus event."
+    : "This deployment is ready for Google login, but it still needs the Google OAuth client and Vercel environment variables before anyone can sign in.";
+  const primarySupportCopy = isGoogleConfigured
+    ? `We will take you back to ${getDestinationLabel(callbackUrl)} after sign-in.`
+    : "Add the Google OAuth credentials for this deployment to turn on sign-in.";
+  const secondaryPanelTitle = isGoogleConfigured ? "Why sign in?" : "What still needs to be connected";
+  const secondaryPanelBody = isGoogleConfigured
+    ? "Save your profile, update your resume link anytime, and make sure your card is always ready before an important event."
+    : "Add AUTH_SECRET, AUTH_GOOGLE_ID, and AUTH_GOOGLE_SECRET in Vercel, then register the Google callback URL for this app.";
 
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
@@ -73,8 +107,15 @@ export default function LoginPage() {
               </p>
 
               <div className="mt-10 space-y-4">
-                {googleAuthConfigured ? (
+                {loginErrorMessage ? (
+                  <div className="rounded-2xl border border-[rgba(199,68,92,0.18)] bg-[rgba(255,238,242,0.92)] px-5 py-4 text-sm font-medium text-[#8a2a43]">
+                    {loginErrorMessage}
+                  </div>
+                ) : null}
+
+                {isGoogleConfigured ? (
                   <form action={signInWithGoogle}>
+                    <input type="hidden" name="callbackUrl" value={callbackUrl} />
                     <button
                       type="submit"
                       className="flex w-full items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.1)] bg-white px-5 py-4 text-left shadow-[0_12px_30px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:shadow-[0_16px_34px_rgba(21,32,58,0.06)]"
@@ -96,28 +137,28 @@ export default function LoginPage() {
                     </button>
                   </form>
                 ) : (
-                  <Link
-                    href="/dashboard"
-                    className="flex w-full items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.1)] bg-white px-5 py-4 text-left shadow-[0_12px_30px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:shadow-[0_16px_34px_rgba(21,32,58,0.06)]"
+                  <button
+                    type="button"
+                    disabled
+                    className="flex w-full cursor-not-allowed items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.08)] bg-white/80 px-5 py-4 text-left opacity-80 shadow-[0_12px_30px_rgba(21,32,58,0.04)]"
                   >
                     <span className="flex items-center gap-4">
-                      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--soft)] text-[var(--brand)]">
-                        <CreditCard className="h-5 w-5" />
+                      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--soft)]">
+                        <span className="text-xl font-bold leading-none text-[#4285F4]">G</span>
                       </span>
                       <span>
                         <span className="block text-base font-semibold text-[var(--ink)]">
-                          Open workspace preview
+                          Google sign-in unavailable
                         </span>
                         <span className="mt-1 block text-xs text-[var(--muted)]">
                           {primarySupportCopy}
                         </span>
                       </span>
                     </span>
-                    <MoveRight className="h-4 w-4 text-[var(--muted)]" />
-                  </Link>
+                  </button>
                 )}
 
-                {googleAuthConfigured
+                {isGoogleConfigured
                   ? comingSoonOptions.map(({ label, icon: Icon }) => (
                       <button
                         key={label}
@@ -140,9 +181,9 @@ export default function LoginPage() {
               </div>
 
               <p className="mt-8 text-sm leading-7 text-[var(--muted)]">
-                {isPreviewMode
-                  ? "Preview mode is enabled here so you can keep reviewing the product without getting blocked by local sign-in setup."
-                  : "By continuing, you agree to DigiCard&apos;s Terms of Use and Privacy Policy."}
+                {isGoogleConfigured
+                  ? "By continuing, you agree to DigiCard&apos;s Terms of Use and Privacy Policy."
+                  : "Once those values are in place, this page will immediately switch from setup mode to a working Google sign-in button."}
               </p>
 
               <div className="mt-10 rounded-[1.6rem] border border-[rgba(25,35,61,0.08)] bg-[var(--soft)] p-5">
@@ -150,6 +191,18 @@ export default function LoginPage() {
                 <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
                   {secondaryPanelBody}
                 </p>
+                {!isGoogleConfigured ? (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {["AUTH_SECRET", "AUTH_GOOGLE_ID", "AUTH_GOOGLE_SECRET"].map((item) => (
+                      <span
+                        key={item}
+                        className="rounded-full border border-[rgba(82,103,217,0.14)] bg-white px-3 py-1.5 text-xs font-semibold tracking-[0.08em] text-[var(--brand)]"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>

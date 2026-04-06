@@ -1,12 +1,18 @@
 "use server";
 
-import { signIn } from "@/auth";
+import { googleAuthEnabled, signIn } from "@/auth";
 import { redirect } from "next/navigation";
 
-export async function signInWithGoogle() {
-  if (!process.env.AUTH_GOOGLE_ID || !process.env.AUTH_GOOGLE_SECRET) {
-    redirect("/dashboard");
+function getSafeCallbackUrl(value: FormDataEntryValue | null) {
+  return typeof value === "string" && value.startsWith("/") ? value : "/dashboard";
+}
+
+export async function signInWithGoogle(formData: FormData) {
+  if (!googleAuthEnabled) {
+    redirect("/login?error=GoogleOAuthNotConfigured");
   }
 
-  await signIn("google", { redirectTo: "/dashboard" });
+  await signIn("google", {
+    redirectTo: getSafeCallbackUrl(formData.get("callbackUrl")),
+  });
 }
