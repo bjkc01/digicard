@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { googleAuthEnabled } from "@/auth";
-import { signInWithGoogle } from "./actions";
+import { emailAuthEnabled, emailAuthUsesConsoleFallback, googleAuthEnabled } from "@/auth";
+import { requestEmailSignIn, signInWithGoogle, verifyEmailSignIn } from "./actions";
 import {
   ArrowLeft,
   CreditCard,
@@ -14,15 +14,16 @@ import {
 } from "lucide-react";
 
 const previewItems = ["LinkedIn", "Portfolio", "Resume", "Email"];
-const comingSoonOptions = [
-  { label: "Continue with LinkedIn", icon: Link2 },
-  { label: "Continue with email", icon: Mail },
-] as const;
+const comingSoonOptions = [{ label: "Continue with LinkedIn", icon: Link2 }] as const;
 
 type LoginPageProps = {
   searchParams?: Promise<{
     callbackUrl?: string;
+    email?: string;
     error?: string;
+    method?: string;
+    notice?: string;
+    step?: string;
   }>;
 };
 
@@ -45,28 +46,60 @@ function getLoginErrorMessage(error?: string) {
     case "Configuration":
     case "GoogleOAuthNotConfigured":
       return "Google sign-in is not configured for this deployment yet.";
+    case "EmailInvalid":
+      return "Enter a valid email address to continue.";
+    case "EmailSigninUnavailable":
+      return "Email sign-in is not configured for this deployment yet.";
+    case "EmailSendFailed":
+      return "We could not send your sign-in code. Please try again.";
+    case "EmailCodeRequired":
+      return "Enter the 6-digit code we sent to your email.";
+    case "EmailCodeInvalid":
+      return "That code did not match. Please try again.";
+    case "EmailCodeExpired":
+      return "That code expired. Request a new one and try again.";
+    case "EmailSigninFailed":
+      return "We could not finish email sign-in. Please try again.";
     default:
       return error ? "We couldn't complete sign-in. Please try again." : null;
+  }
+}
+
+function getLoginNoticeMessage(notice?: string) {
+  switch (notice) {
+    case "EmailCodeSent":
+      return "A 6-digit sign-in code is ready for you.";
+    default:
+      return null;
   }
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
   const callbackUrl = getSafeCallbackUrl(resolvedSearchParams.callbackUrl);
+  const emailAddress = resolvedSearchParams.email ?? "";
   const loginErrorMessage = getLoginErrorMessage(resolvedSearchParams.error);
+  const loginNoticeMessage = getLoginNoticeMessage(resolvedSearchParams.notice);
   const isGoogleConfigured = googleAuthEnabled;
-  const badgeLabel = isGoogleConfigured ? "Welcome back" : "Setup needed";
-  const title = isGoogleConfigured ? "Log in or sign up in seconds." : "Google sign-in is not configured yet.";
-  const description = isGoogleConfigured
+  const isEmailConfigured = emailAuthEnabled;
+  const hasAnySignInMethod = isGoogleConfigured || isEmailConfigured;
+  const showEmailVerification =
+    resolvedSearchParams.method === "email" && resolvedSearchParams.step === "verify";
+  const badgeLabel = hasAnySignInMethod ? "Welcome back" : "Setup needed";
+  const title = hasAnySignInMethod ? "Log in or sign up in seconds." : "Sign-in is not configured yet.";
+  const description = hasAnySignInMethod
     ? "Sign in to manage your DigiCard, refresh your profile, and stay ready for the next career fair, meetup, or campus event."
-    : "This deployment is ready for Google login, but it still needs the Google OAuth client and Vercel environment variables before anyone can sign in.";
-  const primarySupportCopy = isGoogleConfigured
+    : "This deployment is ready for sign-in, but it still needs authentication environment variables before anyone can log in.";
+  const googleSupportCopy = isGoogleConfigured
     ? `We will take you back to ${getDestinationLabel(callbackUrl)} after sign-in.`
-    : "Add the Google OAuth credentials for this deployment to turn on sign-in.";
-  const secondaryPanelTitle = isGoogleConfigured ? "Why sign in?" : "What still needs to be connected";
-  const secondaryPanelBody = isGoogleConfigured
+    : "Add the Google OAuth credentials for this deployment to turn on Google sign-in.";
+  const emailSupportCopy = showEmailVerification
+    ? `Enter the code sent to ${emailAddress || "your inbox"} to finish signing in.`
+    : "Use a one-time code instead of a social login.";
+  const secondaryPanelTitle = hasAnySignInMethod ? "Why sign in?" : "What still needs to be connected";
+  const secondaryPanelBody = hasAnySignInMethod
     ? "Save your profile, update your resume link anytime, and make sure your card is always ready before an important event."
-    : "Add AUTH_SECRET, AUTH_GOOGLE_ID, and AUTH_GOOGLE_SECRET in Vercel, then register the Google callback URL for this app.";
+    : "Add AUTH_SECRET plus either Google OAuth credentials or email-delivery variables to turn on sign-in.";
 
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
@@ -112,6 +145,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                     {loginErrorMessage}
                   </div>
                 ) : null}
+                {loginNoticeMessage ? (
+                  <div className="rounded-2xl border border-[rgba(37,99,235,0.14)] bg-[rgba(239,246,255,0.96)] px-5 py-4 text-sm font-medium text-[#1d4ed8]">
+                    {loginNoticeMessage}
+                  </div>
+                ) : null}
 
                 {isGoogleConfigured ? (
                   <form action={signInWithGoogle}>
@@ -129,7 +167,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                             Continue with Google
                           </span>
                           <span className="mt-1 block text-xs text-[var(--muted)]">
-                            {primarySupportCopy}
+                            {googleSupportCopy}
                           </span>
                         </span>
                       </span>
@@ -151,12 +189,127 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                           Google sign-in unavailable
                         </span>
                         <span className="mt-1 block text-xs text-[var(--muted)]">
-                          {primarySupportCopy}
+                          {googleSupportCopy}
                         </span>
                       </span>
                     </span>
                   </button>
                 )}
+
+                <div className="rounded-[1.7rem] border border-[rgba(25,35,61,0.08)] bg-white px-5 py-5 shadow-[0_12px_30px_rgba(21,32,58,0.04)]">
+                  <div className="flex items-start gap-4">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--soft)] text-[var(--brand)]">
+                      <Mail className="h-5 w-5" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-base font-semibold text-[var(--ink)]">Continue with email</p>
+                      <p className="mt-1 text-xs text-[var(--muted)]">{emailSupportCopy}</p>
+                    </div>
+                  </div>
+
+                  {showEmailVerification ? (
+                    <div className="mt-5 space-y-4">
+                      <form action={verifyEmailSignIn} className="space-y-4">
+                        <input type="hidden" name="callbackUrl" value={callbackUrl} />
+                        <input type="hidden" name="email" value={emailAddress} />
+                        <div className="space-y-2">
+                          <label
+                            htmlFor="email-code"
+                            className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]"
+                          >
+                            Verification code
+                          </label>
+                          <input
+                            id="email-code"
+                            name="code"
+                            type="text"
+                            inputMode="numeric"
+                            autoComplete="one-time-code"
+                            maxLength={6}
+                            placeholder="123456"
+                            className="h-12 w-full rounded-2xl border border-[rgba(25,35,61,0.1)] px-4 text-base tracking-[0.32em] text-[var(--ink)] outline-none transition focus:border-[rgba(82,103,217,0.4)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)]"
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          className="flex w-full items-center justify-between rounded-2xl bg-[var(--brand)] px-5 py-4 text-left text-white shadow-[0_16px_34px_rgba(82,103,217,0.18)] transition hover:bg-[#4459cb]"
+                        >
+                          <span>
+                            <span className="block text-base font-semibold">Continue with email</span>
+                            <span className="mt-1 block text-xs text-white/80">
+                              We will take you back to {getDestinationLabel(callbackUrl)}.
+                            </span>
+                          </span>
+                          <MoveRight className="h-4 w-4 text-white/80" />
+                        </button>
+                      </form>
+
+                      <div className="flex flex-wrap items-center gap-3 text-sm">
+                        <form action={requestEmailSignIn}>
+                          <input type="hidden" name="callbackUrl" value={callbackUrl} />
+                          <input type="hidden" name="email" value={emailAddress} />
+                          <button
+                            type="submit"
+                            className="rounded-full border border-[rgba(25,35,61,0.12)] px-4 py-2 font-medium text-[var(--ink)] transition hover:border-[rgba(82,103,217,0.22)] hover:bg-[var(--soft)]"
+                          >
+                            Resend code
+                          </button>
+                        </form>
+                        <Link
+                          href={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+                          className="rounded-full border border-transparent px-2 py-2 font-medium text-[var(--muted)] transition hover:text-[var(--ink)]"
+                        >
+                          Use a different email
+                        </Link>
+                      </div>
+                    </div>
+                  ) : (
+                    <form action={requestEmailSignIn} className="mt-5 space-y-4">
+                      <input type="hidden" name="callbackUrl" value={callbackUrl} />
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="email-address"
+                          className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]"
+                        >
+                          Email address
+                        </label>
+                        <input
+                          id="email-address"
+                          name="email"
+                          type="email"
+                          defaultValue={emailAddress}
+                          autoComplete="email"
+                          placeholder="you@example.com"
+                          disabled={!isEmailConfigured}
+                          className="h-12 w-full rounded-2xl border border-[rgba(25,35,61,0.1)] px-4 text-base text-[var(--ink)] outline-none transition focus:border-[rgba(82,103,217,0.4)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={!isEmailConfigured}
+                        className="flex w-full items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.1)] bg-white px-5 py-4 text-left shadow-[0_12px_30px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:shadow-[0_16px_34px_rgba(21,32,58,0.06)] disabled:cursor-not-allowed disabled:opacity-75"
+                      >
+                        <span>
+                          <span className="block text-base font-semibold text-[var(--ink)]">
+                            Send sign-in code
+                          </span>
+                          <span className="mt-1 block text-xs text-[var(--muted)]">
+                            {isEmailConfigured
+                              ? "We will email you a 6-digit code."
+                              : "Add the email auth environment variables to enable this option."}
+                          </span>
+                        </span>
+                        <MoveRight className="h-4 w-4 text-[var(--muted)]" />
+                      </button>
+                    </form>
+                  )}
+
+                  {emailAuthUsesConsoleFallback ? (
+                    <p className="mt-4 rounded-2xl bg-[var(--soft)] px-4 py-3 text-xs leading-6 text-[var(--muted)]">
+                      Local development mode is active, so sign-in codes are printed to the server console until you add a real email sender.
+                    </p>
+                  ) : null}
+                </div>
 
                 {isGoogleConfigured
                   ? comingSoonOptions.map(({ label, icon: Icon }) => (
@@ -181,9 +334,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               </div>
 
               <p className="mt-8 text-sm leading-7 text-[var(--muted)]">
-                {isGoogleConfigured
+                {hasAnySignInMethod
                   ? "By continuing, you agree to DigiCard&apos;s Terms of Use and Privacy Policy."
-                  : "Once those values are in place, this page will immediately switch from setup mode to a working Google sign-in button."}
+                  : "Once those values are in place, this page will immediately switch from setup mode to working sign-in actions."}
               </p>
 
               <div className="mt-10 rounded-[1.6rem] border border-[rgba(25,35,61,0.08)] bg-[var(--soft)] p-5">
@@ -191,9 +344,15 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                 <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
                   {secondaryPanelBody}
                 </p>
-                {!isGoogleConfigured ? (
+                {!hasAnySignInMethod ? (
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {["AUTH_SECRET", "AUTH_GOOGLE_ID", "AUTH_GOOGLE_SECRET"].map((item) => (
+                    {[
+                      "AUTH_SECRET",
+                      "AUTH_GOOGLE_ID",
+                      "AUTH_GOOGLE_SECRET",
+                      "AUTH_EMAIL_FROM",
+                      "AUTH_RESEND_API_KEY",
+                    ].map((item) => (
                       <span
                         key={item}
                         className="rounded-full border border-[rgba(82,103,217,0.14)] bg-white px-3 py-1.5 text-xs font-semibold tracking-[0.08em] text-[var(--brand)]"

@@ -34,3 +34,16 @@ The app already uses Auth.js with a Google provider. To turn login on locally or
 5. Redeploy after adding the production variables.
 
 Protected routes are handled through `middleware.ts`, and unauthenticated visitors are redirected to `/login` before they can open the dashboard, templates, create-card flow, or settings.
+
+## Email code login setup
+
+The login page also supports a one-time email code flow.
+
+1. Add these environment variables in Vercel and in your local `.env.local`:
+   - `AUTH_SECRET`
+   - `AUTH_EMAIL_FROM`
+   - `AUTH_RESEND_API_KEY`
+2. Verify the sender domain in Resend and use that address in `AUTH_EMAIL_FROM`.
+3. Redeploy after adding the production variables.
+
+During local development, if `AUTH_SECRET` is set but the Resend values are missing, DigiCard falls back to printing the 6-digit email sign-in code to the server console so you can still test the flow end to end.
