@@ -226,7 +226,7 @@ export default function LandingPage() {
                       <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/14">
                         <UserRound className="h-5.5 w-5.5 text-white" />
                       </div>
-                      <h2 className="mt-3.5 text-[1.7rem] font-semibold tracking-[-0.04em]">Jordan Lee</h2>
+                      <h2 className="mt-3.5 text-[1.7rem] font-semibold tracking-[-0.04em]">Prem Paude</h2>
                       <p className="mt-1 text-[0.92rem] text-white/74">Computer Science Student</p>
                       <p className="mt-1 text-[0.92rem] text-white/68">University of Maryland</p>
                       <p className="mt-3 max-w-[15rem] text-[0.92rem] leading-6 text-white/74">
@@ -243,7 +243,7 @@ export default function LandingPage() {
                           <QRCode value="https://digicard.app/jordan-lee" size={54} fgColor="#172340" />
                         </div>
                         <p className="max-w-[8rem] text-[0.92rem] leading-6 text-white/74">
-                          Scan to open Jordan&apos;s profile instantly.
+                          Scan to open Prem&apos;s profile instantly.
                         </p>
                       </div>
                     </div>
