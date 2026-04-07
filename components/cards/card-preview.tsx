@@ -13,9 +13,9 @@ type CardPreviewProps = {
 
 const contactItems = [
   { key: "email", label: "Email", icon: Mail },
+  { key: "phone", label: "Phone", icon: Phone },
   { key: "linkedin", label: "LinkedIn", icon: AtSign },
   { key: "website", label: "Website", icon: Globe },
-  { key: "phone", label: "Phone", icon: Phone },
 ] as const;
 
 export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProps) {
