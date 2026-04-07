@@ -1,10 +1,14 @@
 import Link from "next/link";
-import { CreditCard, LayoutTemplate, Settings, Sparkles, WalletCards } from "lucide-react";
+import { CreditCard, LayoutTemplate, LogOut, Settings, Sparkles, WalletCards } from "lucide-react";
 import { navigationItems } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { signOutFromWorkspace } from "@/lib/workspace-actions";
 
 type SidebarProps = {
   activePath: string;
+  statusCopy?: string;
+  userLabel?: string;
+  userSubcopy?: string;
 };
 
 const icons = {
@@ -14,7 +18,7 @@ const icons = {
   Settings: Settings,
 } as const;
 
-export function Sidebar({ activePath }: SidebarProps) {
+export function Sidebar({ activePath, statusCopy, userLabel, userSubcopy }: SidebarProps) {
   return (
     <aside className="panel flex h-fit flex-col gap-8 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 lg:sticky lg:top-6">
       <div className="flex items-center gap-3 border-b border-[rgba(82,103,217,0.1)] pb-6">
@@ -30,7 +34,7 @@ export function Sidebar({ activePath }: SidebarProps) {
       <nav className="flex flex-col gap-2">
         {navigationItems.map((item) => {
           const Icon = icons[item.label as keyof typeof icons];
-          const isActive = item.label === "My Cards" ? false : activePath === item.href;
+          const isActive = activePath === item.href;
 
           return (
             <Link
@@ -53,8 +57,28 @@ export function Sidebar({ activePath }: SidebarProps) {
       <div className="rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-white p-5 shadow-[0_12px_30px_rgba(21,32,58,0.04)]">
         <p className="text-sm font-semibold text-[var(--ink)]">Networking status</p>
         <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
-          3 active cards and 214 profile views in the last 7 days.
+          {statusCopy ?? "Complete your workspace profile to keep your card ready to share."}
         </p>
+      </div>
+
+      <div className="rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-white p-5 shadow-[0_12px_30px_rgba(21,32,58,0.04)]">
+        <p className="text-sm font-semibold text-[var(--ink)]">{userLabel ?? "Account"}</p>
+        <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
+          {userSubcopy ?? "Session controls live here so sign-out is always easy to find."}
+        </p>
+
+        <form action={signOutFromWorkspace} className="mt-4">
+          <button
+            type="submit"
+            className="flex w-full items-center justify-between rounded-[1.25rem] border border-[rgba(25,35,61,0.08)] bg-[var(--soft)] px-4 py-3 text-left text-sm font-semibold text-[var(--ink)] transition hover:border-[rgba(82,103,217,0.18)] hover:bg-white"
+          >
+            <span className="inline-flex items-center gap-3">
+              <LogOut className="h-4 w-4 text-[var(--brand)]" />
+              Sign out
+            </span>
+            <span className="text-xs font-medium text-[var(--muted)]">Account</span>
+          </button>
+        </form>
       </div>
     </aside>
   );

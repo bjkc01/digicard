@@ -4,6 +4,7 @@ import {
   emailAuthEnabled,
   emailAuthUsesConsoleFallback,
   googleAuthEnabled,
+  temporaryAccessConfigured,
   temporaryAccessEnabled,
 } from "@/auth";
 import {
@@ -45,6 +46,7 @@ function getSafeCallbackUrl(value?: string) {
 
 function getDestinationLabel(callbackUrl: string) {
   if (callbackUrl === "/dashboard") return "your dashboard";
+  if (callbackUrl.startsWith("/cards")) return "your saved cards";
   if (callbackUrl.startsWith("/create-card")) return "the create-card flow";
   if (callbackUrl.startsWith("/settings")) return "settings";
   if (callbackUrl.startsWith("/templates")) return "template selection";
@@ -100,9 +102,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const loginNoticeMessage = getLoginNoticeMessage(resolvedSearchParams.notice);
   const isGoogleConfigured = googleAuthEnabled;
   const isEmailConfigured = emailAuthEnabled;
-  const isTemporaryAccessConfigured = temporaryAccessEnabled;
+  const isTemporaryAccessConfigured = temporaryAccessConfigured;
+  const isTemporaryAccessAvailable = temporaryAccessEnabled;
   const hasAnySignInMethod =
-    isGoogleConfigured || isEmailConfigured || isTemporaryAccessConfigured;
+    isGoogleConfigured || isEmailConfigured || isTemporaryAccessAvailable;
   const showEmailVerification =
     resolvedSearchParams.method === "email" && resolvedSearchParams.step === "verify";
   const badgeLabel = hasAnySignInMethod ? "Welcome back" : "Setup needed";
@@ -116,13 +119,15 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const emailSupportCopy = showEmailVerification
     ? `Enter the code sent to ${emailAddress || "your inbox"} to finish signing in.`
     : "Use a one-time code instead of a social login.";
-  const temporaryAccessCopy = isTemporaryAccessConfigured
+  const temporaryAccessCopy = isTemporaryAccessAvailable
     ? "Use a temporary ID and password until the main sign-in flow is fully ready."
-    : "Add temporary credentials in the environment settings if you need a quick fallback login.";
+    : isTemporaryAccessConfigured
+      ? "Temporary credentials are configured, but production fallback access stays locked until AUTH_TEMP_LOGIN_ENABLED is set to true."
+      : "Add temporary credentials and explicitly enable them if you need a short-term fallback login.";
   const secondaryPanelTitle = hasAnySignInMethod ? "Why sign in?" : "What still needs to be connected";
   const secondaryPanelBody = hasAnySignInMethod
     ? "Save your profile, update your resume link anytime, and make sure your card is always ready before an important event."
-    : "Add AUTH_SECRET plus Google OAuth credentials, email-delivery variables, or temporary access credentials to turn on sign-in.";
+    : "Add AUTH_SECRET plus Google OAuth credentials, email-delivery variables, or explicitly enabled temporary access to turn on sign-in.";
 
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
@@ -215,7 +220,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                         type="text"
                         autoComplete="username"
                         placeholder="temp-admin"
-                        disabled={!isTemporaryAccessConfigured}
+                        disabled={!isTemporaryAccessAvailable}
                         className="h-12 w-full rounded-2xl border border-[rgba(25,35,61,0.1)] px-4 text-base text-[var(--ink)] outline-none transition focus:border-[rgba(82,103,217,0.4)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                       />
                     </div>
@@ -232,13 +237,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                         type="password"
                         autoComplete="current-password"
                         placeholder="Temporary password"
-                        disabled={!isTemporaryAccessConfigured}
+                        disabled={!isTemporaryAccessAvailable}
                         className="h-12 w-full rounded-2xl border border-[rgba(25,35,61,0.1)] px-4 text-base text-[var(--ink)] outline-none transition focus:border-[rgba(82,103,217,0.4)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                       />
                     </div>
                     <button
                       type="submit"
-                      disabled={!isTemporaryAccessConfigured}
+                      disabled={!isTemporaryAccessAvailable}
                       className="flex w-full items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.1)] bg-white px-5 py-4 text-left shadow-[0_12px_30px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:shadow-[0_16px_34px_rgba(21,32,58,0.06)] disabled:cursor-not-allowed disabled:opacity-75"
                     >
                       <span>
@@ -246,9 +251,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                           Continue with temporary access
                         </span>
                         <span className="mt-1 block text-xs text-[var(--muted)]">
-                          {isTemporaryAccessConfigured
+                          {isTemporaryAccessAvailable
                             ? `We will take you back to ${getDestinationLabel(callbackUrl)}.`
-                            : "Temporary access is disabled until the matching environment variables are added."}
+                            : isTemporaryAccessConfigured
+                              ? "Temporary access is intentionally disabled in production until AUTH_TEMP_LOGIN_ENABLED=true."
+                              : "Temporary access is disabled until the matching environment variables are added."}
                         </span>
                       </span>
                       <MoveRight className="h-4 w-4 text-[var(--muted)]" />
@@ -455,6 +462,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                       "AUTH_SECRET",
                       "AUTH_TEMP_LOGIN_ID",
                       "AUTH_TEMP_LOGIN_PASSWORD",
+                      "AUTH_TEMP_LOGIN_ENABLED",
                       "AUTH_GOOGLE_ID",
                       "AUTH_GOOGLE_SECRET",
                       "AUTH_EMAIL_FROM",

@@ -1,4 +1,4 @@
-import { AtSign, Mail, QrCode, ScanLine } from "lucide-react";
+import { AtSign, Globe, Mail, Phone, QrCode, ScanLine } from "lucide-react";
 import { DigiCard } from "@/lib/data";
 
 type DashboardCardSurfaceProps = {
@@ -9,6 +9,8 @@ type DashboardCardSurfaceProps = {
 const quickLinks = [
   { key: "email", label: "Email", icon: Mail },
   { key: "linkedin", label: "LinkedIn", icon: AtSign },
+  { key: "website", label: "Website", icon: Globe },
+  { key: "phone", label: "Phone", icon: Phone },
 ] as const;
 
 export function DashboardCardSurface({ card, action }: DashboardCardSurfaceProps) {
@@ -35,7 +37,7 @@ export function DashboardCardSurface({ card, action }: DashboardCardSurfaceProps
                 {card.name}
               </h3>
               <p className="mt-2 text-sm font-medium text-cyan-100/80">{card.title}</p>
-              <p className="mt-1 text-sm text-slate-400">{card.company}</p>
+              {card.company ? <p className="mt-1 text-sm text-slate-400">{card.company}</p> : null}
             </div>
           </div>
 
@@ -48,6 +50,10 @@ export function DashboardCardSurface({ card, action }: DashboardCardSurfaceProps
           {quickLinks.map((item) => {
             const value = card[item.key];
             const Icon = item.icon;
+
+            if (!value) {
+              return null;
+            }
 
             return (
               <div key={item.key} className="rounded-[1.3rem] border border-white/10 bg-white/[0.05] px-4 py-3.5">
@@ -70,16 +76,16 @@ export function DashboardCardSurface({ card, action }: DashboardCardSurfaceProps
         <div className="mt-5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
             <ScanLine className="h-3.5 w-3.5" />
-            Event-ready
+            Workspace card
           </div>
           <div className="rounded-full bg-white/[0.06] px-3 py-1 text-xs font-medium text-slate-300">
-            142 opens
+            Active
           </div>
         </div>
 
         <div className="mt-5 flex items-center justify-between gap-4 border-t border-white/10 pt-4">
           <p className="max-w-[13rem] text-sm leading-6 text-slate-300">
-            Ready to share at fairs, mentor chats, and networking events.
+            Ready to share with recruiters, alumni, classmates, and new contacts.
           </p>
           {action}
         </div>

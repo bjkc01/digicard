@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { normalizeEmail } from "@/lib/email-auth";
-import { formDefaults, templates } from "@/lib/data";
+import { templates } from "@/lib/data";
 import type { WorkspaceUser } from "@/lib/workspace-auth";
 
 const SETTINGS_COOKIE_NAME = "digicard-workspace-settings";
@@ -44,7 +44,14 @@ export type WorkspaceProfile = {
   website: string;
 };
 
+export type WorkspaceCardDetails = {
+  company: string;
+  linkedin: string;
+  phone: string;
+};
+
 export type WorkspaceSettings = {
+  card: WorkspaceCardDetails;
   defaultTemplateId: string;
   notifications: WorkspaceNotificationSettings;
   owner: string;
@@ -101,18 +108,29 @@ function normalizeWebsite(value: string) {
   return cleanText(value, 120).replace(/^https?:\/\//i, "");
 }
 
+function normalizeLinkedIn(value: string) {
+  return cleanText(value, 120)
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "");
+}
+
 function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings {
   return {
+    card: {
+      company: "",
+      linkedin: "",
+      phone: "",
+    },
     defaultTemplateId: validTemplateIds.has(defaultTemplateId)
       ? defaultTemplateId
       : templates[0]?.id ?? "blueprint",
     notifications: { ...defaultNotificationSettings },
     owner: getWorkspaceOwner(user),
     profile: {
-      email: user.email || formDefaults.email,
-      name: user.name || formDefaults.name,
-      title: formDefaults.title,
-      website: formDefaults.website,
+      email: user.email,
+      name: user.name,
+      title: "",
+      website: "",
     },
     updatedAt: new Date().toISOString(),
     version: SETTINGS_VERSION,
@@ -191,6 +209,10 @@ function mergeWorkspaceSettings(
       : defaults.defaultTemplateId;
 
   return {
+    card: {
+      ...defaults.card,
+      ...candidate?.card,
+    },
     defaultTemplateId: templateId,
     notifications: {
       ...defaults.notifications,
@@ -253,6 +275,27 @@ export async function saveWorkspaceProfile(
   },
 ) {
   const current = await getWorkspaceSettings(user);
+  return saveWorkspaceProfileDetails(user, {
+    ...input,
+    company: current.card.company,
+    linkedin: current.card.linkedin,
+    phone: current.card.phone,
+  });
+}
+
+export async function saveWorkspaceProfileDetails(
+  user: WorkspaceUser,
+  input: {
+    company: string;
+    email: string;
+    linkedin: string;
+    name: string;
+    phone: string;
+    title: string;
+    website: string;
+  },
+) {
+  const current = await getWorkspaceSettings(user);
   const name = cleanText(input.name, 60);
   const email = normalizeEmail(input.email);
   const title = cleanText(input.title, 80);
@@ -281,12 +324,37 @@ export async function saveWorkspaceProfile(
 
   return persistWorkspaceSettings(user, {
     ...current,
+    card: {
+      company: cleanText(input.company, 80),
+      linkedin: normalizeLinkedIn(input.linkedin),
+      phone: cleanText(input.phone, 40),
+    },
     profile: {
       email,
       name,
       title,
       website,
     },
+  });
+}
+
+export async function saveWorkspaceCardDetails(
+  user: WorkspaceUser,
+  input: {
+    company: string;
+    linkedin: string;
+    phone: string;
+  },
+) {
+  const current = await getWorkspaceSettings(user);
+  return saveWorkspaceProfileDetails(user, {
+    company: input.company,
+    email: current.profile.email,
+    linkedin: input.linkedin,
+    name: current.profile.name,
+    phone: input.phone,
+    title: current.profile.title,
+    website: current.profile.website,
   });
 }
 

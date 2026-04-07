@@ -2,6 +2,13 @@ import { Suspense } from "react";
 import { CreateCardForm } from "@/components/create-card/create-card-form";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
+import { getWorkspaceView } from "@/lib/workspace-view";
+
+type CreateCardPageProps = {
+  searchParams?: Promise<{
+    template?: string;
+  }>;
+};
 
 function FormSkeleton() {
   return (
@@ -38,14 +45,34 @@ function FormSkeleton() {
   );
 }
 
-export default async function CreateCardPage() {
-  await requireWorkspaceUser("/create-card");
+export default async function CreateCardPage({ searchParams }: CreateCardPageProps) {
+  const workspaceUser = await requireWorkspaceUser("/create-card");
+  const workspaceView = await getWorkspaceView(workspaceUser);
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const initialTemplateId = resolvedSearchParams.template ?? workspaceView.settings.defaultTemplateId;
+  const initialFormData = {
+    company: workspaceView.settings.card.company,
+    email: workspaceView.settings.profile.email,
+    linkedin: workspaceView.settings.card.linkedin,
+    name: workspaceView.settings.profile.name,
+    phone: workspaceView.settings.card.phone,
+    title: workspaceView.settings.profile.title,
+    website: workspaceView.settings.profile.website,
+  };
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
-      <Sidebar activePath="/create-card" />
+      <Sidebar
+        activePath="/cards"
+        statusCopy={workspaceView.summary.sidebarStatusCopy}
+        userLabel={workspaceUser.name}
+        userSubcopy={workspaceUser.email}
+      />
       <Suspense fallback={<FormSkeleton />}>
-        <CreateCardForm />
+        <CreateCardForm
+          initialFormData={initialFormData}
+          initialTemplateId={initialTemplateId}
+        />
       </Suspense>
     </main>
   );

@@ -2,12 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { signOut } from "@/auth";
+import { signOutFromWorkspace } from "@/lib/workspace-actions";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import {
   notificationSettingOptions,
   saveWorkspaceNotifications,
-  saveWorkspaceProfile,
+  saveWorkspaceProfileDetails,
   saveWorkspaceTemplate,
   type WorkspaceNotificationKey,
   WorkspaceSettingsValidationError,
@@ -30,13 +30,20 @@ export async function saveProfileSettings(formData: FormData) {
   let notice = "profile-saved";
 
   try {
-    await saveWorkspaceProfile(user, {
+    await saveWorkspaceProfileDetails(user, {
+      company: String(formData.get("company") ?? ""),
       email: String(formData.get("email") ?? ""),
+      linkedin: String(formData.get("linkedin") ?? ""),
       name: String(formData.get("name") ?? ""),
+      phone: String(formData.get("phone") ?? ""),
       title: String(formData.get("title") ?? ""),
       website: String(formData.get("website") ?? ""),
     });
     revalidatePath("/settings");
+    revalidatePath("/dashboard");
+    revalidatePath("/cards");
+    revalidatePath("/create-card");
+    revalidatePath("/templates");
   } catch (error) {
     notice = getNoticeFromError(error, "profile-error");
   }
@@ -51,6 +58,10 @@ export async function saveTemplateSettings(formData: FormData) {
   try {
     await saveWorkspaceTemplate(user, String(formData.get("defaultTemplateId") ?? ""));
     revalidatePath("/settings");
+    revalidatePath("/dashboard");
+    revalidatePath("/cards");
+    revalidatePath("/create-card");
+    revalidatePath("/templates");
   } catch (error) {
     notice = getNoticeFromError(error, "template-error");
   }
@@ -74,6 +85,9 @@ export async function saveNotificationSettings(formData: FormData) {
 
     await saveWorkspaceNotifications(user, enabledKeys);
     revalidatePath("/settings");
+    revalidatePath("/dashboard");
+    revalidatePath("/cards");
+    revalidatePath("/templates");
   } catch (error) {
     notice = getNoticeFromError(error, "notifications-error");
   }
@@ -81,12 +95,4 @@ export async function saveNotificationSettings(formData: FormData) {
   redirectToSettings(notice);
 }
 
-export async function signOutFromSettings() {
-  const user = await requireWorkspaceUser("/settings");
-
-  if (user.isPreview) {
-    redirect("/login");
-  }
-
-  await signOut({ redirectTo: "/login" });
-}
+export { signOutFromWorkspace as signOutFromSettings };

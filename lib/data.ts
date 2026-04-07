@@ -26,7 +26,7 @@ export type DigiCard = {
 
 export const navigationItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "My Cards", href: "/dashboard" },
+  { label: "My Cards", href: "/cards" },
   { label: "Templates", href: "/templates" },
   { label: "Settings", href: "/settings" },
 ];
@@ -93,52 +93,3 @@ export const templates: DigiCardTemplate[] = [
     tone: "bg-indigo-50",
   },
 ];
-
-export const cards: DigiCard[] = [
-  {
-    id: 1,
-    name: "Avery Morgan",
-    title: "Head of Partnerships",
-    company: "Northstar Labs",
-    email: "avery@northstarlabs.co",
-    phone: "+1 (415) 555-0128",
-    linkedin: "linkedin.com/in/averymorgan",
-    website: "northstarlabs.co",
-    template: "Executive Slate",
-    color: "from-slate-900 to-slate-700",
-  },
-  {
-    id: 2,
-    name: "Mina Patel",
-    title: "Product Designer",
-    company: "Canvas House",
-    email: "mina@canvashouse.com",
-    phone: "+1 (646) 555-0162",
-    linkedin: "linkedin.com/in/minapatel",
-    website: "canvashouse.com",
-    template: "Studio Ivory",
-    color: "from-stone-900 to-stone-600",
-  },
-  {
-    id: 3,
-    name: "Jordan Lee",
-    title: "Revenue Operations Lead",
-    company: "SignalFlow",
-    email: "jordan@signalflow.io",
-    phone: "+1 (917) 555-0104",
-    linkedin: "linkedin.com/in/jordanlee",
-    website: "signalflow.io",
-    template: "Blueprint",
-    color: "from-blue-700 to-cyan-500",
-  },
-];
-
-export const formDefaults = {
-  name: "Sofia Bennett",
-  title: "Founder & Growth Advisor",
-  company: "DigiCard",
-  email: "sofia@digicard.app",
-  phone: "+1 (212) 555-0147",
-  linkedin: "linkedin.com/in/sofiabennett",
-  website: "digicard.app",
-};

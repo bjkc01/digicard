@@ -1,5 +1,17 @@
-import { formDefaults } from "@/lib/data";
 import { CardPreview } from "@/components/cards/card-preview";
+
+const previewCard = {
+  color: "from-blue-700 to-cyan-500",
+  company: "Your organization",
+  email: "you@example.com",
+  id: 99,
+  linkedin: "linkedin.com/in/yourname",
+  name: "Your Name",
+  phone: "+1 (555) 000-0000",
+  template: "Blueprint",
+  title: "Professional title",
+  website: "yourwebsite.com",
+};
 
 export function LivePreview() {
   return (
@@ -14,12 +26,7 @@ export function LivePreview() {
         </span>
       </div>
       <CardPreview
-        card={{
-          id: 99,
-          ...formDefaults,
-          template: "Blueprint",
-          color: "from-blue-700 to-cyan-500",
-        }}
+        card={previewCard}
       />
     </div>
   );

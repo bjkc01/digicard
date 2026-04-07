@@ -20,6 +20,12 @@ const contactItems = [
 
 export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProps) {
   const qrValue = `https://digicard.app/view/${card.id}`;
+  const contactPointCount = contactItems.filter((item) => Boolean(card[item.key])).length;
+  const statusItems = [
+    { value: card.template, label: "Template" },
+    { value: `${contactPointCount}`, label: "Links" },
+    { value: card.title ? "Ready" : "Draft", label: "Status" },
+  ];
 
   return (
     <div
@@ -80,7 +86,11 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
               <p className={cn("mt-1 font-medium text-cyan-100/85", compact ? "text-[11px]" : "text-sm")}>
                 {card.title}
               </p>
-              <p className={cn("mt-1 text-slate-400", compact ? "text-[11px]" : "text-sm")}>{card.company}</p>
+              {card.company ? (
+                <p className={cn("mt-1 text-slate-400", compact ? "text-[11px]" : "text-sm")}>
+                  {card.company}
+                </p>
+              ) : null}
             </div>
           </div>
 
@@ -134,11 +144,7 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
         </div>
 
         <div className={cn("grid gap-3 sm:grid-cols-3", compact ? "mt-5" : "mt-8")}>
-          {[
-            { value: "142", label: "Views" },
-            { value: "38", label: "Taps" },
-            { value: "12", label: "Saves" },
-          ].map((metric) => (
+          {statusItems.map((metric) => (
             <div
               key={metric.label}
               className={cn(
@@ -146,7 +152,7 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
                 compact ? "px-3 py-3" : "px-4 py-4",
               )}
             >
-              <p className={cn("font-semibold tracking-[-0.04em] text-white", compact ? "text-[18px]" : "text-2xl")}>
+              <p className={cn("font-semibold tracking-[-0.04em] text-white", compact ? "text-[16px]" : "text-2xl")}>
                 {metric.value}
               </p>
               <p className={cn("mt-1 uppercase tracking-[0.2em] text-slate-500", compact ? "text-[10px]" : "text-xs")}>
@@ -163,7 +169,7 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
                 Share identity
               </p>
               <p className={cn("mt-1 text-slate-300", compact ? "text-[12px]" : "text-sm")}>
-                Designed to look sharp on first tap.
+                Built from the latest saved workspace details.
               </p>
             </div>
             <span className={cn("font-semibold uppercase tracking-[0.24em] text-slate-500", compact ? "text-[9px]" : "text-[11px]")}>

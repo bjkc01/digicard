@@ -1,25 +1,26 @@
-"use client";
-
-import { ArrowRight, Layers3, QrCode, UserPlus } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowRight, LayoutTemplate, Settings, SquarePen } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const actions = [
   {
-    label: "Update profile links",
-    description: "Refresh your resume, portfolio, and LinkedIn before your next event.",
-    icon: Layers3,
+    description: "Refresh your title, contact details, and default workspace identity.",
+    href: "/settings",
+    icon: Settings,
+    label: "Open settings",
   },
   {
-    label: "Generate new QR assets",
-    description: "Export QR codes in high-res PNG and SVG formats.",
-    icon: QrCode,
+    description: "Refine the saved card details that Dashboard and My Cards now reuse.",
+    href: "/create-card",
+    icon: SquarePen,
+    label: "Edit workspace card",
   },
   {
-    label: "Prepare for a new event",
-    description: "Duplicate a card and tailor it for a fair, meetup, or application season.",
-    icon: UserPlus,
+    description: "Review the template catalog and keep your default style consistent.",
+    href: "/templates",
+    icon: LayoutTemplate,
+    label: "Browse templates",
   },
-];
+] as const;
 
 export function QuickActions() {
   return (
@@ -30,20 +31,25 @@ export function QuickActions() {
           const Icon = action.icon;
 
           return (
-            <button
+            <Button
               key={action.label}
-              type="button"
-              onClick={() => toast.info(action.label, { description: action.description })}
-              className="flex w-full items-center justify-between rounded-[1.4rem] border border-[rgba(82,103,217,0.1)] bg-[var(--soft)] px-4 py-4 text-left text-sm font-medium text-[var(--ink)] transition hover:border-[rgba(82,103,217,0.22)] hover:bg-white"
+              href={action.href}
+              variant="ghost"
+              className="flex h-auto w-full items-center justify-between rounded-[1.4rem] border border-[rgba(82,103,217,0.1)] bg-[var(--soft)] px-4 py-4 text-left text-sm font-medium text-[var(--ink)] transition hover:border-[rgba(82,103,217,0.22)] hover:bg-white"
             >
               <span className="flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-[0_10px_22px_rgba(21,32,58,0.05)]">
                   <Icon className="h-4 w-4" />
                 </span>
-                {action.label}
+                <span>
+                  <span className="block text-sm font-semibold text-[var(--ink)]">{action.label}</span>
+                  <span className="mt-1 block text-sm font-normal leading-6 text-[var(--muted)]">
+                    {action.description}
+                  </span>
+                </span>
               </span>
-              <ArrowRight className="h-4 w-4 text-[var(--brand)]" />
-            </button>
+              <ArrowRight className="h-4 w-4 shrink-0 text-[var(--brand)]" />
+            </Button>
           );
         })}
       </div>

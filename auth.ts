@@ -9,16 +9,20 @@ import {
   verifyEmailLoginToken,
 } from "@/lib/email-auth";
 
-const protectedRoutes = ["/dashboard", "/create-card", "/settings", "/templates"];
-
-export const googleAuthEnabled = Boolean(
-  process.env.AUTH_SECRET && process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
-);
-export const temporaryAccessEnabled = Boolean(
+const protectedRoutes = ["/dashboard", "/cards", "/create-card", "/settings", "/templates"];
+const temporaryAccessConfigured = Boolean(
   process.env.AUTH_SECRET &&
     process.env.AUTH_TEMP_LOGIN_ID &&
     process.env.AUTH_TEMP_LOGIN_PASSWORD,
 );
+
+export const googleAuthEnabled = Boolean(
+  process.env.AUTH_SECRET && process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
+);
+export { temporaryAccessConfigured };
+export const temporaryAccessEnabled =
+  temporaryAccessConfigured &&
+  (process.env.NODE_ENV !== "production" || process.env.AUTH_TEMP_LOGIN_ENABLED === "true");
 export const devAuthBypassEnabled =
   process.env.NODE_ENV !== "production" && process.env.AUTH_DEV_BYPASS === "true";
 export { emailAuthEnabled, emailAuthUsesConsoleFallback };

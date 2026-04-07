@@ -9,6 +9,7 @@ import {
   LogOut,
   Mail,
   ShieldCheck,
+  Smartphone,
   UserRound,
 } from "lucide-react";
 import type { ComponentType } from "react";
@@ -17,10 +18,8 @@ import { Button } from "@/components/ui/button";
 import { templates } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
-import {
-  getWorkspaceSettings,
-  notificationSettingOptions,
-} from "@/lib/workspace-settings";
+import { getWorkspaceView } from "@/lib/workspace-view";
+import { notificationSettingOptions } from "@/lib/workspace-settings";
 import {
   saveNotificationSettings,
   saveProfileSettings,
@@ -38,19 +37,19 @@ function getNoticeContent(notice?: string) {
   switch (notice) {
     case "profile-saved":
       return {
-        body: "Your profile details were saved to your secured workspace preferences.",
+        body: "Your workspace identity, card details, and contact links were saved.",
         tone: "border-[rgba(16,185,129,0.16)] bg-[rgba(236,253,245,0.92)] text-[#065f46]",
         title: "Profile updated",
       };
     case "profile-invalid":
       return {
-        body: "Check the profile fields and make sure the name, title, and email are valid.",
+        body: "Check the name, email, and title fields before saving again.",
         tone: "border-[rgba(245,158,11,0.18)] bg-[rgba(255,251,235,0.95)] text-[#92400e]",
         title: "Profile needs attention",
       };
     case "template-saved":
       return {
-        body: "New cards will start from the template you just selected.",
+        body: "The default template for this workspace was updated.",
         tone: "border-[rgba(16,185,129,0.16)] bg-[rgba(236,253,245,0.92)] text-[#065f46]",
         title: "Default template updated",
       };
@@ -62,7 +61,7 @@ function getNoticeContent(notice?: string) {
       };
     case "notifications-saved":
       return {
-        body: "Your alert preferences are now stored on the server for this account.",
+        body: "Alert preferences were saved for this workspace on the current browser.",
         tone: "border-[rgba(16,185,129,0.16)] bg-[rgba(236,253,245,0.92)] text-[#065f46]",
         title: "Notification settings updated",
       };
@@ -77,13 +76,6 @@ function getNoticeContent(notice?: string) {
     default:
       return null;
   }
-}
-
-function formatUpdatedAt(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
 }
 
 function getSessionTone(provider: string) {
@@ -110,17 +102,11 @@ function getSessionTone(provider: string) {
 export default async function SettingsPage({ searchParams }: SettingsPageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
   const workspaceUser = await requireWorkspaceUser("/settings");
-  const settings = await getWorkspaceSettings(workspaceUser);
+  const workspaceView = await getWorkspaceView(workspaceUser);
   const notice = getNoticeContent(resolvedSearchParams.notice);
+  const { settings, summary } = workspaceView;
   const selectedTemplate =
     templates.find((template) => template.id === settings.defaultTemplateId) ?? templates[0]!;
-  const enabledNotificationCount = Object.values(settings.notifications).filter(Boolean).length;
-  const profileCompletion = Math.round(
-    ([settings.profile.name, settings.profile.email, settings.profile.title, settings.profile.website]
-      .filter(Boolean).length /
-      4) *
-      100,
-  );
   const initials = settings.profile.name
     .split(" ")
     .filter(Boolean)
@@ -131,7 +117,12 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
-      <Sidebar activePath="/settings" />
+      <Sidebar
+        activePath="/settings"
+        statusCopy={summary.sidebarStatusCopy}
+        userLabel={workspaceUser.name}
+        userSubcopy={workspaceUser.email}
+      />
 
       <section className="space-y-6">
         <header className="panel flex flex-col gap-5 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 lg:flex-row lg:items-end lg:justify-between">
@@ -141,9 +132,8 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
               Account, access, and workspace defaults
             </h1>
             <p className="mt-2 max-w-2xl text-[0.98rem] leading-7 text-[var(--muted)]">
-              This page now saves through authenticated server actions, so your profile,
-              template preference, and alert settings are tied to the active account instead
-              of temporary browser-only state.
+              Update the identity details, template default, and notification settings that
+              the signed-in workspace uses across Dashboard, My Cards, and the card builder.
             </p>
           </div>
 
@@ -152,16 +142,21 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-[var(--ink)]">Server-backed preferences</p>
+              <p className="text-sm font-semibold text-[var(--ink)]">Scoped workspace storage</p>
               <p className="mt-1 text-sm text-[var(--muted)]">
-                Stored in signed HTTP-only cookies and validated on save.
+                Saved through authenticated server actions and signed storage on this browser.
               </p>
             </div>
           </div>
         </header>
 
         {notice ? (
-          <div className={cn("rounded-[1.6rem] border px-5 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)]", notice.tone)}>
+          <div
+            className={cn(
+              "rounded-[1.6rem] border px-5 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)]",
+              notice.tone,
+            )}
+          >
             <p className="text-sm font-semibold">{notice.title}</p>
             <p className="mt-1 text-sm leading-6">{notice.body}</p>
           </div>
@@ -213,7 +208,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                     Signed session plus server validation
                   </p>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    Settings saves do not rely on middleware alone.
+                    Critical workspace saves do not rely on middleware alone.
                   </p>
                 </div>
               </div>
@@ -224,12 +219,11 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                 <div>
                   <h2 className="text-lg font-semibold text-[var(--ink)]">Profile</h2>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    This information is stored for the active account and can power workspace
-                    surfaces as the product grows.
+                    Edit the identity and contact details used to generate your workspace card.
                   </p>
                 </div>
                 <span className="inline-flex h-fit rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold text-[var(--brand)]">
-                  {profileCompletion}% complete
+                  {summary.profileCompletion}% complete
                 </span>
               </div>
 
@@ -248,7 +242,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                     defaultValue={settings.profile.email}
                     label="Profile email"
                     name="email"
-                    placeholder="you@company.com"
+                    placeholder="you@example.com"
                     required
                     type="email"
                   />
@@ -259,17 +253,40 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                     defaultValue={settings.profile.title}
                     label="Professional title"
                     name="title"
-                    placeholder="Founder & Growth Advisor"
+                    placeholder="Student, founder, designer, or advisor"
                     required
                   />
+                  <SettingsField
+                    defaultValue={settings.card.company}
+                    label="School or company"
+                    name="company"
+                    placeholder="University or company"
+                  />
+                </div>
+
+                <div className="grid gap-5 md:grid-cols-2">
                   <SettingsField
                     autoComplete="url"
                     defaultValue={settings.profile.website}
                     label="Website"
                     name="website"
-                    placeholder="digicard.app"
+                    placeholder="yourwebsite.com"
+                  />
+                  <SettingsField
+                    defaultValue={settings.card.linkedin}
+                    label="LinkedIn"
+                    name="linkedin"
+                    placeholder="linkedin.com/in/yourname"
                   />
                 </div>
+
+                <SettingsField
+                  autoComplete="tel"
+                  defaultValue={settings.card.phone}
+                  label="Phone"
+                  name="phone"
+                  placeholder="+1 (555) 000-0000"
+                />
 
                 <div className="rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(247,249,255,0.94),_rgba(255,255,255,0.96))] p-4">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -280,13 +297,15 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                       <p className="truncate text-base font-semibold text-[var(--ink)]">
                         {settings.profile.name}
                       </p>
-                      <p className="mt-1 text-sm text-[var(--muted)]">{settings.profile.title}</p>
+                      <p className="mt-1 text-sm text-[var(--muted)]">
+                        {settings.profile.title || "Add a professional title"}
+                      </p>
                       <p className="mt-2 truncate text-sm text-[var(--muted)]">
                         {settings.profile.email}
                       </p>
                     </div>
                     <div className="sm:ml-auto rounded-full border border-[rgba(82,103,217,0.14)] bg-white px-4 py-2 text-sm font-medium text-[var(--muted)]">
-                      Auth session owner
+                      Workspace owner
                     </div>
                   </div>
                 </div>
@@ -316,7 +335,11 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
               </div>
 
               <form action={saveTemplateSettings} className="mt-6 space-y-6">
-                <div role="radiogroup" aria-label="Default card template" className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+                <div
+                  role="radiogroup"
+                  aria-label="Default card template"
+                  className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3"
+                >
                   {templates.map((template) => {
                     const isSelected = template.id === settings.defaultTemplateId;
 
@@ -390,11 +413,11 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                 <div>
                   <h2 className="text-lg font-semibold text-[var(--ink)]">Notifications</h2>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    Keep the signals that matter and store them on the server for this account.
+                    Save the signals that matter for this workspace on the current browser.
                   </p>
                 </div>
                 <span className="inline-flex h-fit rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold text-[var(--brand)]">
-                  {enabledNotificationCount} of {notificationSettingOptions.length} enabled
+                  {summary.alertsEnabledCount} of {notificationSettingOptions.length} enabled
                 </span>
               </div>
 
@@ -448,37 +471,27 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                 <div>
                   <h2 className="text-lg font-semibold text-[var(--ink)]">Danger zone</h2>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    Sensitive account actions stay locked until ownership checks and deletion
-                    workflows are backed by a database.
+                    Destructive account actions stay locked until the product has a database-backed
+                    ownership, deletion, and audit workflow.
                   </p>
                 </div>
                 <span className="inline-flex h-fit rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
-                  Honest placeholder
+                  Not available yet
                 </span>
               </div>
 
               <div className="mt-6 rounded-[1.6rem] border border-red-200 bg-white/80 p-5">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-red-100 text-red-600">
-                      <AlertTriangle className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-red-700">Delete account</p>
-                      <p className="mt-1 max-w-2xl text-sm leading-6 text-red-600">
-                        This action stays disabled until the backend can verify ownership, remove
-                        data safely, and write an audit trail.
-                      </p>
-                    </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-red-100 text-red-600">
+                    <AlertTriangle className="h-4 w-4" />
                   </div>
-
-                  <button
-                    type="button"
-                    disabled
-                    className="inline-flex shrink-0 cursor-not-allowed rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-400"
-                  >
-                    Request deletion
-                  </button>
+                  <div>
+                    <p className="text-sm font-semibold text-red-700">Delete account</p>
+                    <p className="mt-1 max-w-2xl text-sm leading-6 text-red-600">
+                      This stays unavailable until ownership verification, safe data removal, and
+                      an audit trail are supported end to end.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -489,22 +502,22 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
               <p className="eyebrow text-[var(--brand)]">Workspace snapshot</p>
               <div className="mt-5 space-y-3">
                 <SnapshotCard
-                  description="Core identity fields are stored and ready to reuse."
+                  description="Identity fields saved for the current workspace."
                   icon={UserRound}
                   title="Profile status"
-                  value={`${profileCompletion}%`}
+                  value={`${summary.profileCompletion}%`}
                 />
                 <SnapshotCard
-                  description="New cards will start from this saved design system choice."
+                  description="Cards generated from the active profile right now."
                   icon={LayoutTemplate}
-                  title="Default style"
-                  value={selectedTemplate.name}
+                  title="Saved cards"
+                  value={`${summary.activeCardCount}`}
                 />
                 <SnapshotCard
-                  description="Saved alert preferences for the current account."
+                  description="Alert preferences currently enabled in this browser."
                   icon={BellRing}
                   title="Alerts"
-                  value={`${enabledNotificationCount} active`}
+                  value={`${summary.alertsEnabledCount} active`}
                 />
               </div>
             </div>
@@ -521,7 +534,9 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-sm font-semibold text-white/75">{settings.profile.name}</p>
-                      <p className="mt-2 text-xl font-semibold tracking-tight">{settings.profile.title}</p>
+                      <p className="mt-2 text-xl font-semibold tracking-tight">
+                        {settings.profile.title || "Add your title"}
+                      </p>
                     </div>
                     <LayoutTemplate className="h-5 w-5 text-white/80" />
                   </div>
@@ -544,38 +559,15 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                 Keep account controls visible and accountable.
               </h2>
               <p className="mt-3 text-sm leading-7 text-white/72">
-                The active session, last saved timestamp, and fallback-access status now live in
-                one place so the settings surface feels operational instead of decorative.
+                The active session, storage scope, and latest save timestamp now live in one
+                place without pretending this is already a full database-backed account system.
               </p>
               <div className="mt-6 space-y-3">
-                <div className="flex items-center justify-between rounded-[1.3rem] border border-white/15 bg-white/10 px-4 py-3 text-sm">
-                  <span className="inline-flex items-center gap-3">
-                    <Mail className="h-4 w-4" />
-                    Session email
-                  </span>
-                  <span className="max-w-[12rem] truncate text-white/78">{workspaceUser.email}</span>
-                </div>
-                <div className="flex items-center justify-between rounded-[1.3rem] border border-white/15 bg-white/10 px-4 py-3 text-sm">
-                  <span className="inline-flex items-center gap-3">
-                    <LockKeyhole className="h-4 w-4" />
-                    Sign-in method
-                  </span>
-                  <span className="text-white/78">{workspaceUser.authLabel}</span>
-                </div>
-                <div className="flex items-center justify-between rounded-[1.3rem] border border-white/15 bg-white/10 px-4 py-3 text-sm">
-                  <span className="inline-flex items-center gap-3">
-                    <Clock3 className="h-4 w-4" />
-                    Last saved
-                  </span>
-                  <span className="text-right text-white/78">{formatUpdatedAt(settings.updatedAt)}</span>
-                </div>
-                <div className="flex items-center justify-between rounded-[1.3rem] border border-white/15 bg-white/10 px-4 py-3 text-sm">
-                  <span className="inline-flex items-center gap-3">
-                    <Globe className="h-4 w-4" />
-                    Cookie model
-                  </span>
-                  <span className="text-white/78">Signed / HTTP-only</span>
-                </div>
+                <AccessRow icon={Mail} label="Session email" value={workspaceUser.email} />
+                <AccessRow icon={LockKeyhole} label="Sign-in method" value={workspaceUser.authLabel} />
+                <AccessRow icon={Clock3} label="Last saved" value={summary.lastUpdatedLabel} />
+                <AccessRow icon={Smartphone} label="Storage scope" value="Current browser" />
+                <AccessRow icon={Globe} label="Integrity model" value="Signed / validated" />
               </div>
             </div>
           </aside>
@@ -638,6 +630,26 @@ function SnapshotCard({ description, icon: Icon, title, value }: SnapshotCardPro
       </div>
       <p className="mt-3 text-xl font-semibold text-[var(--ink)]">{value}</p>
       <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{description}</p>
+    </div>
+  );
+}
+
+function AccessRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-[1.3rem] border border-white/15 bg-white/10 px-4 py-3 text-sm">
+      <span className="inline-flex items-center gap-3">
+        <Icon className="h-4 w-4" />
+        {label}
+      </span>
+      <span className="max-w-[12rem] text-right text-white/78">{value}</span>
     </div>
   );
 }
