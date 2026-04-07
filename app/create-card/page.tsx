@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { CreateCardForm } from "@/components/create-card/create-card-form";
 import { Sidebar } from "@/components/dashboard/sidebar";
+import { requireWorkspaceUser } from "@/lib/workspace-auth";
 
 function FormSkeleton() {
   return (
@@ -37,7 +38,9 @@ function FormSkeleton() {
   );
 }
 
-export default function CreateCardPage() {
+export default async function CreateCardPage() {
+  await requireWorkspaceUser("/create-card");
+
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
       <Sidebar activePath="/create-card" />

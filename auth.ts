@@ -101,6 +101,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   trustHost: true,
   callbacks: {
+    jwt({ token, user, account }) {
+      if (account?.provider) {
+        token.authProvider = account.provider;
+      }
+
+      if (typeof user?.id === "string") {
+        token.userId = user.id;
+      } else if (!token.userId && typeof token.sub === "string") {
+        token.userId = token.sub;
+      }
+
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user) {
+        if (typeof token.userId === "string") {
+          session.user.id = token.userId;
+        }
+
+        if (typeof token.authProvider === "string") {
+          session.user.authProvider = token.authProvider;
+        }
+      }
+
+      return session;
+    },
     authorized({ request, auth }) {
       const { pathname, search } = request.nextUrl;
       const isAuthenticated = Boolean(auth?.user);

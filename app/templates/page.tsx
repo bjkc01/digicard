@@ -2,8 +2,11 @@ import { Sidebar } from "@/components/dashboard/sidebar";
 import { Button } from "@/components/ui/button";
 import { TemplateTile } from "@/components/cards/template-tile";
 import { templates } from "@/lib/data";
+import { requireWorkspaceUser } from "@/lib/workspace-auth";
 
-export default function TemplatesPage() {
+export default async function TemplatesPage() {
+  await requireWorkspaceUser("/templates");
+
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
       <Sidebar activePath="/templates" />

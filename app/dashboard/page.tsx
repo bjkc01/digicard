@@ -5,6 +5,7 @@ import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Button } from "@/components/ui/button";
+import { requireWorkspaceUser } from "@/lib/workspace-auth";
 
 const metrics = [
   { value: "842", label: "Card opens", icon: UserRound },
@@ -12,7 +13,9 @@ const metrics = [
   { value: "56", label: "New saves", icon: ScanLine },
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await requireWorkspaceUser("/dashboard");
+
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
       <Sidebar activePath="/dashboard" />
