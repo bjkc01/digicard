@@ -3,7 +3,7 @@
 import { cookies, headers } from "next/headers";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
-import { emailAuthEnabled, googleAuthEnabled, signIn } from "@/auth";
+import { emailAuthEnabled, googleAuthEnabled, signIn, temporaryAccessEnabled } from "@/auth";
 import {
   createEmailLoginToken,
   createPendingEmailCode,
@@ -61,6 +61,34 @@ export async function signInWithGoogle(formData: FormData) {
   await signIn("google", {
     redirectTo: getSafeCallbackUrl(formData.get("callbackUrl")),
   });
+}
+
+export async function signInWithTemporaryAccess(formData: FormData) {
+  const callbackUrl = getSafeCallbackUrl(formData.get("callbackUrl"));
+  const loginId = typeof formData.get("loginId") === "string" ? formData.get("loginId")?.toString().trim() : "";
+  const password = typeof formData.get("password") === "string" ? formData.get("password")?.toString() : "";
+
+  if (!loginId || !password) {
+    redirect(getLoginUrl({ callbackUrl, error: "TempCredentialsRequired" }));
+  }
+
+  if (!temporaryAccessEnabled) {
+    redirect(getLoginUrl({ callbackUrl, error: "TempCredentialsUnavailable" }));
+  }
+
+  try {
+    await signIn("temp-access", {
+      loginId,
+      password,
+      redirectTo: callbackUrl,
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      redirect(getLoginUrl({ callbackUrl, error: "TempCredentialsInvalid" }));
+    }
+
+    throw error;
+  }
 }
 
 export async function requestEmailSignIn(formData: FormData) {

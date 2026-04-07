@@ -1,10 +1,22 @@
 import Link from "next/link";
-import { emailAuthEnabled, emailAuthUsesConsoleFallback, googleAuthEnabled } from "@/auth";
-import { requestEmailSignIn, signInWithGoogle, verifyEmailSignIn } from "./actions";
+import {
+  devAuthBypassEnabled,
+  emailAuthEnabled,
+  emailAuthUsesConsoleFallback,
+  googleAuthEnabled,
+  temporaryAccessEnabled,
+} from "@/auth";
+import {
+  requestEmailSignIn,
+  signInWithGoogle,
+  signInWithTemporaryAccess,
+  verifyEmailSignIn,
+} from "./actions";
 import {
   ArrowLeft,
   CreditCard,
   GraduationCap,
+  KeyRound,
   Link2,
   Mail,
   MoveRight,
@@ -60,6 +72,12 @@ function getLoginErrorMessage(error?: string) {
       return "That code expired. Request a new one and try again.";
     case "EmailSigninFailed":
       return "We could not finish email sign-in. Please try again.";
+    case "TempCredentialsRequired":
+      return "Enter the temporary ID and password to continue.";
+    case "TempCredentialsUnavailable":
+      return "Temporary access is not configured for this deployment yet.";
+    case "TempCredentialsInvalid":
+      return "That temporary ID or password was not correct.";
     default:
       return error ? "We couldn't complete sign-in. Please try again." : null;
   }
@@ -82,7 +100,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const loginNoticeMessage = getLoginNoticeMessage(resolvedSearchParams.notice);
   const isGoogleConfigured = googleAuthEnabled;
   const isEmailConfigured = emailAuthEnabled;
-  const hasAnySignInMethod = isGoogleConfigured || isEmailConfigured;
+  const isTemporaryAccessConfigured = temporaryAccessEnabled;
+  const hasAnySignInMethod =
+    isGoogleConfigured || isEmailConfigured || isTemporaryAccessConfigured;
   const showEmailVerification =
     resolvedSearchParams.method === "email" && resolvedSearchParams.step === "verify";
   const badgeLabel = hasAnySignInMethod ? "Welcome back" : "Setup needed";
@@ -96,10 +116,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const emailSupportCopy = showEmailVerification
     ? `Enter the code sent to ${emailAddress || "your inbox"} to finish signing in.`
     : "Use a one-time code instead of a social login.";
+  const temporaryAccessCopy = isTemporaryAccessConfigured
+    ? "Use a temporary ID and password until the main sign-in flow is fully ready."
+    : "Add temporary credentials in the environment settings if you need a quick fallback login.";
   const secondaryPanelTitle = hasAnySignInMethod ? "Why sign in?" : "What still needs to be connected";
   const secondaryPanelBody = hasAnySignInMethod
     ? "Save your profile, update your resume link anytime, and make sure your card is always ready before an important event."
-    : "Add AUTH_SECRET plus either Google OAuth credentials or email-delivery variables to turn on sign-in.";
+    : "Add AUTH_SECRET plus Google OAuth credentials, email-delivery variables, or temporary access credentials to turn on sign-in.";
 
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
@@ -150,6 +173,88 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                     {loginNoticeMessage}
                   </div>
                 ) : null}
+                {devAuthBypassEnabled ? (
+                  <div className="rounded-[1.7rem] border border-[rgba(16,185,129,0.16)] bg-[rgba(236,253,245,0.9)] px-5 py-5 shadow-[0_12px_30px_rgba(16,185,129,0.08)]">
+                    <p className="text-sm font-semibold text-[#065f46]">Local preview mode is on</p>
+                    <p className="mt-2 text-sm leading-7 text-[#0f766e]">
+                      Protected pages are temporarily unlocked in development so you can inspect the product while sign-in is still being fixed.
+                    </p>
+                    <Link
+                      href={callbackUrl}
+                      className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#059669] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#047857]"
+                    >
+                      Open preview
+                      <MoveRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                ) : null}
+
+                <div className="rounded-[1.7rem] border border-[rgba(25,35,61,0.08)] bg-white px-5 py-5 shadow-[0_12px_30px_rgba(21,32,58,0.04)]">
+                  <div className="flex items-start gap-4">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--soft)] text-[var(--brand)]">
+                      <KeyRound className="h-5 w-5" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-base font-semibold text-[var(--ink)]">Temporary access</p>
+                      <p className="mt-1 text-xs text-[var(--muted)]">{temporaryAccessCopy}</p>
+                    </div>
+                  </div>
+
+                  <form action={signInWithTemporaryAccess} className="mt-5 space-y-4">
+                    <input type="hidden" name="callbackUrl" value={callbackUrl} />
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="temp-login-id"
+                        className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]"
+                      >
+                        Temporary ID
+                      </label>
+                      <input
+                        id="temp-login-id"
+                        name="loginId"
+                        type="text"
+                        autoComplete="username"
+                        placeholder="temp-admin"
+                        disabled={!isTemporaryAccessConfigured}
+                        className="h-12 w-full rounded-2xl border border-[rgba(25,35,61,0.1)] px-4 text-base text-[var(--ink)] outline-none transition focus:border-[rgba(82,103,217,0.4)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="temp-login-password"
+                        className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]"
+                      >
+                        Password
+                      </label>
+                      <input
+                        id="temp-login-password"
+                        name="password"
+                        type="password"
+                        autoComplete="current-password"
+                        placeholder="Temporary password"
+                        disabled={!isTemporaryAccessConfigured}
+                        className="h-12 w-full rounded-2xl border border-[rgba(25,35,61,0.1)] px-4 text-base text-[var(--ink)] outline-none transition focus:border-[rgba(82,103,217,0.4)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={!isTemporaryAccessConfigured}
+                      className="flex w-full items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.1)] bg-white px-5 py-4 text-left shadow-[0_12px_30px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:shadow-[0_16px_34px_rgba(21,32,58,0.06)] disabled:cursor-not-allowed disabled:opacity-75"
+                    >
+                      <span>
+                        <span className="block text-base font-semibold text-[var(--ink)]">
+                          Continue with temporary access
+                        </span>
+                        <span className="mt-1 block text-xs text-[var(--muted)]">
+                          {isTemporaryAccessConfigured
+                            ? `We will take you back to ${getDestinationLabel(callbackUrl)}.`
+                            : "Temporary access is disabled until the matching environment variables are added."}
+                        </span>
+                      </span>
+                      <MoveRight className="h-4 w-4 text-[var(--muted)]" />
+                    </button>
+                  </form>
+                </div>
 
                 {isGoogleConfigured ? (
                   <form action={signInWithGoogle}>
@@ -348,6 +453,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                   <div className="mt-4 flex flex-wrap gap-2">
                     {[
                       "AUTH_SECRET",
+                      "AUTH_TEMP_LOGIN_ID",
+                      "AUTH_TEMP_LOGIN_PASSWORD",
                       "AUTH_GOOGLE_ID",
                       "AUTH_GOOGLE_SECRET",
                       "AUTH_EMAIL_FROM",

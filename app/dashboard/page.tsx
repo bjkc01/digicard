@@ -1,4 +1,5 @@
 import { QrCode, ScanLine, UserRound } from "lucide-react";
+import { devAuthBypassEnabled } from "@/auth";
 import { CardsSection } from "@/components/cards/cards-section";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { QuickActions } from "@/components/dashboard/quick-actions";
@@ -18,6 +19,12 @@ export default function DashboardPage() {
 
       <section className="space-y-6">
         <DashboardHeader />
+
+        {devAuthBypassEnabled ? (
+          <div className="rounded-[1.6rem] border border-[rgba(16,185,129,0.16)] bg-[rgba(236,253,245,0.9)] px-5 py-4 text-sm text-[#065f46] shadow-[0_12px_30px_rgba(16,185,129,0.08)]">
+            Preview mode is enabled in local development, so this dashboard is temporarily visible without sign-in.
+          </div>
+        ) : null}
 
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
           <div className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.94),_rgba(244,247,255,0.92))] p-6">

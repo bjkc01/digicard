@@ -14,6 +14,13 @@ const protectedRoutes = ["/dashboard", "/create-card", "/settings", "/templates"
 export const googleAuthEnabled = Boolean(
   process.env.AUTH_SECRET && process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
 );
+export const temporaryAccessEnabled = Boolean(
+  process.env.AUTH_SECRET &&
+    process.env.AUTH_TEMP_LOGIN_ID &&
+    process.env.AUTH_TEMP_LOGIN_PASSWORD,
+);
+export const devAuthBypassEnabled =
+  process.env.NODE_ENV !== "production" && process.env.AUTH_DEV_BYPASS === "true";
 export { emailAuthEnabled, emailAuthUsesConsoleFallback };
 
 function isProtectedRoute(pathname: string) {
@@ -54,6 +61,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }),
         ]
       : []),
+    ...(temporaryAccessEnabled
+      ? [
+          Credentials({
+            id: "temp-access",
+            name: "Temporary Access",
+            credentials: {
+              loginId: { label: "Temporary ID", type: "text" },
+              password: { label: "Password", type: "password" },
+            },
+            async authorize(credentials) {
+              const loginId =
+                typeof credentials.loginId === "string" ? credentials.loginId.trim() : "";
+              const password =
+                typeof credentials.password === "string" ? credentials.password : "";
+
+              if (
+                loginId !== process.env.AUTH_TEMP_LOGIN_ID ||
+                password !== process.env.AUTH_TEMP_LOGIN_PASSWORD
+              ) {
+                return null;
+              }
+
+              return {
+                email: process.env.AUTH_TEMP_LOGIN_EMAIL ?? `${loginId}@temporary.local`,
+                id: `temp-access:${loginId}`,
+                name: process.env.AUTH_TEMP_LOGIN_NAME ?? "Temporary Access",
+              };
+            },
+          }),
+        ]
+      : []),
   ],
   pages: {
     signIn: "/login",
@@ -67,6 +105,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const { pathname, search } = request.nextUrl;
       const isAuthenticated = Boolean(auth?.user);
       const callbackUrl = getSafeCallbackUrl(request.nextUrl.searchParams.get("callbackUrl"));
+
+      if (devAuthBypassEnabled && isProtectedRoute(pathname)) {
+        return true;
+      }
 
       if (pathname === "/login" && isAuthenticated) {
         return NextResponse.redirect(new URL(callbackUrl, request.nextUrl.origin));
