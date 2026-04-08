@@ -72,7 +72,7 @@ function StatusMessage({
         tone === "success" &&
           "border-[rgba(34,197,94,0.18)] bg-[rgba(240,253,244,0.94)] text-[#166534]",
         tone === "neutral" &&
-          "border-[rgba(82,103,217,0.14)] bg-[rgba(241,244,255,0.9)] text-[var(--ink)]",
+          "border-[rgba(82,103,217,0.14)] bg-[rgba(241,244,255,0.92)] text-[var(--ink)]",
       )}
     >
       {message}
@@ -80,7 +80,7 @@ function StatusMessage({
   );
 }
 
-function ProviderRow({
+function ActionSurface({
   description,
   disabled = false,
   icon,
@@ -96,14 +96,14 @@ function ProviderRow({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-4 rounded-[1.4rem] border border-[rgba(25,35,61,0.1)] bg-white px-4 py-3.5 shadow-[0_10px_24px_rgba(21,32,58,0.04)] transition",
+        "flex items-center justify-between gap-3 rounded-[1.3rem] border border-[rgba(25,35,61,0.1)] bg-white px-3.5 py-3 shadow-[0_8px_20px_rgba(21,32,58,0.04)] transition",
         disabled
           ? "cursor-not-allowed opacity-70"
-          : "hover:border-[rgba(82,103,217,0.24)] hover:shadow-[0_16px_34px_rgba(21,32,58,0.08)]",
+          : "hover:-translate-y-0.5 hover:border-[rgba(82,103,217,0.24)] hover:shadow-[0_16px_30px_rgba(21,32,58,0.08)]",
       )}
     >
-      <span className="flex min-w-0 items-center gap-3.5">
-        <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-[var(--soft)]">
+      <span className="flex min-w-0 items-center gap-3">
+        <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--soft)]">
           {icon}
         </span>
         <span className="min-w-0">
@@ -116,61 +116,40 @@ function ProviderRow({
   );
 }
 
-function DesktopVisualPanel({ destinationLabel }: { destinationLabel: string }) {
+function DesktopVisualPanel() {
   return (
-    <div className="relative hidden overflow-hidden bg-[linear-gradient(180deg,_#172340_0%,_#243967_44%,_#5267d9_100%)] p-8 text-white lg:flex lg:flex-col lg:justify-between">
-      <div className="absolute left-10 top-10 h-32 w-32 rounded-full bg-white/14 blur-3xl" />
-      <div className="absolute bottom-12 right-8 h-40 w-40 rounded-full bg-[rgba(255,141,87,0.18)] blur-3xl" />
+    <div className="relative hidden w-[200px] flex-shrink-0 overflow-hidden border-l border-slate-100 lg:flex">
+      <div className="absolute inset-0 bg-[linear-gradient(160deg,_#172340_0%,_#283f70_55%,_#5267d9_100%)]" />
+      <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+      <div className="absolute -bottom-6 left-2 h-32 w-32 rounded-full bg-[rgba(255,141,87,0.22)] blur-2xl" />
 
-      <div className="relative z-10">
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">
-          <Sparkles className="h-3.5 w-3.5" />
-          Smooth auth flow
+      <div className="relative flex w-full flex-col justify-between p-5 text-white">
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/80">
+          <CreditCard className="h-3 w-3" />
+          DigiCard
         </div>
-        <h3 className="mt-5 max-w-[14rem] text-[2rem] font-semibold leading-[1.02] tracking-[-0.05em]">
-          Stay on the page while you sign in.
-        </h3>
-        <p className="mt-4 max-w-[15rem] text-sm leading-7 text-white/76">
-          Open auth in a polished modal, then continue straight to {destinationLabel}.
-        </p>
-      </div>
 
-      <div className="relative z-10 space-y-4">
-        <div className="rounded-[1.8rem] border border-white/12 bg-white/10 p-4 backdrop-blur-xl">
-          <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/74">
-              <CreditCard className="h-3.5 w-3.5" />
-              DigiCard
+        <div className="space-y-3">
+          <div className="rounded-[1.6rem] border border-white/12 bg-white/10 p-3.5 backdrop-blur-xl">
+            <div className="flex items-center justify-between">
+              <p className="text-[0.92rem] font-semibold tracking-[-0.03em]">Maya Carter</p>
+              <ShieldCheck className="h-3.5 w-3.5 text-white/60" />
             </div>
-            <ShieldCheck className="h-4 w-4 text-white/72" />
-          </div>
+            <p className="mt-0.5 text-[11px] text-white/60">CS Student</p>
 
-          <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-[rgba(10,14,26,0.26)] p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-lg font-semibold tracking-[-0.03em] text-white">Maya Carter</p>
-                <p className="mt-1 text-sm text-white/72">Computer Science Student</p>
-              </div>
-              <div className="rounded-2xl bg-white/12 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/72">
-                Ready
-              </div>
-            </div>
-
-            <div className="mt-4 grid gap-2.5">
-              {[
-                "Share your profile with one scan",
-                "Keep resume, links, and contact details together",
-                "Move from hello to follow-up much faster",
-              ].map((item) => (
-                <div key={item} className="flex items-start gap-3 rounded-2xl bg-white/8 px-3 py-3">
-                  <div className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-white/14">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-white" />
-                  </div>
-                  <p className="text-sm leading-6 text-white/80">{item}</p>
+            <div className="mt-3 space-y-1.5">
+              {["One scan, full profile", "Resume + links together", "Instant follow-up"].map((item) => (
+                <div key={item} className="flex items-center gap-2 rounded-xl bg-white/8 px-2.5 py-1.5">
+                  <CheckCircle2 className="h-3 w-3 flex-shrink-0 text-white/70" />
+                  <p className="text-[11px] leading-4 text-white/76">{item}</p>
                 </div>
               ))}
             </div>
           </div>
+
+          <p className="text-[11px] leading-5 text-white/48">
+            Your professional profile, shared in seconds.
+          </p>
         </div>
       </div>
     </div>
@@ -200,110 +179,117 @@ export function HomeAuthModalCard({
     setPanel(initialPanel);
   }, [initialPanel]);
 
-  const showingEmailPanel = panel === "email";
-  const showingVerifyPanel = panel === "verify";
-  const showingTemporaryPanel = panel === "temporary";
+  const isChoicesPanel = panel === "choices";
+  const isEmailPanel = panel === "email";
+  const isVerifyPanel = panel === "verify";
+  const isTemporaryPanel = panel === "temporary";
 
   const showChoiceError =
-    panel === "choices" &&
+    isChoicesPanel &&
     Boolean(errorMessage) &&
     !errorCode?.startsWith("Email") &&
     !errorCode?.startsWith("TempCredentials");
-
-  const showEmailError = Boolean(errorMessage) && errorCode?.startsWith("Email");
-  const showTemporaryError = Boolean(errorMessage) && errorCode?.startsWith("TempCredentials");
-  const showVerifyNotice = showingVerifyPanel && Boolean(noticeMessage) && noticeCode === "EmailCodeSent";
+  const showEmailError =
+    (isEmailPanel || isVerifyPanel) && Boolean(errorMessage) && errorCode?.startsWith("Email");
+  const showTemporaryError =
+    isTemporaryPanel && Boolean(errorMessage) && errorCode?.startsWith("TempCredentials");
+  const showVerifyNotice = isVerifyPanel && Boolean(noticeMessage) && noticeCode === "EmailCodeSent";
 
   return (
-    <div className="w-full max-w-[34rem] lg:max-w-[54rem]">
-      <div className="grid max-h-[min(90vh,760px)] overflow-hidden rounded-[2rem] border border-white/75 bg-white/96 shadow-[0_40px_120px_rgba(15,23,42,0.24)] backdrop-blur-xl lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="overflow-y-auto px-5 py-5 sm:px-7 sm:py-7">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-[var(--soft)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
-            <Sparkles className="h-3.5 w-3.5" />
-            {hasAnySignInMethod ? "Welcome" : "Setup needed"}
+    <div className="w-[min(calc(100vw-2rem),27rem)] sm:w-[min(calc(100vw-3rem),28rem)] lg:w-[min(calc(100vw-5rem),43rem)]">
+      <div className="flex max-h-[min(85vh,36rem)] overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.22),0_4px_16px_rgba(15,23,42,0.08)]">
+        <div className="min-w-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-[var(--soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
+              <Sparkles className="h-3 w-3" />
+              {hasAnySignInMethod ? "Welcome" : "Setup needed"}
+            </div>
+
+            {isChoicesPanel ? (
+              <div className="mt-4">
+                <h2 className="text-[1.6rem] font-semibold leading-[1.06] tracking-[-0.05em] text-[var(--ink)]">
+                  Log in or sign up in seconds
+                </h2>
+                <p className="mt-2 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">
+                  Continue to {destinationLabel} without leaving the page.
+                </p>
+              </div>
+            ) : null}
+
+            {isEmailPanel ? (
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => setPanel("choices")}
+                  className="inline-flex items-center gap-2 rounded-full border border-[rgba(25,35,61,0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)] transition hover:border-[rgba(82,103,217,0.24)] hover:text-[var(--ink)]"
+                >
+                  <ArrowLeft className="h-3 w-3" />
+                  Back
+                </button>
+                <h2 className="mt-3 text-[1.5rem] font-semibold leading-[1.06] tracking-[-0.05em] text-[var(--ink)]">
+                  Continue with email
+                </h2>
+                <p className="mt-1.5 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">
+                  Enter your email and we&apos;ll send a secure sign-in code.
+                </p>
+              </div>
+            ) : null}
+
+            {isVerifyPanel ? (
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => setPanel("email")}
+                  className="inline-flex items-center gap-2 rounded-full border border-[rgba(25,35,61,0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)] transition hover:border-[rgba(82,103,217,0.24)] hover:text-[var(--ink)]"
+                >
+                  <ArrowLeft className="h-3 w-3" />
+                  Back
+                </button>
+                <h2 className="mt-3 text-[1.5rem] font-semibold leading-[1.06] tracking-[-0.05em] text-[var(--ink)]">
+                  Check your email
+                </h2>
+                <p className="mt-1.5 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">
+                  Enter the 6-digit code sent to{" "}
+                  <span className="font-semibold text-[var(--ink)]">{emailAddress}</span>.
+                </p>
+              </div>
+            ) : null}
+
+            {isTemporaryPanel ? (
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => setPanel("choices")}
+                  className="inline-flex items-center gap-2 rounded-full border border-[rgba(25,35,61,0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)] transition hover:border-[rgba(82,103,217,0.24)] hover:text-[var(--ink)]"
+                >
+                  <ArrowLeft className="h-3 w-3" />
+                  Back
+                </button>
+                <h2 className="mt-3 text-[1.5rem] font-semibold leading-[1.06] tracking-[-0.05em] text-[var(--ink)]">
+                  Temporary access
+                </h2>
+                <p className="mt-1.5 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">
+                  Use short-term credentials for a fallback route into the workspace.
+                </p>
+              </div>
+            ) : null}
+
+            <div className="mt-4 space-y-3">
+              {showChoiceError && errorMessage ? <StatusMessage message={errorMessage} tone="error" /> : null}
+              {showEmailError && errorMessage ? <StatusMessage message={errorMessage} tone="error" /> : null}
+              {showTemporaryError && errorMessage ? <StatusMessage message={errorMessage} tone="error" /> : null}
+              {showVerifyNotice && noticeMessage ? <StatusMessage message={noticeMessage} tone="success" /> : null}
+            </div>
           </div>
 
-          {panel === "choices" ? (
-            <div className="mt-5">
-              <h2 className="text-[2rem] font-semibold leading-[1.02] tracking-[-0.05em] text-[var(--ink)] sm:text-[2.15rem]">
-                Log in or sign up in seconds
-              </h2>
-              <p className="mt-3 max-w-[28rem] text-sm leading-7 text-[var(--muted)] sm:text-[0.96rem]">
-                Continue to {destinationLabel} without losing the page behind you.
-              </p>
-            </div>
-          ) : null}
-
-          {showingEmailPanel ? (
-            <div className="mt-5">
-              <button
-                type="button"
-                onClick={() => setPanel("choices")}
-                className="inline-flex items-center gap-2 rounded-full border border-[rgba(25,35,61,0.1)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)] transition hover:border-[rgba(82,103,217,0.24)] hover:text-[var(--ink)]"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                Back
-              </button>
-              <h2 className="mt-4 text-[1.8rem] font-semibold leading-[1.04] tracking-[-0.05em] text-[var(--ink)]">
-                Continue with email
-              </h2>
-              <p className="mt-3 max-w-[28rem] text-sm leading-7 text-[var(--muted)] sm:text-[0.96rem]">
-                Enter your email and we&apos;ll send a secure sign-in code without leaving this modal.
-              </p>
-            </div>
-          ) : null}
-
-          {showingVerifyPanel ? (
-            <div className="mt-5">
-              <button
-                type="button"
-                onClick={() => setPanel("email")}
-                className="inline-flex items-center gap-2 rounded-full border border-[rgba(25,35,61,0.1)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)] transition hover:border-[rgba(82,103,217,0.24)] hover:text-[var(--ink)]"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                Use a different email
-              </button>
-              <h2 className="mt-4 text-[1.8rem] font-semibold leading-[1.04] tracking-[-0.05em] text-[var(--ink)]">
-                Check your email
-              </h2>
-              <p className="mt-3 max-w-[28rem] text-sm leading-7 text-[var(--muted)] sm:text-[0.96rem]">
-                Enter the 6-digit code sent to <span className="font-semibold text-[var(--ink)]">{emailAddress}</span>.
-              </p>
-            </div>
-          ) : null}
-
-          {showingTemporaryPanel ? (
-            <div className="mt-5">
-              <button
-                type="button"
-                onClick={() => setPanel("choices")}
-                className="inline-flex items-center gap-2 rounded-full border border-[rgba(25,35,61,0.1)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)] transition hover:border-[rgba(82,103,217,0.24)] hover:text-[var(--ink)]"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                Back
-              </button>
-              <h2 className="mt-4 text-[1.8rem] font-semibold leading-[1.04] tracking-[-0.05em] text-[var(--ink)]">
-                Temporary access
-              </h2>
-              <p className="mt-3 max-w-[28rem] text-sm leading-7 text-[var(--muted)] sm:text-[0.96rem]">
-                Use short-term credentials if you need a fallback path into the workspace.
-              </p>
-            </div>
-          ) : null}
-
-          <div className="mt-6 space-y-4">
-            {showChoiceError && errorMessage ? <StatusMessage message={errorMessage} tone="error" /> : null}
-            {showEmailError && errorMessage ? <StatusMessage message={errorMessage} tone="error" /> : null}
-            {showTemporaryError && errorMessage ? <StatusMessage message={errorMessage} tone="error" /> : null}
-            {showVerifyNotice && noticeMessage ? <StatusMessage message={noticeMessage} tone="success" /> : null}
-
-            {panel === "choices" ? (
-              <>
+          <div className="mt-4">
+            {isChoicesPanel ? (
+              <div className="space-y-2.5">
                 {googleConfigured ? (
                   <form action={signInWithGoogle}>
                     <ModalAuthContextFields callbackUrl={callbackUrl} originPath={originPath} />
                     <button type="submit" className="w-full text-left">
-                      <ProviderRow
+                      <ActionSurface
                         title="Continue with Google"
                         description="Secure handoff only when Google takes over."
                         icon={<span className="text-xl font-bold leading-none text-[#4285F4]">G</span>}
@@ -312,7 +298,7 @@ export function HomeAuthModalCard({
                     </button>
                   </form>
                 ) : (
-                  <ProviderRow
+                  <ActionSurface
                     disabled
                     title="Continue with Google"
                     description="Google sign-in is not available on this deployment yet."
@@ -320,18 +306,23 @@ export function HomeAuthModalCard({
                   />
                 )}
 
-                <button type="button" className="w-full text-left" onClick={() => setPanel("email")}>
-                  <ProviderRow
+                {isEmailConfigured ? (
+                  <button type="button" className="w-full text-left" onClick={() => setPanel("email")}>
+                    <ActionSurface
+                      title="Continue with email"
+                      description="Get a one-time code and finish inside this modal."
+                      icon={<Mail className="h-5 w-5 text-[var(--brand)]" />}
+                      trailing={<ArrowRight className="h-4 w-4" />}
+                    />
+                  </button>
+                ) : (
+                  <ActionSurface
+                    disabled
                     title="Continue with email"
-                    description={
-                      isEmailConfigured
-                        ? "Receive a one-time code and finish right here."
-                        : "Email sign-in is not available on this deployment yet."
-                    }
+                    description="Email sign-in is not available on this deployment yet."
                     icon={<Mail className="h-5 w-5 text-[var(--brand)]" />}
-                    trailing={<ArrowRight className="h-4 w-4" />}
                   />
-                </button>
+                )}
 
                 {isTemporaryAccessAvailable ? (
                   <button
@@ -344,27 +335,17 @@ export function HomeAuthModalCard({
                   </button>
                 ) : null}
 
-                {devAuthBypassEnabled ? (
-                  <Link
-                    href={callbackUrl}
-                    className="inline-flex items-center gap-2 rounded-full bg-[#059669] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#047857]"
-                  >
-                    Open preview without sign-in
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                ) : null}
-
                 {!hasAnySignInMethod ? (
                   <StatusMessage
                     message="Sign-in methods are still being configured for this deployment."
                     tone="neutral"
                   />
                 ) : null}
-              </>
+              </div>
             ) : null}
 
-            {showingEmailPanel ? (
-              <div className="rounded-[1.6rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(246,248,255,0.94))] p-4 sm:p-5">
+            {isEmailPanel ? (
+              <div className="rounded-[1.7rem] border border-[rgba(25,35,61,0.08)] bg-[#f6f8ff] p-4 sm:p-5">
                 <form action={requestEmailSignIn} className="space-y-4">
                   <ModalAuthContextFields callbackUrl={callbackUrl} originPath={originPath} />
                   <label className="block space-y-2">
@@ -408,8 +389,8 @@ export function HomeAuthModalCard({
               </div>
             ) : null}
 
-            {showingVerifyPanel ? (
-              <div className="rounded-[1.6rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(246,248,255,0.94))] p-4 sm:p-5">
+            {isVerifyPanel ? (
+              <div className="rounded-[1.7rem] border border-[rgba(25,35,61,0.08)] bg-[#f6f8ff] p-4 sm:p-5">
                 <form action={verifyEmailSignIn} className="space-y-4">
                   <ModalAuthContextFields callbackUrl={callbackUrl} originPath={originPath} />
                   <input type="hidden" name="email" value={emailAddress} />
@@ -471,8 +452,8 @@ export function HomeAuthModalCard({
               </div>
             ) : null}
 
-            {showingTemporaryPanel ? (
-              <div className="rounded-[1.6rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(246,248,255,0.94))] p-4 sm:p-5">
+            {isTemporaryPanel ? (
+              <div className="rounded-[1.7rem] border border-[rgba(25,35,61,0.08)] bg-[#f6f8ff] p-4 sm:p-5">
                 <form action={signInWithTemporaryAccess} className="space-y-4">
                   <ModalAuthContextFields callbackUrl={callbackUrl} originPath={originPath} />
                   <label className="block space-y-2">
@@ -523,12 +504,24 @@ export function HomeAuthModalCard({
             ) : null}
           </div>
 
-          <p className="mt-6 text-xs leading-6 text-[var(--muted)] sm:text-sm">
-            By continuing, you agree to DigiCard&apos;s Terms of Use and Privacy Policy.
-          </p>
+          <div className="mt-5 flex flex-col gap-2.5 border-t border-[rgba(25,35,61,0.08)] pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs leading-6 text-[var(--muted)] sm:text-sm">
+              By continuing, you agree to DigiCard&apos;s Terms of Use and Privacy Policy.
+            </p>
+
+            {devAuthBypassEnabled ? (
+              <Link
+                href={callbackUrl}
+                className="inline-flex items-center gap-2 rounded-full bg-[#059669] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#047857]"
+              >
+                Open preview
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            ) : null}
+          </div>
         </div>
 
-        <DesktopVisualPanel destinationLabel={destinationLabel} />
+        <DesktopVisualPanel />
       </div>
     </div>
   );

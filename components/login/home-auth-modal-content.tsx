@@ -24,7 +24,16 @@ function getInitialPanel(searchParams: LoginSearchParams): AuthModalPanel {
     return "verify";
   }
 
-  if (searchParams.error?.startsWith("Email")) {
+  if (
+    searchParams.error === "EmailCodeRequired" ||
+    searchParams.error === "EmailCodeInvalid" ||
+    searchParams.error === "EmailCodeExpired" ||
+    searchParams.error === "EmailSigninFailed"
+  ) {
+    return "verify";
+  }
+
+  if (searchParams.error === "EmailInvalid" || searchParams.error === "EmailSendFailed") {
     return "email";
   }
 
