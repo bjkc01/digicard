@@ -74,8 +74,6 @@ const quickPoints = [
   "Give recruiters and professionals an easy way to remember you",
 ];
 
-// Touching the landing page keeps Vercel's Git-based deployment path active for this branch.
-
 const networkingQuote = {
   line: "If you're not networking, you're not working.",
   source: "A reminder students hear for a reason",
@@ -83,8 +81,8 @@ const networkingQuote = {
 };
 
 const profileLinks = [
-  { label: "LinkedIn", value: "linkedin.com/in/jordan-lee" },
-  { label: "Portfolio", value: "jordanlee.design" },
+  { label: "LinkedIn", value: "linkedin.com/in/maya-carter-demo" },
+  { label: "Portfolio", value: "mayacarter.dev" },
   { label: "Resume", value: "View PDF" },
 ];
 
@@ -241,7 +239,7 @@ export default function LandingPage() {
                       </p>
                       <div className="mt-3 flex items-center gap-3">
                         <div className="rounded-2xl bg-white p-2.5">
-                          <QRCode value="https://digicard.app/jordan-lee" size={54} fgColor="#172340" />
+                          <QRCode value="https://digicard.app/maya-carter-demo" size={54} fgColor="#172340" />
                         </div>
                         <p className="max-w-[8rem] text-[0.92rem] leading-6 text-white/74">
                           Scan to open Maya&apos;s profile instantly.
@@ -270,7 +268,7 @@ export default function LandingPage() {
                             Email
                           </p>
                           <p className="mt-1.5 break-all text-[0.78rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.82rem]">
-                            jordanlee@umaryland.edu
+                            maya.carter@umd-example.edu
                           </p>
                         </div>
                         <div className="rounded-2xl bg-[var(--soft)] px-4 py-3">
