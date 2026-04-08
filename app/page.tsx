@@ -265,19 +265,19 @@ export default function LandingPage() {
 
                     <div className="rounded-[1.35rem] border border-[rgba(25,35,61,0.08)] bg-white p-4 shadow-[0_12px_24px_rgba(21,32,58,0.05)]">
                       <div className="grid gap-2.5">
-                        <div className="flex items-center justify-between gap-4 rounded-2xl bg-[var(--soft)] px-4 py-3">
+                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-3.5">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                             Email
                           </p>
-                          <p className="min-w-0 whitespace-nowrap text-right text-[0.8rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.84rem]">
+                          <p className="mt-1.5 text-[0.86rem] font-medium leading-6 text-[var(--ink)]">
                             maya.carter@umd-example.edu
                           </p>
                         </div>
-                        <div className="flex items-center justify-between gap-4 rounded-2xl bg-[var(--soft)] px-4 py-3">
+                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-3.5">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                             Focus
                           </p>
-                          <p className="min-w-0 whitespace-nowrap text-right text-[0.8rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.84rem]">
+                          <p className="mt-1.5 text-[0.86rem] font-medium leading-6 text-[var(--ink)]">
                             Software Engineering
                           </p>
                         </div>
@@ -287,13 +287,13 @@ export default function LandingPage() {
                         {profileLinks.slice(0, 2).map((item) => (
                           <div
                             key={item.label}
-                            className="flex items-center justify-between gap-3 rounded-2xl border border-[rgba(25,35,61,0.07)] px-4 py-3"
+                            className="flex items-center justify-between gap-3 rounded-2xl border border-[rgba(25,35,61,0.07)] px-4 py-3.5"
                           >
                             <div className="min-w-0">
                               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                                 {item.label}
                               </p>
-                              <p className="mt-1 break-words pr-2 text-[0.9rem] font-medium leading-6 text-[var(--ink)]">
+                              <p className="mt-1.5 break-words pr-3 text-[0.9rem] font-medium leading-6 text-[var(--ink)]">
                                 {item.value}
                               </p>
                             </div>
