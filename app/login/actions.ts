@@ -13,67 +13,42 @@ import {
   sendEmailSignInCode,
   verifyPendingEmailCode,
 } from "@/lib/email-auth";
-
-function getSafeCallbackUrl(value: FormDataEntryValue | null) {
-  return typeof value === "string" && value.startsWith("/") ? value : "/dashboard";
-}
-
-function getLoginUrl({
-  callbackUrl,
-  email,
-  error,
-  notice,
-  step,
-}: {
-  callbackUrl: string;
-  email?: string;
-  error?: string;
-  notice?: string;
-  step?: "verify";
-}) {
-  const params = new URLSearchParams({ callbackUrl });
-
-  if (email) {
-    params.set("email", email);
-  }
-
-  if (error) {
-    params.set("error", error);
-  }
-
-  if (notice) {
-    params.set("notice", notice);
-  }
-
-  if (step) {
-    params.set("method", "email");
-    params.set("step", step);
-  }
-
-  return `/login?${params.toString()}`;
-}
+import { getAuthView, getLoginUrl, getSafeCallbackUrl, getSafeOriginPath } from "@/lib/login-flow";
 
 export async function signInWithGoogle(formData: FormData) {
+  const callbackUrl = getSafeCallbackUrl(formData.get("callbackUrl"));
+  const authView = getAuthView(formData.get("authView"));
+  const originPath = getSafeOriginPath(formData.get("originPath"));
+
   if (!googleAuthEnabled) {
-    redirect("/login?error=GoogleOAuthNotConfigured");
+    redirect(
+      getLoginUrl({
+        authView,
+        callbackUrl,
+        error: "GoogleOAuthNotConfigured",
+        originPath,
+      }),
+    );
   }
 
   await signIn("google", {
-    redirectTo: getSafeCallbackUrl(formData.get("callbackUrl")),
+    redirectTo: callbackUrl,
   });
 }
 
 export async function signInWithTemporaryAccess(formData: FormData) {
   const callbackUrl = getSafeCallbackUrl(formData.get("callbackUrl"));
+  const authView = getAuthView(formData.get("authView"));
+  const originPath = getSafeOriginPath(formData.get("originPath"));
   const loginId = typeof formData.get("loginId") === "string" ? formData.get("loginId")?.toString().trim() : "";
   const password = typeof formData.get("password") === "string" ? formData.get("password")?.toString() : "";
 
   if (!loginId || !password) {
-    redirect(getLoginUrl({ callbackUrl, error: "TempCredentialsRequired" }));
+    redirect(getLoginUrl({ authView, callbackUrl, error: "TempCredentialsRequired", originPath }));
   }
 
   if (!temporaryAccessEnabled) {
-    redirect(getLoginUrl({ callbackUrl, error: "TempCredentialsUnavailable" }));
+    redirect(getLoginUrl({ authView, callbackUrl, error: "TempCredentialsUnavailable", originPath }));
   }
 
   try {
@@ -84,7 +59,7 @@ export async function signInWithTemporaryAccess(formData: FormData) {
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      redirect(getLoginUrl({ callbackUrl, error: "TempCredentialsInvalid" }));
+      redirect(getLoginUrl({ authView, callbackUrl, error: "TempCredentialsInvalid", originPath }));
     }
 
     throw error;
@@ -93,14 +68,24 @@ export async function signInWithTemporaryAccess(formData: FormData) {
 
 export async function requestEmailSignIn(formData: FormData) {
   const callbackUrl = getSafeCallbackUrl(formData.get("callbackUrl"));
+  const authView = getAuthView(formData.get("authView"));
+  const originPath = getSafeOriginPath(formData.get("originPath"));
   const email = normalizeEmail(formData.get("email"));
 
   if (!email) {
-    redirect(getLoginUrl({ callbackUrl, error: "EmailInvalid" }));
+    redirect(getLoginUrl({ authView, callbackUrl, error: "EmailInvalid", originPath }));
   }
 
   if (!emailAuthEnabled) {
-    redirect(getLoginUrl({ callbackUrl, email, error: "EmailSigninUnavailable" }));
+    redirect(
+      getLoginUrl({
+        authView,
+        callbackUrl,
+        email,
+        error: "EmailSigninUnavailable",
+        originPath,
+      }),
+    );
   }
 
   const pendingCode = await createPendingEmailCode(email);
@@ -123,14 +108,16 @@ export async function requestEmailSignIn(formData: FormData) {
     });
   } catch {
     cookieStore.delete(emailAuthCookieName);
-    redirect(getLoginUrl({ callbackUrl, email, error: "EmailSendFailed" }));
+    redirect(getLoginUrl({ authView, callbackUrl, email, error: "EmailSendFailed", originPath }));
   }
 
   redirect(
     getLoginUrl({
+      authView,
       callbackUrl,
       email,
       notice: "EmailCodeSent",
+      originPath,
       step: "verify",
     }),
   );
@@ -138,16 +125,27 @@ export async function requestEmailSignIn(formData: FormData) {
 
 export async function verifyEmailSignIn(formData: FormData) {
   const callbackUrl = getSafeCallbackUrl(formData.get("callbackUrl"));
+  const authView = getAuthView(formData.get("authView"));
+  const originPath = getSafeOriginPath(formData.get("originPath"));
   const email = normalizeEmail(formData.get("email"));
   const submittedCode = formData.get("code");
   const code = typeof submittedCode === "string" ? submittedCode.trim() : "";
 
   if (!email) {
-    redirect(getLoginUrl({ callbackUrl, error: "EmailInvalid" }));
+    redirect(getLoginUrl({ authView, callbackUrl, error: "EmailInvalid", originPath }));
   }
 
   if (!code) {
-    redirect(getLoginUrl({ callbackUrl, email, error: "EmailCodeRequired", step: "verify" }));
+    redirect(
+      getLoginUrl({
+        authView,
+        callbackUrl,
+        email,
+        error: "EmailCodeRequired",
+        originPath,
+        step: "verify",
+      }),
+    );
   }
 
   const cookieStore = await cookies();
@@ -164,9 +162,11 @@ export async function verifyEmailSignIn(formData: FormData) {
 
     redirect(
       getLoginUrl({
+        authView,
         callbackUrl,
         email,
         error: verification.reason,
+        originPath,
         step: "verify",
       }),
     );
@@ -184,9 +184,11 @@ export async function verifyEmailSignIn(formData: FormData) {
     if (error instanceof AuthError) {
       redirect(
         getLoginUrl({
+          authView,
           callbackUrl,
           email,
           error: "EmailSigninFailed",
+          originPath,
           step: "verify",
         }),
       );
