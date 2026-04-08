@@ -117,11 +117,12 @@ body {
 }
 
 .auth-modal-backdrop {
-  animation: modalBackdropIn 220ms ease both;
+  animation: modalBackdropIn 240ms ease both;
 }
 
 .auth-modal-panel {
-  animation: modalPanelIn 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: modalPanelIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center bottom;
 }
 
 .scroll-reveal {

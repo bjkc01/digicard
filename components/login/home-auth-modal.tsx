@@ -98,25 +98,25 @@ export function HomeAuthModal({
 
       {open ? (
         <div
-          className="fixed inset-0 z-[120] flex items-center justify-center px-4 py-6 sm:px-6"
+          className="fixed inset-0 z-[120] flex items-end justify-center px-4 py-4 sm:items-center sm:px-6 sm:py-6"
           onClick={(event) => {
             if (event.target === event.currentTarget) {
               handleClose();
             }
           }}
         >
-          <div className="auth-modal-backdrop absolute inset-0 bg-[rgba(15,23,42,0.34)] backdrop-blur-[14px]" />
+          <div className="auth-modal-backdrop absolute inset-0 bg-[rgba(11,18,32,0.38)] backdrop-blur-[18px]" />
 
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Sign in to DigiCard"
-            className="auth-modal-panel relative z-10 w-full max-w-[1080px]"
+            className="auth-modal-panel relative z-10 flex w-full justify-center"
           >
             <button
               type="button"
               onClick={handleClose}
-              className="absolute -right-2 top-3 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/60 bg-white/92 text-[var(--ink)] shadow-[0_18px_36px_rgba(15,23,42,0.12)] transition hover:bg-white sm:right-3 sm:top-4"
+              className="absolute right-3 top-3 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/95 text-[var(--ink)] shadow-[0_18px_36px_rgba(15,23,42,0.12)] transition hover:bg-white sm:right-4 sm:top-4"
               aria-label="Close sign in"
             >
               <X className="h-5 w-5" />
