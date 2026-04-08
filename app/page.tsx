@@ -83,8 +83,8 @@ const networkingQuote = {
 };
 
 const profileLinks = [
-  { label: "LinkedIn", value: "linkedin.com/in/maya-carter-demo" },
-  { label: "Portfolio", value: "mayacarter.dev" },
+  { label: "LinkedIn", value: "linkedin.com/in/mayacarter" },
+  { label: "Portfolio", value: "maya.dev" },
   { label: "Resume", value: "View PDF" },
 ];
 
@@ -270,7 +270,7 @@ export default function LandingPage() {
                             Email
                           </p>
                           <p className="mt-1.5 break-all text-[0.78rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.82rem]">
-                            maya.carter@umd-example.edu
+                            maya@mayacarter.dev
                           </p>
                         </div>
                         <div className="rounded-2xl bg-[var(--soft)] px-4 py-3">
@@ -278,7 +278,7 @@ export default function LandingPage() {
                             Focus
                           </p>
                           <p className="mt-1.5 max-w-[9.5rem] text-[0.8rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.84rem]">
-                            Software Engineering
+                            Software Dev
                           </p>
                         </div>
                       </div>
