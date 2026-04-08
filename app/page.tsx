@@ -1,14 +1,18 @@
 import Link from "next/link";
-import { SplineHero } from "@/components/landing/spline-hero";
+import { QRCode } from "@/components/ui/qr-code";
 import {
   ArrowRight,
   Check,
   CreditCard,
+  GraduationCap,
+  Link2,
   Mail,
   Menu,
   QrCode,
+  ScanLine,
   Sparkles,
   SquareArrowOutUpRight,
+  UserRound,
 } from "lucide-react";
 
 // Small no-op touch to verify Git-based production deployments still trigger correctly.
@@ -77,6 +81,12 @@ const networkingQuote = {
   source: "A reminder students hear for a reason",
   body: "DigiCard helps you turn that idea into something practical by making it easier to share your profile in the moment, not after the opportunity has passed.",
 };
+
+const profileLinks = [
+  { label: "LinkedIn", value: "linkedin.com/in/mayacarter" },
+  { label: "Portfolio", value: "maya.dev" },
+  { label: "Resume", value: "View PDF" },
+];
 
 export default function LandingPage() {
   return (
@@ -201,7 +211,101 @@ export default function LandingPage() {
           <div className="anim-2 relative" id="live-preview">
             <div className="absolute -left-8 top-12 hidden h-32 w-32 rounded-full bg-[rgba(255,141,87,0.16)] blur-3xl lg:block" />
             <div className="absolute -right-6 bottom-2 hidden h-36 w-36 rounded-full bg-[rgba(82,103,217,0.16)] blur-3xl lg:block" />
-            <SplineHero />
+            <div className="relative rounded-[1.8rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.92),_rgba(244,247,255,0.94))] p-3 shadow-[0_24px_60px_rgba(18,31,66,0.1)] lg:p-4">
+              <div className="rounded-[1.55rem] border border-[rgba(25,35,61,0.08)] bg-[#eef3ff] p-3">
+                <div className="grid gap-3 lg:grid-cols-[minmax(244px,0.8fr)_minmax(300px,1.2fr)]">
+                  <div className="rounded-[1.35rem] bg-[linear-gradient(165deg,_#172340_0%,_#2d4177_48%,_#5267d9_100%)] p-4 text-white shadow-[0_16px_30px_rgba(49,69,127,0.18)]">
+                    <div className="flex items-center justify-between">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">
+                        <GraduationCap className="h-3.5 w-3.5" />
+                        Student profile
+                      </div>
+                      <ScanLine className="h-4 w-4 text-white/72" />
+                    </div>
+
+                    <div className="mt-6">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/14">
+                        <UserRound className="h-5.5 w-5.5 text-white" />
+                      </div>
+                      <h2 className="mt-3.5 text-[1.7rem] font-semibold tracking-[-0.04em]">Maya Carter</h2>
+                      <p className="mt-1 text-[0.92rem] text-white/74">Computer Science Student</p>
+                      <p className="mt-1 text-[0.92rem] text-white/68">University of Maryland</p>
+                      <p className="mt-3 max-w-[15rem] text-[0.92rem] leading-6 text-white/74">
+                        Looking for software engineering internships and student networking opportunities.
+                      </p>
+                    </div>
+
+                    <div className="mt-6 rounded-[1.25rem] border border-white/12 bg-white/8 p-3.5">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/62">
+                        Quick share
+                      </p>
+                      <div className="mt-3 flex items-center gap-3">
+                        <div className="rounded-2xl bg-white p-2.5">
+                          <QRCode value="https://digicard.app/maya-carter-demo" size={54} fgColor="#172340" />
+                        </div>
+                        <p className="max-w-[8rem] text-[0.92rem] leading-6 text-white/74">
+                          Scan to open Maya&apos;s profile instantly.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="rounded-[1.35rem] border border-[rgba(25,35,61,0.08)] bg-white p-4 shadow-[0_12px_24px_rgba(21,32,58,0.05)]">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                        Live profile preview
+                      </p>
+                      <h3 className="mt-2.5 max-w-[16rem] text-[1.28rem] font-semibold leading-[1.08] tracking-[-0.05em] text-[var(--ink)] sm:text-[1.36rem] xl:text-[1.46rem]">
+                        Everything someone needs after a quick conversation
+                      </h3>
+                      <p className="mt-2.5 max-w-[17rem] text-[0.88rem] leading-6 text-[var(--muted)] sm:text-[0.9rem]">
+                        Open one profile with the core information already organized and ready to review.
+                      </p>
+                    </div>
+
+                    <div className="rounded-[1.35rem] border border-[rgba(25,35,61,0.08)] bg-white p-4 shadow-[0_12px_24px_rgba(21,32,58,0.05)]">
+                      <div className="grid gap-2.5">
+                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-3.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                            Email
+                          </p>
+                          <p className="mt-1.5 text-[0.86rem] font-medium leading-6 text-[var(--ink)]">
+                            maya.carter@umd-example.edu
+                          </p>
+                        </div>
+                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-3.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                            Focus
+                          </p>
+                          <p className="mt-1.5 text-[0.86rem] font-medium leading-6 text-[var(--ink)]">
+                            Software Engineering
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 grid gap-2.5">
+                        {profileLinks.slice(0, 2).map((item) => (
+                          <div
+                            key={item.label}
+                            className="flex items-center justify-between gap-3 rounded-2xl border border-[rgba(25,35,61,0.07)] px-4 py-3.5"
+                          >
+                            <div className="min-w-0">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                                {item.label}
+                              </p>
+                              <p className="mt-1.5 break-words pr-3 text-[0.9rem] font-medium leading-6 text-[var(--ink)]">
+                                {item.value}
+                              </p>
+                            </div>
+                            <Link2 className="h-4 w-4 flex-shrink-0 text-[var(--brand)]" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
