@@ -15,6 +15,8 @@ import {
   UserRound,
 } from "lucide-react";
 
+// Small no-op touch to verify Git-based production deployments still trigger correctly.
+
 const whyItMatters = [
   {
     title: "Real moments move fast",
