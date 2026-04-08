@@ -15,6 +15,7 @@ import {
   verifyEmailSignIn,
 } from "./actions";
 import { ResetScroll } from "@/components/login/reset-scroll";
+import { siteConfig } from "@/lib/site-config";
 import {
   ArrowLeft,
   CreditCard,
@@ -104,7 +105,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
   const protocol =
     forwardedProto ?? (process.env.NODE_ENV === "production" ? "https" : "http");
-  const deploymentOrigin = host ? `${protocol}://${host}` : "https://your-vercel-domain";
+  const deploymentOrigin = host ? `${protocol}://${host}` : siteConfig.url;
   const googleCallbackUrl = `${deploymentOrigin}/api/auth/callback/google`;
   const callbackUrl = getSafeCallbackUrl(resolvedSearchParams.callbackUrl);
   const emailAddress = resolvedSearchParams.email ?? "";

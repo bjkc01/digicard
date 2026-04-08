@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { QRCode } from "@/components/ui/qr-code";
+import { getAbsoluteUrl } from "@/lib/site-config";
 import {
   BriefcaseBusiness,
   CheckCircle2,
@@ -42,6 +43,8 @@ const linkCards = [
     icon: BriefcaseBusiness,
   },
 ] as const;
+
+const samplePreviewUrl = getAbsoluteUrl("/");
 
 export function InteractivePhonePreview() {
   const [activeTab, setActiveTab] = useState<TabId>("profile");
@@ -226,7 +229,7 @@ export function InteractivePhonePreview() {
                     <div className="mt-5 grid gap-4 sm:grid-cols-[128px_1fr]">
                       <div className="rounded-[1.35rem] bg-[var(--soft)] p-3">
                         <div className="flex items-center justify-center rounded-[1rem] bg-white p-2.5 shadow-[0_12px_24px_rgba(17,24,39,0.08)]">
-                          <QRCode value="https://digicard.app/maya-carter-demo" size={78} fgColor="#172340" />
+                          <QRCode value={samplePreviewUrl} size={78} fgColor="#172340" />
                         </div>
                       </div>
 
@@ -236,7 +239,7 @@ export function InteractivePhonePreview() {
                           <p className="text-sm font-semibold">Profile ready</p>
                         </div>
                         <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-                          Show the code on your phone, let someone scan, and take them straight to your digital card.
+                          Show the code on your phone, let someone scan, and preview how DigiCard opens on mobile.
                         </p>
                         <button
                           type="button"

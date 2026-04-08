@@ -3,6 +3,7 @@
 import { AtSign, Globe, Mail, Phone } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { DigiCard } from "@/lib/data";
+import { getCardShareTarget } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
 type CardPreviewProps = {
@@ -19,7 +20,8 @@ const contactItems = [
 ] as const;
 
 export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProps) {
-  const qrValue = `https://digicard.app/view/${card.id}`;
+  const shareTarget = getCardShareTarget(card);
+  const qrValue = shareTarget.url;
   const contactPointCount = contactItems.filter((item) => Boolean(card[item.key])).length;
   const statusItems = [
     { value: card.template, label: "Template" },
@@ -169,7 +171,7 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
                 Share identity
               </p>
               <p className={cn("mt-1 text-slate-300", compact ? "text-[12px]" : "text-sm")}>
-                Built from the latest saved workspace details.
+                QR opens your {shareTarget.label} so every scan has a working destination.
               </p>
             </div>
             <span className={cn("font-semibold uppercase tracking-[0.24em] text-slate-500", compact ? "text-[9px]" : "text-[11px]")}>
