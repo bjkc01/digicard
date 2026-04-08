@@ -1,3 +1,5 @@
+import { authSecret } from "@/lib/auth-env";
+
 const EMAIL_CODE_TTL_SECONDS = 10 * 60;
 const EMAIL_LOGIN_TOKEN_TTL_SECONDS = 5 * 60;
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,10 +24,10 @@ type EmailLoginTokenPayload = {
 };
 
 function getAuthSecret() {
-  const secret = process.env.AUTH_SECRET;
+  const secret = authSecret;
 
   if (!secret) {
-    throw new Error("AUTH_SECRET is required for email sign-in.");
+    throw new Error("AUTH_SECRET (or NEXTAUTH_SECRET) is required for email sign-in.");
   }
 
   return secret;
@@ -115,7 +117,7 @@ export const emailDeliveryConfigured = Boolean(
 export const emailAuthUsesConsoleFallback =
   process.env.NODE_ENV !== "production" && !emailDeliveryConfigured;
 
-export const emailAuthEnabled = Boolean(process.env.AUTH_SECRET) && (
+export const emailAuthEnabled = Boolean(authSecret) && (
   emailDeliveryConfigured || emailAuthUsesConsoleFallback
 );
 

@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { authSecret } from "@/lib/auth-env";
 import { normalizeEmail } from "@/lib/email-auth";
 import { templates } from "@/lib/data";
 import type { WorkspaceUser } from "@/lib/workspace-auth";
@@ -85,15 +86,15 @@ export class WorkspaceSettingsValidationError extends Error {
 }
 
 function getSettingsSecret() {
-  if (process.env.AUTH_SECRET) {
-    return process.env.AUTH_SECRET;
+  if (authSecret) {
+    return authSecret;
   }
 
   if (process.env.NODE_ENV !== "production") {
     return "digicard-local-settings-secret";
   }
 
-  throw new Error("AUTH_SECRET is required to persist workspace settings.");
+  throw new Error("AUTH_SECRET (or NEXTAUTH_SECRET) is required to persist workspace settings.");
 }
 
 function getWorkspaceOwner(user: WorkspaceUser) {

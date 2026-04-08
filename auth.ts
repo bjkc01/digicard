@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { NextResponse } from "next/server";
+import { authSecret, googleClientId, googleClientSecret } from "@/lib/auth-env";
 import {
   emailAuthEnabled,
   emailAuthUsesConsoleFallback,
@@ -11,13 +12,11 @@ import {
 
 const protectedRoutes = ["/dashboard", "/cards", "/create-card", "/settings", "/templates"];
 const temporaryAccessConfigured = Boolean(
-  process.env.AUTH_SECRET &&
-    process.env.AUTH_TEMP_LOGIN_ID &&
-    process.env.AUTH_TEMP_LOGIN_PASSWORD,
+  authSecret && process.env.AUTH_TEMP_LOGIN_ID && process.env.AUTH_TEMP_LOGIN_PASSWORD,
 );
 
 export const googleAuthEnabled = Boolean(
-  process.env.AUTH_SECRET && process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
+  authSecret && googleClientId && googleClientSecret,
 );
 export { temporaryAccessConfigured };
 export const temporaryAccessEnabled =
@@ -40,8 +39,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ...(googleAuthEnabled
       ? [
           Google({
-            clientId: process.env.AUTH_GOOGLE_ID!,
-            clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+            clientId: googleClientId!,
+            clientSecret: googleClientSecret!,
           }),
         ]
       : []),
@@ -98,6 +97,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       : []),
   ],
   pages: {
+    error: "/login",
     signIn: "/login",
   },
   session: {

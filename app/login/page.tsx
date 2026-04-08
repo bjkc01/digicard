@@ -14,6 +14,7 @@ import {
   signInWithTemporaryAccess,
   verifyEmailSignIn,
 } from "./actions";
+import { ResetScroll } from "@/components/login/reset-scroll";
 import {
   ArrowLeft,
   CreditCard,
@@ -59,6 +60,7 @@ function getLoginErrorMessage(error?: string) {
     case "AccessDenied":
       return "Google sign-in was canceled before it finished. Please try again.";
     case "Configuration":
+      return "Google sign-in is misconfigured for this deployment. Check AUTH_SECRET, AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET, and the callback URL in Google Cloud.";
     case "GoogleOAuthNotConfigured":
       return "Google sign-in is not configured for this deployment yet.";
     case "EmailInvalid":
@@ -148,9 +150,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     : "Add AUTH_SECRET plus Google OAuth credentials, email-delivery variables, or explicitly enabled temporary access to turn on sign-in.";
 
   return (
-    <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
-      <div className="mx-auto grid min-h-screen max-w-[1600px] lg:grid-cols-[minmax(420px,540px)_1fr]">
-        <section className="flex min-h-screen flex-col justify-between border-b border-[rgba(25,35,61,0.06)] bg-white px-6 py-6 sm:px-10 lg:border-b-0 lg:border-r lg:px-12 lg:py-10">
+    <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)] lg:h-screen lg:overflow-hidden">
+      <ResetScroll />
+      <div className="mx-auto grid min-h-screen max-w-[1600px] lg:h-full lg:min-h-0 lg:grid-cols-[minmax(420px,540px)_1fr]">
+        <section className="flex min-h-screen flex-col border-b border-[rgba(25,35,61,0.06)] bg-white px-6 py-6 sm:px-10 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-12 lg:py-10">
           <div>
             <div className="flex items-center justify-between gap-4">
               <Link href="/" className="flex items-center gap-3">
@@ -531,10 +534,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </div>
           </div>
 
-          <p className="mt-12 text-sm text-[var(--muted)]">Built for students, grads, and early professionals.</p>
+          <p className="mt-12 text-sm text-[var(--muted)]">
+            Built for students, grads, and early professionals.
+          </p>
         </section>
 
-        <section className="relative hidden overflow-hidden bg-[linear-gradient(180deg,_#f6f8ff_0%,_#eef2ff_100%)] lg:flex lg:min-h-screen lg:items-center lg:justify-center lg:px-12 xl:px-20">
+        <section className="relative hidden overflow-hidden bg-[linear-gradient(180deg,_#f6f8ff_0%,_#eef2ff_100%)] lg:flex lg:h-full lg:min-h-0 lg:items-center lg:justify-center lg:px-12 xl:px-20">
           <div className="absolute left-12 top-12 h-40 w-40 rounded-full bg-[rgba(82,103,217,0.18)] blur-3xl" />
           <div className="absolute bottom-12 right-16 h-48 w-48 rounded-full bg-[rgba(255,141,87,0.16)] blur-3xl" />
 

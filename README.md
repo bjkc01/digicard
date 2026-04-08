@@ -31,6 +31,7 @@ The app already uses Auth.js with a Google provider. To turn login on locally or
    - `AUTH_SECRET`
    - `AUTH_GOOGLE_ID`
    - `AUTH_GOOGLE_SECRET`
+   - Optional aliases also supported: `NEXTAUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
 5. Redeploy after adding the production variables.
 6. If Google still shows an "unverified app" warning, open the OAuth consent screen in Google Cloud:
    - set the app audience and branding
