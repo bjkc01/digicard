@@ -1,19 +1,21 @@
 import Link from "next/link";
-import { InteractivePhonePreview } from "@/components/landing/interactive-phone-preview";
-import { ScrollReveal } from "@/components/landing/scroll-reveal";
+import { QRCode } from "@/components/ui/qr-code";
 import {
   ArrowRight,
-  BriefcaseBusiness,
   Check,
-  CheckCircle2,
   CreditCard,
   GraduationCap,
+  Link2,
+  Mail,
   Menu,
   QrCode,
+  ScanLine,
   Sparkles,
   SquareArrowOutUpRight,
   UserRound,
 } from "lucide-react";
+
+// Small no-op touch to verify Git-based production deployments still trigger correctly.
 
 const whyItMatters = [
   {
@@ -48,6 +50,26 @@ const steps = [
   },
 ];
 
+const cardIncludes = [
+  "Full name",
+  "University",
+  "Major or title",
+  "LinkedIn",
+  "Portfolio",
+  "Resume",
+  "Email and contact details",
+  "QR share",
+];
+
+const useCases = [
+  "Career fairs",
+  "Campus networking events",
+  "Club events",
+  "Hackathons",
+  "Alumni meetups",
+  "Internship events",
+];
+
 const quickPoints = [
   "Share LinkedIn, resume, and portfolio with one scan",
   "Make a better first impression in short conversations",
@@ -60,64 +82,11 @@ const networkingQuote = {
   body: "DigiCard helps you turn that idea into something practical by making it easier to share your profile in the moment, not after the opportunity has passed.",
 };
 
-const comparisonColumns = [
-  {
-    label: "Without DigiCard",
-    points: [
-      "You spell your name out loud while someone opens LinkedIn.",
-      "Your resume, portfolio, and contact info live in different places.",
-      "The conversation ends before the follow-up feels easy.",
-    ],
-    tone: "muted",
-  },
-  {
-    label: "With DigiCard",
-    points: [
-      "One scan opens your intro, links, and professional identity instantly.",
-      "Recruiters can review your profile while the conversation is still fresh.",
-      "You leave the moment looking prepared, organized, and memorable.",
-    ],
-    tone: "brand",
-  },
-] as const;
-
-const includedFeatures = [
-  {
-    description: "Keep your full name and the version of your professional identity you want people to remember.",
-    title: "Identity-first intro",
-  },
-  {
-    description: "Show the school, program, and focus area that give your story immediate context.",
-    title: "Academic context",
-  },
-  {
-    description: "Put LinkedIn, portfolio, and resume in one clean place instead of scattering them across apps.",
-    title: "One-tap proof of work",
-  },
-  {
-    description: "Share instantly through a phone-friendly card and QR flow that feels ready for real events.",
-    title: "Fast share moment",
-  },
-] as const;
-
-const useCaseDetails = [
-  {
-    copy: "Open your profile before the recruiter line gets crowded and hand off your key links in one scan.",
-    title: "Career fairs",
-  },
-  {
-    copy: "Skip the awkward search step and move straight into talking about classes, projects, and goals.",
-    title: "Campus networking events",
-  },
-  {
-    copy: "Make it easy for teammates, judges, and alumni to revisit your work after a club or hackathon conversation.",
-    title: "Clubs and hackathons",
-  },
-  {
-    copy: "Share a polished student profile when speaking with mentors, alumni, or internship program reps.",
-    title: "Mentor and alumni meetups",
-  },
-] as const;
+const profileLinks = [
+  { label: "LinkedIn", value: "linkedin.com/in/mayacarter" },
+  { label: "Portfolio", value: "maya.dev" },
+  { label: "Resume", value: "View PDF" },
+];
 
 export default function LandingPage() {
   return (
@@ -192,7 +161,7 @@ export default function LandingPage() {
 
       <section className="mx-auto max-w-7xl px-6 pb-10 pt-10 lg:pt-12">
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.96fr]">
-          <ScrollReveal className="anim-1" delayMs={40}>
+          <div className="anim-1">
             <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white/90 px-4 py-2 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_24px_rgba(21,32,58,0.05)]">
               <Sparkles className="h-4 w-4 text-[var(--brand)]" />
               Made for career fairs, campus events, and networking meetups
@@ -237,96 +206,149 @@ export default function LandingPage() {
                 <SquareArrowOutUpRight className="h-4 w-4" />
               </a>
             </div>
-          </ScrollReveal>
+          </div>
 
-          <ScrollReveal className="anim-2 relative" id="live-preview" delayMs={140}>
+          <div className="anim-2 relative" id="live-preview">
             <div className="absolute -left-8 top-12 hidden h-32 w-32 rounded-full bg-[rgba(255,141,87,0.16)] blur-3xl lg:block" />
             <div className="absolute -right-6 bottom-2 hidden h-36 w-36 rounded-full bg-[rgba(82,103,217,0.16)] blur-3xl lg:block" />
-            <InteractivePhonePreview />
-          </ScrollReveal>
+            <div className="relative rounded-[1.8rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.92),_rgba(244,247,255,0.94))] p-3 shadow-[0_24px_60px_rgba(18,31,66,0.1)] lg:p-4">
+              <div className="rounded-[1.55rem] border border-[rgba(25,35,61,0.08)] bg-[#eef3ff] p-3">
+                <div className="grid gap-3 lg:grid-cols-[minmax(244px,0.8fr)_minmax(300px,1.2fr)]">
+                  <div className="rounded-[1.35rem] bg-[linear-gradient(165deg,_#172340_0%,_#2d4177_48%,_#5267d9_100%)] p-4 text-white shadow-[0_16px_30px_rgba(49,69,127,0.18)]">
+                    <div className="flex items-center justify-between">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">
+                        <GraduationCap className="h-3.5 w-3.5" />
+                        Student profile
+                      </div>
+                      <ScanLine className="h-4 w-4 text-white/72" />
+                    </div>
+
+                    <div className="mt-6">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/14">
+                        <UserRound className="h-5.5 w-5.5 text-white" />
+                      </div>
+                      <h2 className="mt-3.5 text-[1.7rem] font-semibold tracking-[-0.04em]">Maya Carter</h2>
+                      <p className="mt-1 text-[0.92rem] text-white/74">Computer Science Student</p>
+                      <p className="mt-1 text-[0.92rem] text-white/68">University of Maryland</p>
+                      <p className="mt-3 max-w-[15rem] text-[0.92rem] leading-6 text-white/74">
+                        Looking for software engineering internships and student networking opportunities.
+                      </p>
+                    </div>
+
+                    <div className="mt-6 rounded-[1.25rem] border border-white/12 bg-white/8 p-3.5">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/62">
+                        Quick share
+                      </p>
+                      <div className="mt-3 flex items-center gap-3">
+                        <div className="rounded-2xl bg-white p-2.5">
+                          <QRCode value="https://digicard.app/maya-carter-demo" size={54} fgColor="#172340" />
+                        </div>
+                        <p className="max-w-[8rem] text-[0.92rem] leading-6 text-white/74">
+                          Scan to open Maya&apos;s profile instantly.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="rounded-[1.35rem] border border-[rgba(25,35,61,0.08)] bg-white p-4 shadow-[0_12px_24px_rgba(21,32,58,0.05)]">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                        Live profile preview
+                      </p>
+                      <h3 className="mt-2.5 max-w-[16rem] text-[1.28rem] font-semibold leading-[1.08] tracking-[-0.05em] text-[var(--ink)] sm:text-[1.36rem] xl:text-[1.46rem]">
+                        Everything someone needs after a quick conversation
+                      </h3>
+                      <p className="mt-2.5 max-w-[17rem] text-[0.88rem] leading-6 text-[var(--muted)] sm:text-[0.9rem]">
+                        Open one profile with the core information already organized and ready to review.
+                      </p>
+                    </div>
+
+                    <div className="rounded-[1.35rem] border border-[rgba(25,35,61,0.08)] bg-white p-4 shadow-[0_12px_24px_rgba(21,32,58,0.05)]">
+                      <div className="grid gap-2.5">
+                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-3.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                            Email
+                          </p>
+                          <p className="mt-1.5 text-[0.86rem] font-medium leading-6 text-[var(--ink)]">
+                            maya.carter@umd-example.edu
+                          </p>
+                        </div>
+                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-3.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                            Focus
+                          </p>
+                          <p className="mt-1.5 text-[0.86rem] font-medium leading-6 text-[var(--ink)]">
+                            Software Engineering
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 grid gap-2.5">
+                        {profileLinks.slice(0, 2).map((item) => (
+                          <div
+                            key={item.label}
+                            className="flex items-center justify-between gap-3 rounded-2xl border border-[rgba(25,35,61,0.07)] px-4 py-3.5"
+                          >
+                            <div className="min-w-0">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                                {item.label}
+                              </p>
+                              <p className="mt-1.5 break-words pr-3 text-[0.9rem] font-medium leading-6 text-[var(--ink)]">
+                                {item.value}
+                              </p>
+                            </div>
+                            <Link2 className="h-4 w-4 flex-shrink-0 text-[var(--brand)]" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       <section id="why-it-matters" className="border-y border-[rgba(25,35,61,0.06)] bg-white/88">
-        <ScrollReveal className="mx-auto max-w-7xl px-6 py-24">
-          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-            <div className="max-w-3xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Why this matters</p>
-              <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
-                Great networking opportunities are often lost in small, awkward moments.
-              </h2>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
-                Students and early professionals already do the hard part by showing up. The problem is making
-                the connection feel easy while the moment is still there.
-              </p>
-            </div>
-
-            <div className="rounded-[1.9rem] border border-[rgba(82,103,217,0.12)] bg-[linear-gradient(135deg,_rgba(82,103,217,0.1),_rgba(255,255,255,0.96))] p-7 shadow-[0_18px_40px_rgba(21,32,58,0.05)] sm:p-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">
-                {networkingQuote.source}
-              </p>
-              <blockquote className="mt-3 max-w-3xl text-2xl font-semibold leading-tight tracking-[-0.04em] text-[var(--ink)] sm:text-[2rem]">
-                &ldquo;{networkingQuote.line}&rdquo;
-              </blockquote>
-              <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--muted)]">{networkingQuote.body}</p>
-            </div>
+        <div className="mx-auto max-w-7xl px-6 py-24">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Why this matters</p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
+              Great networking opportunities are often lost in small, awkward moments.
+            </h2>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+              Students and early professionals already do the hard part by showing up. The problem is making
+              the connection feel easy while the moment is still there.
+            </p>
           </div>
 
-          <div className="mt-12 rounded-[2rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_#ffffff_0%,_#f8faff_100%)] p-5 shadow-[0_22px_50px_rgba(21,32,58,0.06)] sm:p-7">
-            <div className="grid gap-4 lg:grid-cols-2">
-              {comparisonColumns.map((column) => (
-                <div
-                  key={column.label}
-                  className={`rounded-[1.6rem] border px-5 py-5 ${
-                    column.tone === "brand"
-                      ? "border-[rgba(82,103,217,0.16)] bg-[linear-gradient(160deg,_rgba(82,103,217,0.12),_rgba(255,255,255,0.96))]"
-                      : "border-[rgba(25,35,61,0.08)] bg-white"
-                  }`}
-                >
-                  <p
-                    className={`text-xs font-semibold uppercase tracking-[0.24em] ${
-                      column.tone === "brand" ? "text-[var(--brand)]" : "text-[var(--muted)]"
-                    }`}
-                  >
-                    {column.label}
-                  </p>
-                  <div className="mt-4 space-y-3">
-                    {column.points.map((point) => (
-                      <div key={point} className="flex items-start gap-3">
-                        <div
-                          className={`mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${
-                            column.tone === "brand"
-                              ? "bg-[rgba(82,103,217,0.12)] text-[var(--brand)]"
-                              : "bg-[var(--soft)] text-[var(--muted)]"
-                          }`}
-                        >
-                          <CheckCircle2 className="h-4 w-4" />
-                        </div>
-                        <p className="text-sm leading-7 text-[var(--ink)]">{point}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="mt-10 rounded-[1.9rem] border border-[rgba(82,103,217,0.12)] bg-[linear-gradient(135deg,_rgba(82,103,217,0.08),_rgba(255,255,255,0.96))] p-7 shadow-[0_18px_40px_rgba(21,32,58,0.05)] sm:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">
+              {networkingQuote.source}
+            </p>
+            <blockquote className="mt-3 max-w-3xl text-2xl font-semibold leading-tight tracking-[-0.04em] text-[var(--ink)] sm:text-[2rem]">
+              &ldquo;{networkingQuote.line}&rdquo;
+            </blockquote>
+            <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--muted)]">{networkingQuote.body}</p>
           </div>
 
           <div className="mt-14 grid gap-5 lg:grid-cols-3">
             {whyItMatters.map((item) => (
               <article
                 key={item.title}
-                className="rounded-[1.75rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(21,32,58,0.08)]"
+                className="rounded-[1.75rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)]"
               >
                 <h3 className="text-xl font-semibold tracking-[-0.03em] text-[var(--ink)]">{item.title}</h3>
                 <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{item.body}</p>
               </article>
             ))}
           </div>
-        </ScrollReveal>
+        </div>
       </section>
 
       <section id="how-it-works" className="mx-auto max-w-7xl px-6 py-24">
-        <ScrollReveal className="max-w-3xl">
+        <div className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">How it works</p>
           <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
             A simple flow built for the way networking actually happens.
@@ -334,33 +356,24 @@ export default function LandingPage() {
           <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
             Set up your card once, open it in seconds, and share it when the conversation matters most.
           </p>
-        </ScrollReveal>
+        </div>
 
-        <ScrollReveal className="mt-14 grid gap-5 lg:grid-cols-3" delayMs={80}>
+        <div className="mt-14 grid gap-5 lg:grid-cols-3">
           {steps.map((step) => (
             <article
               key={step.id}
-              className="relative overflow-hidden rounded-[1.9rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)]"
+              className="rounded-[1.75rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)]"
             >
-              <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,_#5267d9,_#8da0ff)]" />
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(82,103,217,0.1)] text-sm font-semibold text-[var(--brand)]">
-                {step.id}
-              </div>
+              <p className="text-sm font-semibold text-[var(--brand)]">{step.id}</p>
               <h3 className="mt-6 text-2xl font-semibold tracking-[-0.04em] text-[var(--ink)]">{step.title}</h3>
               <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{step.body}</p>
-              {step.id !== "03" ? (
-                <div className="mt-6 hidden items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)] lg:inline-flex">
-                  Next step
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </div>
-              ) : null}
             </article>
           ))}
-        </ScrollReveal>
+        </div>
       </section>
 
       <section className="border-y border-[rgba(25,35,61,0.06)] bg-[linear-gradient(180deg,_#ffffff_0%,_#f6f8ff_100%)]">
-        <ScrollReveal className="mx-auto grid max-w-7xl gap-14 px-6 py-24 lg:grid-cols-[0.92fr_1.08fr]">
+        <div className="mx-auto grid max-w-7xl gap-14 px-6 py-24 lg:grid-cols-[0.92fr_1.08fr]">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">
               What your card includes
@@ -374,29 +387,25 @@ export default function LandingPage() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {includedFeatures.map((item, index) => (
+            {cardIncludes.map((item) => (
               <div
-                key={item.title}
-                className="rounded-[1.5rem] border border-[rgba(25,35,61,0.07)] bg-white px-5 py-5 shadow-[0_16px_35px_rgba(21,32,58,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_44px_rgba(21,32,58,0.08)]"
+                key={item}
+                className="rounded-[1.5rem] border border-[rgba(25,35,61,0.07)] bg-white px-5 py-5 shadow-[0_16px_35px_rgba(21,32,58,0.05)]"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--soft)] text-[var(--brand)]">
-                    {index === 0 ? <UserRound className="h-4 w-4" /> : null}
-                    {index === 1 ? <GraduationCap className="h-4 w-4" /> : null}
-                    {index === 2 ? <BriefcaseBusiness className="h-4 w-4" /> : null}
-                    {index === 3 ? <QrCode className="h-4 w-4" /> : null}
+                    {item === "QR share" ? <QrCode className="h-4 w-4" /> : <Mail className="h-4 w-4" />}
                   </div>
-                  <p className="text-sm font-semibold text-[var(--ink)]">{item.title}</p>
+                  <p className="text-sm font-semibold text-[var(--ink)]">{item}</p>
                 </div>
-                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{item.description}</p>
               </div>
             ))}
           </div>
-        </ScrollReveal>
+        </div>
       </section>
 
       <section id="use-cases" className="mx-auto max-w-7xl px-6 py-24">
-        <ScrollReveal className="max-w-3xl">
+        <div className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Use cases</p>
           <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
             Built for the places where students meet real opportunities.
@@ -404,62 +413,42 @@ export default function LandingPage() {
           <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
             DigiCard is designed for fast, in-person moments where a clean profile and quick QR share can make networking easier.
           </p>
-        </ScrollReveal>
+        </div>
 
-        <ScrollReveal className="mt-14 grid gap-5 lg:grid-cols-2" delayMs={80}>
-          {useCaseDetails.map((item, index) => (
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {useCases.map((item) => (
             <article
-              key={item.title}
-              className="rounded-[1.9rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)]"
+              key={item}
+              className="rounded-[1.75rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)]"
             >
-              <div className="flex items-center justify-between gap-4">
-                <p className="text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{item.title}</p>
-                <span className="rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
-                  0{index + 1}
-                </span>
-              </div>
+              <p className="text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{item}</p>
               <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
-                {item.copy}
+                Open your profile quickly, let someone scan it, and keep the connection moving naturally.
               </p>
-              <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--brand)]">
-                Designed for quick follow-up
-                <ArrowRight className="h-4 w-4" />
-              </div>
             </article>
           ))}
-        </ScrollReveal>
+        </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-24">
-        <ScrollReveal className="rounded-[2.4rem] border border-[rgba(255,255,255,0.18)] bg-[linear-gradient(135deg,_#172340_0%,_#2d4177_36%,_#5267d9_72%,_#8ca0ff_100%)] px-8 py-10 text-white shadow-[0_32px_80px_rgba(35,51,103,0.22)] md:px-12 md:py-14">
+        <div className="rounded-[2.2rem] bg-[linear-gradient(135deg,_#172340_0%,_#2d4177_44%,_#5267d9_100%)] px-8 py-10 text-white shadow-[0_32px_80px_rgba(35,51,103,0.22)] md:px-12 md:py-14">
           <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/60">Build your own version</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/60">Final CTA</p>
               <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">
-                Launch a card that feels ready before the next opportunity even starts.
+                Make it easy for the next recruiter, alum, or speaker to remember you.
               </h2>
               <p className="mt-5 text-lg leading-8 text-white/74">
-                Start with the same polished experience you just explored, customize it in minutes, and walk into your next event already prepared.
+                Create a digital networking card that helps you show up professionally and share your profile in seconds.
               </p>
-              <div className="mt-6 flex flex-wrap gap-3 text-sm text-white/78">
-                {["Live profile", "QR share", "Resume links", "Instant follow-up"].map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-full border border-white/18 bg-white/10 px-4 py-2 font-medium backdrop-blur"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-4 text-sm font-semibold text-[var(--brand)] transition hover:bg-[#f2f5ff]"
+                className="inline-flex items-center justify-center rounded-full bg-white px-7 py-4 text-sm font-semibold text-[var(--brand)] transition hover:bg-[#f2f5ff]"
               >
                 Create my card
-                <ArrowRight className="h-4 w-4" />
               </Link>
               <a
                 href="#live-preview"
@@ -469,7 +458,7 @@ export default function LandingPage() {
               </a>
             </div>
           </div>
-        </ScrollReveal>
+        </div>
       </section>
     </main>
   );
