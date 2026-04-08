@@ -81,8 +81,8 @@ const networkingQuote = {
 };
 
 const profileLinks = [
-  { label: "LinkedIn", value: "linkedin.com/in/alex-morgan-demo" },
-  { label: "Portfolio", value: "example.com/portfolio" },
+  { label: "LinkedIn", value: "linkedin.com/in/jordan-lee" },
+  { label: "Portfolio", value: "jordanlee.design" },
   { label: "Resume", value: "View PDF" },
 ];
 
@@ -225,11 +225,11 @@ export default function LandingPage() {
                       <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/14">
                         <UserRound className="h-5.5 w-5.5 text-white" />
                       </div>
-                      <h2 className="mt-3.5 text-[1.7rem] font-semibold tracking-[-0.04em]">Alex Morgan</h2>
-                      <p className="mt-1 text-[0.92rem] text-white/74">Business Analytics Student</p>
-                      <p className="mt-1 text-[0.92rem] text-white/68">Lakeside University</p>
+                      <h2 className="mt-3.5 text-[1.7rem] font-semibold tracking-[-0.04em]">Maya Carter</h2>
+                      <p className="mt-1 text-[0.92rem] text-white/74">Computer Science Student</p>
+                      <p className="mt-1 text-[0.92rem] text-white/68">University of Maryland</p>
                       <p className="mt-3 max-w-[15rem] text-[0.92rem] leading-6 text-white/74">
-                        Interested in data storytelling, business strategy, and internship opportunities in analytics.
+                        Looking for software engineering internships and student networking opportunities.
                       </p>
                     </div>
 
@@ -239,10 +239,10 @@ export default function LandingPage() {
                       </p>
                       <div className="mt-3 flex items-center gap-3">
                         <div className="rounded-2xl bg-white p-2.5">
-                          <QRCode value="https://digicard.app/alex-morgan-demo" size={54} fgColor="#172340" />
+                          <QRCode value="https://digicard.app/jordan-lee" size={54} fgColor="#172340" />
                         </div>
                         <p className="max-w-[8rem] text-[0.92rem] leading-6 text-white/74">
-                          Scan to view links, projects, and a quick student intro.
+                          Scan to open Maya&apos;s profile instantly.
                         </p>
                       </div>
                     </div>
@@ -268,7 +268,7 @@ export default function LandingPage() {
                             Email
                           </p>
                           <p className="mt-1.5 break-all text-[0.78rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.82rem]">
-                            alex.morgan@example.com
+                            jordanlee@umaryland.edu
                           </p>
                         </div>
                         <div className="rounded-2xl bg-[var(--soft)] px-4 py-3">
@@ -276,7 +276,7 @@ export default function LandingPage() {
                             Focus
                           </p>
                           <p className="mt-1.5 max-w-[9.5rem] text-[0.8rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.84rem]">
-                            Business Analytics
+                            Software Engineering
                           </p>
                         </div>
                       </div>
