@@ -264,21 +264,21 @@ export default function LandingPage() {
                     </div>
 
                     <div className="rounded-[1.35rem] border border-[rgba(25,35,61,0.08)] bg-white p-4 shadow-[0_12px_24px_rgba(21,32,58,0.05)]">
-                      <div className="grid gap-3 sm:grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)]">
-                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-3">
+                      <div className="grid gap-2.5">
+                        <div className="flex items-center justify-between gap-4 rounded-2xl bg-[var(--soft)] px-4 py-3">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                             Email
                           </p>
-                          <p className="mt-1.5 break-all text-[0.78rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.82rem]">
-                            maya@mayacarter.dev
+                          <p className="min-w-0 whitespace-nowrap text-right text-[0.8rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.84rem]">
+                            maya.carter@umd-example.edu
                           </p>
                         </div>
-                        <div className="rounded-2xl bg-[var(--soft)] px-4 py-3">
+                        <div className="flex items-center justify-between gap-4 rounded-2xl bg-[var(--soft)] px-4 py-3">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                             Focus
                           </p>
-                          <p className="mt-1.5 max-w-[9.5rem] text-[0.8rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.84rem]">
-                            Software Dev
+                          <p className="min-w-0 whitespace-nowrap text-right text-[0.8rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.84rem]">
+                            Software Engineering
                           </p>
                         </div>
                       </div>
