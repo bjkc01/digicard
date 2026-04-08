@@ -555,9 +555,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                       <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/14">
                         <GraduationCap className="h-7 w-7 text-white" />
                       </div>
-                      <h2 className="mt-5 text-2xl font-semibold tracking-[-0.04em]">Jordan Lee</h2>
-                      <p className="mt-1 text-sm text-white/74">Computer Science Student</p>
-                      <p className="mt-1 text-sm text-white/68">University of Maryland</p>
+                      <h2 className="mt-5 text-2xl font-semibold tracking-[-0.04em]">Alex Morgan</h2>
+                      <p className="mt-1 text-sm text-white/74">Business Analytics Student</p>
+                      <p className="mt-1 text-sm text-white/68">State University</p>
                     </div>
 
                     <div className="mt-8 rounded-[1.4rem] border border-white/12 bg-white/8 p-4">

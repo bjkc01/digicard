@@ -81,8 +81,8 @@ const networkingQuote = {
 };
 
 const profileLinks = [
-  { label: "LinkedIn", value: "linkedin.com/in/jordan-lee" },
-  { label: "Portfolio", value: "jordanlee.design" },
+  { label: "LinkedIn", value: "linkedin.com/in/alex-morgan-demo" },
+  { label: "Portfolio", value: "example.com/portfolio" },
   { label: "Resume", value: "View PDF" },
 ];
 
@@ -209,7 +209,6 @@ export default function LandingPage() {
           <div className="anim-2 relative" id="live-preview">
             <div className="absolute -left-8 top-12 hidden h-32 w-32 rounded-full bg-[rgba(255,141,87,0.16)] blur-3xl lg:block" />
             <div className="absolute -right-6 bottom-2 hidden h-36 w-36 rounded-full bg-[rgba(82,103,217,0.16)] blur-3xl lg:block" />
-
             <div className="relative rounded-[1.8rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.92),_rgba(244,247,255,0.94))] p-3 shadow-[0_24px_60px_rgba(18,31,66,0.1)] lg:p-4">
               <div className="rounded-[1.55rem] border border-[rgba(25,35,61,0.08)] bg-[#eef3ff] p-3">
                 <div className="grid gap-3 lg:grid-cols-[minmax(244px,0.8fr)_minmax(300px,1.2fr)]">
@@ -226,11 +225,11 @@ export default function LandingPage() {
                       <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/14">
                         <UserRound className="h-5.5 w-5.5 text-white" />
                       </div>
-                      <h2 className="mt-3.5 text-[1.7rem] font-semibold tracking-[-0.04em]">Prem Paude</h2>
-                      <p className="mt-1 text-[0.92rem] text-white/74">Computer Science Student</p>
-                      <p className="mt-1 text-[0.92rem] text-white/68">University of Maryland</p>
+                      <h2 className="mt-3.5 text-[1.7rem] font-semibold tracking-[-0.04em]">Alex Morgan</h2>
+                      <p className="mt-1 text-[0.92rem] text-white/74">Business Analytics Student</p>
+                      <p className="mt-1 text-[0.92rem] text-white/68">Lakeside University</p>
                       <p className="mt-3 max-w-[15rem] text-[0.92rem] leading-6 text-white/74">
-                        Looking for software engineering internships and student networking opportunities.
+                        Interested in data storytelling, business strategy, and internship opportunities in analytics.
                       </p>
                     </div>
 
@@ -240,10 +239,10 @@ export default function LandingPage() {
                       </p>
                       <div className="mt-3 flex items-center gap-3">
                         <div className="rounded-2xl bg-white p-2.5">
-                          <QRCode value="https://digicard.app/jordan-lee" size={54} fgColor="#172340" />
+                          <QRCode value="https://digicard.app/alex-morgan-demo" size={54} fgColor="#172340" />
                         </div>
                         <p className="max-w-[8rem] text-[0.92rem] leading-6 text-white/74">
-                          Scan to open Prem&apos;s profile instantly.
+                          Scan to view links, projects, and a quick student intro.
                         </p>
                       </div>
                     </div>
@@ -258,7 +257,7 @@ export default function LandingPage() {
                         Everything someone needs after a quick conversation
                       </h3>
                       <p className="mt-2.5 max-w-[17rem] text-[0.88rem] leading-6 text-[var(--muted)] sm:text-[0.9rem]">
-                        Open one profile with your core information already organized and ready to review.
+                        Open one profile with the core information already organized and ready to review.
                       </p>
                     </div>
 
@@ -269,7 +268,7 @@ export default function LandingPage() {
                             Email
                           </p>
                           <p className="mt-1.5 break-all text-[0.78rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.82rem]">
-                            jordanlee@umaryland.edu
+                            alex.morgan@example.com
                           </p>
                         </div>
                         <div className="rounded-2xl bg-[var(--soft)] px-4 py-3">
@@ -277,7 +276,7 @@ export default function LandingPage() {
                             Focus
                           </p>
                           <p className="mt-1.5 max-w-[9.5rem] text-[0.8rem] font-medium leading-6 text-[var(--ink)] sm:text-[0.84rem]">
-                            Software Engineering
+                            Business Analytics
                           </p>
                         </div>
                       </div>
