@@ -32,6 +32,10 @@ The app already uses Auth.js with a Google provider. To turn login on locally or
    - `AUTH_GOOGLE_ID`
    - `AUTH_GOOGLE_SECRET`
 5. Redeploy after adding the production variables.
+6. If Google still shows an "unverified app" warning, open the OAuth consent screen in Google Cloud:
+   - set the app audience and branding
+   - add your Google accounts as test users while the app is still in testing
+   - publish/verify the app if you want the warning removed for everyone
 
 Protected routes are handled through `middleware.ts`, and unauthenticated visitors are redirected to `/login` before they can open the dashboard, templates, create-card flow, or settings.
 

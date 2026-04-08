@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import {
   devAuthBypassEnabled,
   emailAuthEnabled,
@@ -96,6 +97,13 @@ function getLoginNoticeMessage(notice?: string) {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
+  const headerStore = await headers();
+  const forwardedProto = headerStore.get("x-forwarded-proto");
+  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  const protocol =
+    forwardedProto ?? (process.env.NODE_ENV === "production" ? "https" : "http");
+  const deploymentOrigin = host ? `${protocol}://${host}` : "https://your-vercel-domain";
+  const googleCallbackUrl = `${deploymentOrigin}/api/auth/callback/google`;
   const callbackUrl = getSafeCallbackUrl(resolvedSearchParams.callbackUrl);
   const emailAddress = resolvedSearchParams.email ?? "";
   const loginErrorMessage = getLoginErrorMessage(resolvedSearchParams.error);
@@ -104,6 +112,16 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const isEmailConfigured = emailAuthEnabled;
   const isTemporaryAccessConfigured = temporaryAccessConfigured;
   const isTemporaryAccessAvailable = temporaryAccessEnabled;
+  const missingGoogleEnv = [
+    !process.env.AUTH_SECRET ? "AUTH_SECRET" : null,
+    !process.env.AUTH_GOOGLE_ID ? "AUTH_GOOGLE_ID" : null,
+    !process.env.AUTH_GOOGLE_SECRET ? "AUTH_GOOGLE_SECRET" : null,
+  ].filter(Boolean) as string[];
+  const missingEmailEnv = [
+    !process.env.AUTH_SECRET ? "AUTH_SECRET" : null,
+    !process.env.AUTH_EMAIL_FROM ? "AUTH_EMAIL_FROM" : null,
+    !process.env.AUTH_RESEND_API_KEY ? "AUTH_RESEND_API_KEY" : null,
+  ].filter(Boolean) as string[];
   const hasAnySignInMethod =
     isGoogleConfigured || isEmailConfigured || isTemporaryAccessAvailable;
   const showEmailVerification =
@@ -287,25 +305,44 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                     </button>
                   </form>
                 ) : (
-                  <button
-                    type="button"
-                    disabled
-                    className="flex w-full cursor-not-allowed items-center justify-between rounded-2xl border border-[rgba(25,35,61,0.08)] bg-white/80 px-5 py-4 text-left opacity-80 shadow-[0_12px_30px_rgba(21,32,58,0.04)]"
-                  >
-                    <span className="flex items-center gap-4">
-                      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--soft)]">
-                        <span className="text-xl font-bold leading-none text-[#4285F4]">G</span>
-                      </span>
-                      <span>
-                        <span className="block text-base font-semibold text-[var(--ink)]">
-                          Google sign-in unavailable
+                  <div className="rounded-[1.7rem] border border-[rgba(25,35,61,0.08)] bg-white/80 px-5 py-5 opacity-90 shadow-[0_12px_30px_rgba(21,32,58,0.04)]">
+                    <button
+                      type="button"
+                      disabled
+                      className="flex w-full cursor-not-allowed items-center justify-between text-left opacity-80"
+                    >
+                      <span className="flex items-center gap-4">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--soft)]">
+                          <span className="text-xl font-bold leading-none text-[#4285F4]">G</span>
                         </span>
-                        <span className="mt-1 block text-xs text-[var(--muted)]">
-                          {googleSupportCopy}
+                        <span>
+                          <span className="block text-base font-semibold text-[var(--ink)]">
+                            Google sign-in unavailable
+                          </span>
+                          <span className="mt-1 block text-xs text-[var(--muted)]">
+                            {googleSupportCopy}
+                          </span>
                         </span>
                       </span>
-                    </span>
-                  </button>
+                    </button>
+
+                    <div className="mt-5 rounded-2xl bg-[var(--soft)] px-4 py-4 text-xs leading-6 text-[var(--muted)]">
+                      <p className="font-semibold text-[var(--ink)]">Google setup for this deployment</p>
+                      <p className="mt-2">
+                        Add these Vercel environment variables:{" "}
+                        {missingGoogleEnv.length > 0 ? missingGoogleEnv.join(", ") : "none missing"}.
+                      </p>
+                      <p className="mt-2">
+                        Authorized JavaScript origin: <span className="font-medium text-[var(--ink)]">{deploymentOrigin}</span>
+                      </p>
+                      <p className="mt-1">
+                        Authorized redirect URI: <span className="font-medium text-[var(--ink)]">{googleCallbackUrl}</span>
+                      </p>
+                      <p className="mt-2">
+                        If Google shows an unverified-app warning after that, fix the OAuth consent screen in Google Cloud and add tester accounts while the app is still in testing.
+                      </p>
+                    </div>
+                  </div>
                 )}
 
                 <div className="rounded-[1.7rem] border border-[rgba(25,35,61,0.08)] bg-white px-5 py-5 shadow-[0_12px_30px_rgba(21,32,58,0.04)]">
@@ -420,6 +457,19 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                     <p className="mt-4 rounded-2xl bg-[var(--soft)] px-4 py-3 text-xs leading-6 text-[var(--muted)]">
                       Local development mode is active, so sign-in codes are printed to the server console until you add a real email sender.
                     </p>
+                  ) : null}
+
+                  {!isEmailConfigured ? (
+                    <div className="mt-4 rounded-2xl bg-[var(--soft)] px-4 py-4 text-xs leading-6 text-[var(--muted)]">
+                      <p className="font-semibold text-[var(--ink)]">Email sign-in setup for this deployment</p>
+                      <p className="mt-2">
+                        Add these Vercel environment variables:{" "}
+                        {missingEmailEnv.length > 0 ? missingEmailEnv.join(", ") : "none missing"}.
+                      </p>
+                      <p className="mt-2">
+                        `AUTH_EMAIL_FROM` must use a sender address from a verified Resend domain before production email sign-in will work.
+                      </p>
+                    </div>
                   ) : null}
                 </div>
 
