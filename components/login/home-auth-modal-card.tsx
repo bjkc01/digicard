@@ -5,11 +5,8 @@ import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  CheckCircle2,
-  CreditCard,
   KeyRound,
   Mail,
-  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import {
@@ -18,6 +15,7 @@ import {
   signInWithTemporaryAccess,
   verifyEmailSignIn,
 } from "@/app/login/actions";
+import { AuthBenefitsShowcase } from "@/components/login/auth-benefits-showcase";
 import { cn } from "@/lib/utils";
 
 export type AuthModalPanel = "choices" | "email" | "verify" | "temporary";
@@ -116,46 +114,6 @@ function ActionSurface({
   );
 }
 
-function DesktopVisualPanel() {
-  return (
-    <div className="relative hidden w-[200px] flex-shrink-0 overflow-hidden border-l border-slate-100 lg:flex">
-      <div className="absolute inset-0 bg-[linear-gradient(160deg,_#172340_0%,_#283f70_55%,_#5267d9_100%)]" />
-      <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
-      <div className="absolute -bottom-6 left-2 h-32 w-32 rounded-full bg-[rgba(255,141,87,0.22)] blur-2xl" />
-
-      <div className="relative flex w-full flex-col justify-between p-5 text-white">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/80">
-          <CreditCard className="h-3 w-3" />
-          DigiCard
-        </div>
-
-        <div className="space-y-3">
-          <div className="rounded-[1.6rem] border border-white/12 bg-white/10 p-3.5 backdrop-blur-xl">
-            <div className="flex items-center justify-between">
-              <p className="text-[0.92rem] font-semibold tracking-[-0.03em]">Maya Carter</p>
-              <ShieldCheck className="h-3.5 w-3.5 text-white/60" />
-            </div>
-            <p className="mt-0.5 text-[11px] text-white/60">CS Student</p>
-
-            <div className="mt-3 space-y-1.5">
-              {["One scan, full profile", "Resume + links together", "Instant follow-up"].map((item) => (
-                <div key={item} className="flex items-center gap-2 rounded-xl bg-white/8 px-2.5 py-1.5">
-                  <CheckCircle2 className="h-3 w-3 flex-shrink-0 text-white/70" />
-                  <p className="text-[11px] leading-4 text-white/76">{item}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <p className="text-[11px] leading-5 text-white/48">
-            Your professional profile, shared in seconds.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function HomeAuthModalCard({
   callbackUrl,
   destinationLabel,
@@ -196,9 +154,9 @@ export function HomeAuthModalCard({
   const showVerifyNotice = isVerifyPanel && Boolean(noticeMessage) && noticeCode === "EmailCodeSent";
 
   return (
-    <div className="w-[min(calc(100vw-2rem),27rem)] sm:w-[min(calc(100vw-3rem),28rem)] lg:w-[min(calc(100vw-5rem),43rem)]">
-      <div className="flex max-h-[min(85vh,36rem)] overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.22),0_4px_16px_rgba(15,23,42,0.08)]">
-        <div className="min-w-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
+    <div className="w-[min(calc(100vw-2rem),27rem)] sm:w-[min(calc(100vw-3rem),29rem)] lg:w-[min(calc(100vw-5rem),54rem)]">
+      <div className="flex max-h-[min(88vh,42rem)] overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.22),0_4px_16px_rgba(15,23,42,0.08)]">
+        <div className="min-w-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6 sm:py-6 lg:basis-[29rem] lg:shrink-0">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-[var(--soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
               <Sparkles className="h-3 w-3" />
@@ -521,7 +479,7 @@ export function HomeAuthModalCard({
           </div>
         </div>
 
-        <DesktopVisualPanel />
+        <AuthBenefitsShowcase />
       </div>
     </div>
   );

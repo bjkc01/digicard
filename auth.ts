@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { NextResponse } from "next/server";
 import { authSecret, googleClientId, googleClientSecret } from "@/lib/auth-env";
+import { getLoginUrl } from "@/lib/login-flow";
 import {
   emailAuthEnabled,
   emailAuthUsesConsoleFallback,
@@ -145,8 +146,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       if (isProtectedRoute(pathname) && !isAuthenticated) {
-        const loginUrl = new URL("/login", request.nextUrl.origin);
-        loginUrl.searchParams.set("callbackUrl", `${pathname}${search}`);
+        const loginUrl = new URL(
+          getLoginUrl({
+            authView: "modal",
+            callbackUrl: `${pathname}${search}`,
+            originPath: "/",
+          }),
+          request.nextUrl.origin,
+        );
         return NextResponse.redirect(loginUrl);
       }
 
