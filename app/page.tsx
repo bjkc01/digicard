@@ -74,6 +74,8 @@ const quickPoints = [
   "Give recruiters and professionals an easy way to remember you",
 ];
 
+// Touching the landing page keeps Vercel's Git-based deployment path active for this branch.
+
 const networkingQuote = {
   line: "If you're not networking, you're not working.",
   source: "A reminder students hear for a reason",
