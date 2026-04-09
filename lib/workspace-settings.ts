@@ -76,26 +76,6 @@ const defaultNotificationSettings: WorkspaceNotificationSettings = {
 
 const validTemplateIds = new Set(templates.map((template) => template.id));
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
-function getOptionalString(value: unknown, fallback = "") {
-  return typeof value === "string" ? value : fallback;
-}
-
-function getOptionalBoolean(value: unknown, fallback = false) {
-  return typeof value === "boolean" ? value : fallback;
-}
-
-function isValidDateString(value: unknown): value is string {
-  if (typeof value !== "string" || !value) {
-    return false;
-  }
-
-  return !Number.isNaN(new Date(value).getTime());
-}
-
 export class WorkspaceSettingsValidationError extends Error {
   code: string;
 
@@ -204,22 +184,16 @@ async function decodePayload(value: string | undefined) {
     return null;
   }
 
+  const [encodedPayload, signature] = value.split(".");
+
+  if (!encodedPayload || !signature || (await signValue(encodedPayload)) !== signature) {
+    return null;
+  }
+
   try {
-    const [encodedPayload, signature] = value.split(".");
-
-    if (!encodedPayload || !signature || (await signValue(encodedPayload)) !== signature) {
-      return null;
-    }
-
-    const parsed = JSON.parse(
+    return JSON.parse(
       decoder.decode(fromBase64Url(encodedPayload)),
-    ) as unknown;
-
-    if (!isRecord(parsed) || !isRecord(parsed.value)) {
-      return null;
-    }
-
-    return parsed as WorkspaceSettingsCookiePayload;
+    ) as WorkspaceSettingsCookiePayload;
   } catch {
     return null;
   }
@@ -230,11 +204,6 @@ function mergeWorkspaceSettings(
   candidate: Partial<WorkspaceSettings> | null | undefined,
 ) {
   const defaults = createDefaultWorkspaceSettings(user);
-  const candidateCard = isRecord(candidate?.card) ? candidate.card : undefined;
-  const candidateNotifications = isRecord(candidate?.notifications)
-    ? candidate.notifications
-    : undefined;
-  const candidateProfile = isRecord(candidate?.profile) ? candidate.profile : undefined;
   const templateId =
     typeof candidate?.defaultTemplateId === "string" && validTemplateIds.has(candidate.defaultTemplateId)
       ? candidate.defaultTemplateId
@@ -242,29 +211,23 @@ function mergeWorkspaceSettings(
 
   return {
     card: {
-      company: getOptionalString(candidateCard?.company, defaults.card.company),
-      linkedin: getOptionalString(candidateCard?.linkedin, defaults.card.linkedin),
-      phone: getOptionalString(candidateCard?.phone, defaults.card.phone),
+      ...defaults.card,
+      ...candidate?.card,
     },
     defaultTemplateId: templateId,
-    notifications: notificationSettingOptions.reduce<WorkspaceNotificationSettings>(
-      (accumulator, option) => {
-        accumulator[option.key] = getOptionalBoolean(
-          candidateNotifications?.[option.key],
-          defaults.notifications[option.key],
-        );
-        return accumulator;
-      },
-      { ...defaults.notifications },
-    ),
+    notifications: {
+      ...defaults.notifications,
+      ...candidate?.notifications,
+    },
     owner: defaults.owner,
     profile: {
-      email: getOptionalString(candidateProfile?.email, defaults.profile.email),
-      name: getOptionalString(candidateProfile?.name, defaults.profile.name),
-      title: getOptionalString(candidateProfile?.title, defaults.profile.title),
-      website: getOptionalString(candidateProfile?.website, defaults.profile.website),
+      ...defaults.profile,
+      ...candidate?.profile,
     },
-    updatedAt: isValidDateString(candidate?.updatedAt) ? candidate.updatedAt : defaults.updatedAt,
+    updatedAt:
+      typeof candidate?.updatedAt === "string" && candidate.updatedAt
+        ? candidate.updatedAt
+        : defaults.updatedAt,
     version: SETTINGS_VERSION,
   } satisfies WorkspaceSettings;
 }
