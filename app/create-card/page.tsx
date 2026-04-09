@@ -65,7 +65,7 @@ export default async function CreateCardPage({ searchParams }: CreateCardPagePro
       <Sidebar activePath="/create-card" />
       <Suspense fallback={<FormSkeleton />}>
         <CreateCardForm
-          key={workspaceView.settings.updatedAt}
+          key={workspaceView.settings.updatedAt ?? "workspace-card-unsaved"}
           initialFormData={initialFormData}
           initialTemplateId={initialTemplateId}
         />

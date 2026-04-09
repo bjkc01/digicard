@@ -25,10 +25,16 @@ function formatUpdatedAt(value: string | null) {
     return "Not saved yet";
   }
 
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Not saved yet";
+  }
+
   return new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(new Date(value));
+  }).format(date);
 }
 
 function buildWorkspaceCard(settings: Awaited<ReturnType<typeof getWorkspaceSettings>>) {
