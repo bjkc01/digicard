@@ -243,7 +243,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
                 href="/dashboard"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-8 py-4 text-base font-semibold text-[var(--ink)] shadow-[0_20px_40px_rgba(255,141,87,0.32)] transition hover:scale-[1.03] hover:bg-[#ff9a67] hover:shadow-[0_24px_48px_rgba(255,141,87,0.4)] active:scale-[0.98]"
               >
-                Create my card — it's free
+                Create my card — it&apos;s free
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <a
