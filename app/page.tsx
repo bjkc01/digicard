@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { InteractivePhonePreview } from "@/components/landing/interactive-phone-preview";
+import { Card3DScene } from "@/components/landing/card-3d-scene";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import { HomeAuthModalContent } from "@/components/login/home-auth-modal-content";
 import { HomeAuthModal } from "@/components/login/home-auth-modal";
@@ -264,9 +264,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
           </ScrollReveal>
 
           <ScrollReveal className="anim-2 relative" id="live-preview" delayMs={140}>
-            <div className="absolute -left-8 top-12 hidden h-32 w-32 rounded-full bg-[rgba(255,141,87,0.16)] blur-3xl lg:block" />
-            <div className="absolute -right-6 bottom-2 hidden h-36 w-36 rounded-full bg-[rgba(82,103,217,0.16)] blur-3xl lg:block" />
-            <InteractivePhonePreview />
+            <Card3DScene />
           </ScrollReveal>
         </div>
       </section>
