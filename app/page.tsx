@@ -18,20 +18,6 @@ import {
   UserRound,
 } from "lucide-react";
 
-const whyItMatters = [
-  {
-    title: "Real moments move fast",
-    body: "Career fairs, speaker sessions, and networking events rarely give you more than a minute to make the connection.",
-  },
-  {
-    title: "Awkward sharing breaks momentum",
-    body: "Spelling your name, asking someone to search LinkedIn, or digging through your phone can make the moment feel clumsy.",
-  },
-  {
-    title: "Follow-up gets harder later",
-    body: "If the connection does not happen on the spot, it often gets lost once the event ends and everyone moves on.",
-  },
-];
 
 const steps = [
   {
@@ -145,7 +131,12 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
 
   return (
     <main className="min-h-screen overflow-hidden bg-[var(--canvas)] text-[var(--ink)]">
-      <div className="absolute inset-x-0 top-0 -z-10 h-[560px] bg-[radial-gradient(circle_at_top_left,_rgba(82,103,217,0.14),_transparent_34%),radial-gradient(circle_at_top_right,_rgba(255,141,87,0.12),_transparent_26%),linear-gradient(180deg,_#f8f9fd_0%,_#fbfbfd_58%,_#ffffff_100%)]" />
+      {/* Animated ambient background */}
+      <div className="absolute inset-x-0 top-0 -z-10 h-[620px] overflow-hidden">
+        <div className="orb-drift-1 absolute -top-24 left-[6%] h-[520px] w-[520px] rounded-full bg-[rgba(82,103,217,0.13)] blur-[130px]" />
+        <div className="orb-drift-2 absolute -top-12 right-[4%] h-[400px] w-[400px] rounded-full bg-[rgba(255,141,87,0.08)] blur-[110px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,_#f8f9fd_0%,_#fbfbfd_58%,_#ffffff_100%)]" />
+      </div>
 
       <div className="border-b border-[rgba(25,35,61,0.08)] bg-[#5267d9] text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-center gap-4 px-6 py-3 text-center text-sm font-medium">
@@ -216,22 +207,24 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
 
       <section className="mx-auto max-w-7xl px-6 pb-10 pt-10 lg:pt-12">
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.96fr]">
-          <ScrollReveal className="anim-1" delayMs={40}>
-            <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white/90 px-4 py-2 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_24px_rgba(21,32,58,0.05)]">
+          <div>
+            <div className="anim-1 inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white/90 px-4 py-2 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_24px_rgba(21,32,58,0.05)]">
               <Sparkles className="h-4 w-4 text-[var(--brand)]" />
               Made for career fairs, campus events, and networking meetups
             </div>
 
-            <h1 className="mt-5 max-w-[34rem] text-[2.7rem] font-semibold leading-[0.96] tracking-[-0.065em] text-[var(--ink)] sm:text-[3.5rem] lg:text-[4rem]">
-              Your professional profile, ready to share with one QR scan.
+            <h1 className="anim-2 mt-5 max-w-[34rem] text-[2.7rem] font-semibold leading-[0.96] tracking-[-0.065em] text-[var(--ink)] sm:text-[3.5rem] lg:text-[4.2rem]">
+              Share your profile
+              <br />
+              <span className="text-[var(--brand)]">in one scan.</span>
             </h1>
 
-            <p className="mt-5 max-w-[32rem] text-[0.98rem] leading-7 text-[var(--muted)] sm:text-[1.02rem]">
-              Create a digital networking card that opens instantly and lets recruiters, alumni, speakers,
-              and professionals view your LinkedIn, portfolio, resume, and contact details in one place.
+            <p className="anim-3 mt-5 max-w-[32rem] text-[0.98rem] leading-7 text-[var(--muted)] sm:text-[1.02rem]">
+              Your digital networking card — LinkedIn, portfolio, resume, and contact details in one place.
+              Perfect for career fairs, campus events, and meetups.
             </p>
 
-            <div className="mt-6 grid gap-2.5 text-sm text-[var(--ink)]">
+            <div className="anim-4 mt-6 grid gap-2.5 text-sm text-[var(--ink)]">
               {quickPoints.map((item) => (
                 <div
                   key={item}
@@ -245,42 +238,42 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
               ))}
             </div>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="anim-5 mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-7 py-3.5 text-sm font-semibold text-[var(--ink)] shadow-[0_16px_34px_rgba(255,141,87,0.24)] transition hover:bg-[#ff9a67]"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-8 py-4 text-base font-semibold text-[var(--ink)] shadow-[0_20px_40px_rgba(255,141,87,0.32)] transition hover:scale-[1.03] hover:bg-[#ff9a67] hover:shadow-[0_24px_48px_rgba(255,141,87,0.4)] active:scale-[0.98]"
               >
-                Create my card
+                Create my card — it's free
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-[rgba(25,35,61,0.14)] bg-white/88 px-7 py-3.5 text-sm font-semibold text-[var(--ink)] transition hover:border-[rgba(82,103,217,0.3)] hover:text-[var(--brand)]"
+                className="inline-flex items-center justify-center gap-1.5 py-4 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--ink)]"
               >
                 See how it works
-                <SquareArrowOutUpRight className="h-4 w-4" />
+                <SquareArrowOutUpRight className="h-3.5 w-3.5" />
               </a>
             </div>
-          </ScrollReveal>
 
-          <ScrollReveal className="anim-2 relative" id="live-preview" delayMs={140}>
+            <p className="anim-6 mt-4 text-xs text-[var(--muted)]">
+              No app download needed &middot; Works instantly at any event
+            </p>
+          </div>
+
+          <div className="anim-card relative" id="live-preview">
             <Card3DScene />
-          </ScrollReveal>
+          </div>
         </div>
       </section>
 
       <section id="why-it-matters" className="border-y border-[rgba(25,35,61,0.06)] bg-white/88">
-        <ScrollReveal className="mx-auto max-w-7xl px-6 py-24">
-          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+        <div className="mx-auto max-w-7xl px-6 py-24">
+          <ScrollReveal className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end stagger-children">
             <div className="max-w-3xl">
               <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Why this matters</p>
               <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
                 Great networking opportunities are often lost in small, awkward moments.
               </h2>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
-                Students and early professionals already do the hard part by showing up. The problem is making
-                the connection feel easy while the moment is still there.
-              </p>
             </div>
 
             <div className="rounded-[1.9rem] border border-[rgba(82,103,217,0.12)] bg-[linear-gradient(135deg,_rgba(82,103,217,0.1),_rgba(255,255,255,0.96))] p-7 shadow-[0_18px_40px_rgba(21,32,58,0.05)] sm:p-8">
@@ -292,10 +285,10 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
               </blockquote>
               <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--muted)]">{networkingQuote.body}</p>
             </div>
-          </div>
+          </ScrollReveal>
 
-          <div className="mt-12 rounded-[2rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_#ffffff_0%,_#f8faff_100%)] p-5 shadow-[0_22px_50px_rgba(21,32,58,0.06)] sm:p-7">
-            <div className="grid gap-4 lg:grid-cols-2">
+          <ScrollReveal className="mt-12 rounded-[2rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_#ffffff_0%,_#f8faff_100%)] p-5 shadow-[0_22px_50px_rgba(21,32,58,0.06)] sm:p-7" delayMs={120}>
+            <div className="grid gap-4 lg:grid-cols-2 stagger-children">
               {comparisonColumns.map((column) => (
                 <div
                   key={column.label}
@@ -331,20 +324,8 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="mt-14 grid gap-5 lg:grid-cols-3">
-            {whyItMatters.map((item) => (
-              <article
-                key={item.title}
-                className="rounded-[1.75rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(21,32,58,0.08)]"
-              >
-                <h3 className="text-xl font-semibold tracking-[-0.03em] text-[var(--ink)]">{item.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
+        </div>
       </section>
 
       <section id="how-it-works" className="mx-auto max-w-7xl px-6 py-24">
@@ -358,11 +339,11 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
           </p>
         </ScrollReveal>
 
-        <ScrollReveal className="mt-14 grid gap-5 lg:grid-cols-3" delayMs={80}>
+        <ScrollReveal className="mt-14 grid gap-5 lg:grid-cols-3 stagger-children">
           {steps.map((step) => (
             <article
               key={step.id}
-              className="relative overflow-hidden rounded-[1.9rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)]"
+              className="hover-lift relative overflow-hidden rounded-[1.9rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)] hover:shadow-[0_28px_56px_rgba(21,32,58,0.1)]"
             >
               <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,_#5267d9,_#8da0ff)]" />
               <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(82,103,217,0.1)] text-sm font-semibold text-[var(--brand)]">
@@ -382,8 +363,8 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
       </section>
 
       <section className="border-y border-[rgba(25,35,61,0.06)] bg-[linear-gradient(180deg,_#ffffff_0%,_#f6f8ff_100%)]">
-        <ScrollReveal className="mx-auto grid max-w-7xl gap-14 px-6 py-24 lg:grid-cols-[0.92fr_1.08fr]">
-          <div>
+        <div className="mx-auto grid max-w-7xl gap-14 px-6 py-24 lg:grid-cols-[0.92fr_1.08fr]">
+          <ScrollReveal>
             <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">
               What your card includes
             </p>
@@ -393,13 +374,13 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
             <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--muted)]">
               Keep the essentials in one place so the person who scans your code can understand who you are and how to reach you immediately.
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <ScrollReveal className="grid gap-4 sm:grid-cols-2 stagger-children">
             {includedFeatures.map((item, index) => (
               <div
                 key={item.title}
-                className="rounded-[1.5rem] border border-[rgba(25,35,61,0.07)] bg-white px-5 py-5 shadow-[0_16px_35px_rgba(21,32,58,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_44px_rgba(21,32,58,0.08)]"
+                className="hover-lift rounded-[1.5rem] border border-[rgba(25,35,61,0.07)] bg-white px-5 py-5 shadow-[0_16px_35px_rgba(21,32,58,0.05)] hover:shadow-[0_24px_48px_rgba(21,32,58,0.1)]"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--soft)] text-[var(--brand)]">
@@ -413,8 +394,8 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
                 <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{item.description}</p>
               </div>
             ))}
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
+        </div>
       </section>
 
       <section id="use-cases" className="mx-auto max-w-7xl px-6 py-24">
@@ -428,11 +409,11 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
           </p>
         </ScrollReveal>
 
-        <ScrollReveal className="mt-14 grid gap-5 lg:grid-cols-2" delayMs={80}>
+        <ScrollReveal className="mt-14 grid gap-5 lg:grid-cols-2 stagger-children">
           {useCaseDetails.map((item, index) => (
             <article
               key={item.title}
-              className="rounded-[1.9rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)]"
+              className="hover-lift rounded-[1.9rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)] hover:shadow-[0_28px_56px_rgba(21,32,58,0.1)]"
             >
               <div className="flex items-center justify-between gap-4">
                 <p className="text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{item.title}</p>
