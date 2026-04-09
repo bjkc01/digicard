@@ -29,6 +29,7 @@ type HomeAuthModalCardProps = {
   errorCode?: string;
   errorMessage?: string | null;
   googleConfigured: boolean;
+  googleDisabledMessage?: string;
   hasAnySignInMethod: boolean;
   initialPanel: AuthModalPanel;
   isEmailConfigured: boolean;
@@ -123,6 +124,7 @@ export function HomeAuthModalCard({
   errorCode,
   errorMessage,
   googleConfigured,
+  googleDisabledMessage,
   hasAnySignInMethod,
   initialPanel,
   isEmailConfigured,
@@ -259,7 +261,9 @@ export function HomeAuthModalCard({
                   <ActionSurface
                     disabled
                     title="Continue with Google"
-                    description="Google sign-in is not available on this deployment yet."
+                    description={
+                      googleDisabledMessage ?? "Google sign-in is not available on this deployment yet."
+                    }
                     icon={<span className="text-xl font-bold leading-none text-[#4285F4]">G</span>}
                   />
                 )}

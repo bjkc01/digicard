@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import {
   devAuthBypassEnabled,
   emailAuthEnabled,
@@ -5,6 +6,7 @@ import {
   googleAuthEnabled,
   temporaryAccessEnabled,
 } from "@/auth";
+import { getGoogleAuthHostErrorMessage, isGoogleAuthSupportedHost } from "@/lib/google-auth";
 import {
   getDestinationLabel,
   getLoginErrorMessage,
@@ -44,12 +46,17 @@ function getInitialPanel(searchParams: LoginSearchParams): AuthModalPanel {
   return "choices";
 }
 
-export function HomeAuthModalContent({
+export async function HomeAuthModalContent({
   originPath = "/",
   searchParams,
 }: HomeAuthModalContentProps) {
   const resolvedSearchParams = searchParams ?? {};
   const callbackUrl = getSafeCallbackUrl(resolvedSearchParams.callbackUrl);
+  const headerStore = await headers();
+  const requestHost = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  const googleAvailable = googleAuthEnabled && isGoogleAuthSupportedHost(requestHost);
+  const googleDisabledMessage =
+    googleAuthEnabled && !googleAvailable ? getGoogleAuthHostErrorMessage() : undefined;
 
   return (
     <HomeAuthModalCard
@@ -60,8 +67,9 @@ export function HomeAuthModalContent({
       emailAuthUsesConsoleFallback={emailAuthUsesConsoleFallback}
       errorCode={resolvedSearchParams.error}
       errorMessage={getLoginErrorMessage(resolvedSearchParams.error)}
-      googleConfigured={googleAuthEnabled}
-      hasAnySignInMethod={googleAuthEnabled || emailAuthEnabled || temporaryAccessEnabled}
+      googleConfigured={googleAvailable}
+      googleDisabledMessage={googleDisabledMessage}
+      hasAnySignInMethod={googleAvailable || emailAuthEnabled || temporaryAccessEnabled}
       initialPanel={getInitialPanel(resolvedSearchParams)}
       isEmailConfigured={emailAuthEnabled}
       isTemporaryAccessAvailable={temporaryAccessEnabled}
