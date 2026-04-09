@@ -22,10 +22,16 @@ export type WorkspaceView = {
 };
 
 function formatUpdatedAt(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Not saved yet";
+  }
+
   return new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(new Date(value));
+  }).format(date);
 }
 
 function buildWorkspaceCard(user: WorkspaceUser, settings: Awaited<ReturnType<typeof getWorkspaceSettings>>) {
