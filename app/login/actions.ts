@@ -3,7 +3,7 @@
 import { cookies, headers } from "next/headers";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
-import { emailAuthEnabled, googleAuthEnabled, signIn, temporaryAccessEnabled } from "@/auth";
+import { emailAuthEnabled, googleAuthEnabled, signIn } from "@/auth";
 import {
   createEmailLoginToken,
   createPendingEmailCode,
@@ -34,36 +34,6 @@ export async function signInWithGoogle(formData: FormData) {
   await signIn("google", {
     redirectTo: callbackUrl,
   });
-}
-
-export async function signInWithTemporaryAccess(formData: FormData) {
-  const callbackUrl = getSafeCallbackUrl(formData.get("callbackUrl"));
-  const authView = getAuthView(formData.get("authView"));
-  const originPath = getSafeOriginPath(formData.get("originPath"));
-  const loginId = typeof formData.get("loginId") === "string" ? formData.get("loginId")?.toString().trim() : "";
-  const password = typeof formData.get("password") === "string" ? formData.get("password")?.toString() : "";
-
-  if (!loginId || !password) {
-    redirect(getLoginUrl({ authView, callbackUrl, error: "TempCredentialsRequired", originPath }));
-  }
-
-  if (!temporaryAccessEnabled) {
-    redirect(getLoginUrl({ authView, callbackUrl, error: "TempCredentialsUnavailable", originPath }));
-  }
-
-  try {
-    await signIn("temp-access", {
-      loginId,
-      password,
-      redirectTo: callbackUrl,
-    });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      redirect(getLoginUrl({ authView, callbackUrl, error: "TempCredentialsInvalid", originPath }));
-    }
-
-    throw error;
-  }
 }
 
 export async function requestEmailSignIn(formData: FormData) {

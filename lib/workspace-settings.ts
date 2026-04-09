@@ -57,7 +57,7 @@ export type WorkspaceSettings = {
   notifications: WorkspaceNotificationSettings;
   owner: string;
   profile: WorkspaceProfile;
-  updatedAt: string;
+  updatedAt: string | null;
   version: number;
 };
 
@@ -133,7 +133,7 @@ function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings 
       title: "",
       website: "",
     },
-    updatedAt: new Date().toISOString(),
+    updatedAt: null,
     version: SETTINGS_VERSION,
   };
 }
@@ -227,7 +227,7 @@ function mergeWorkspaceSettings(
     updatedAt:
       typeof candidate?.updatedAt === "string" && candidate.updatedAt
         ? candidate.updatedAt
-        : defaults.updatedAt,
+        : null,
     version: SETTINGS_VERSION,
   } satisfies WorkspaceSettings;
 }

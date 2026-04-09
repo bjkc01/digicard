@@ -1,4 +1,4 @@
-import { ArrowRight, LayoutTemplate, Settings, SquarePen } from "lucide-react";
+import { ArrowRight, LayoutTemplate, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const actions = [
@@ -7,12 +7,6 @@ const actions = [
     href: "/settings",
     icon: Settings,
     label: "Open settings",
-  },
-  {
-    description: "Refine the saved card details that Dashboard and My Cards now reuse.",
-    href: "/create-card",
-    icon: SquarePen,
-    label: "Edit workspace card",
   },
   {
     description: "Review the template catalog and keep your default style consistent.",

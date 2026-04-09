@@ -27,12 +27,6 @@ function getAuthCopy(provider: string) {
         authDescription: "Authenticated with a one-time verification code and signed session.",
         authLabel: "Email code",
       };
-    case "temp-access":
-      return {
-        authDescription:
-          "Fallback credentials are active right now. Remove them after the primary sign-in flow is fixed.",
-        authLabel: "Temporary access",
-      };
     case "dev-bypass":
       return {
         authDescription:

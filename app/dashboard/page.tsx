@@ -1,4 +1,4 @@
-import { BellRing, CreditCard, UserRound } from "lucide-react";
+import { CreditCard, ShieldCheck, UserRound } from "lucide-react";
 import { devAuthBypassEnabled } from "@/auth";
 import { CardsSection } from "@/components/cards/cards-section";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
@@ -11,16 +11,17 @@ import { getWorkspaceView } from "@/lib/workspace-view";
 export default async function DashboardPage() {
   const workspaceUser = await requireWorkspaceUser("/dashboard");
   const workspaceView = await getWorkspaceView(workspaceUser);
+  const hasActiveCard = workspaceView.summary.activeCardCount > 0;
   const metrics = [
     {
       icon: CreditCard,
-      label: "Saved cards",
-      value: `${workspaceView.summary.activeCardCount}`,
+      label: "Card status",
+      value: workspaceView.summary.cardStatusLabel,
     },
     {
-      icon: BellRing,
-      label: "Alerts enabled",
-      value: `${workspaceView.summary.alertsEnabledCount}`,
+      icon: ShieldCheck,
+      label: "Storage scope",
+      value: workspaceView.summary.storageScopeLabel,
     },
     {
       icon: UserRound,
@@ -31,17 +32,12 @@ export default async function DashboardPage() {
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
-      <Sidebar
-        activePath="/dashboard"
-        statusCopy={workspaceView.summary.sidebarStatusCopy}
-        userLabel={workspaceUser.name}
-        userSubcopy={workspaceUser.email}
-      />
+      <Sidebar activePath="/dashboard" />
 
       <section className="space-y-6">
         <DashboardHeader
           authLabel={workspaceUser.authLabel}
-          subtitle="Your workspace now reads from the same saved profile, template, and contact details across every signed-in page."
+          subtitle="Your profile, template, and contact details are currently saved on this browser and reused across signed-in workspace pages."
           userName={workspaceUser.name}
         />
 
@@ -57,17 +53,17 @@ export default async function DashboardPage() {
               <div>
                 <p className="eyebrow text-[var(--brand)]">Dashboard</p>
                 <h2 className="mt-2 max-w-[34rem] text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
-                  Your active networking card
+                  Your workspace card
                 </h2>
                 <p className="mt-2 max-w-xl text-[0.98rem] leading-7 text-[var(--muted)]">
-                  Keep one polished card ready for recruiters, classmates, mentors, and new contacts.
+                  Keep one polished card ready for recruiters, classmates, mentors, and new contacts on this browser.
                 </p>
               </div>
               <Button
                 href="/create-card"
                 className="rounded-full bg-[var(--brand)] px-5 py-3 text-white shadow-[0_16px_34px_rgba(82,103,217,0.22)] hover:bg-[#4459cb]"
               >
-                Update Card
+                {hasActiveCard ? "Edit card" : "Create card"}
               </Button>
             </div>
 
@@ -82,9 +78,9 @@ export default async function DashboardPage() {
             <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold text-[var(--ink)]">Workspace readiness</p>
+                  <p className="text-sm font-semibold text-[var(--ink)]">Workspace snapshot</p>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    Honest status from your saved workspace data
+                    Status drawn from the current browser-scoped workspace record
                   </p>
                 </div>
                 <span className="rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold text-[var(--brand)]">
@@ -118,14 +114,16 @@ export default async function DashboardPage() {
                 Keep one card ready for every opportunity.
               </h3>
               <p className="mt-3 text-sm leading-7 text-white/72">
-                Your default style is {workspaceView.summary.selectedTemplateName.toLowerCase()}, and the latest workspace save was {workspaceView.summary.lastUpdatedLabel}.
+                {hasActiveCard
+                  ? `Your default style is ${workspaceView.summary.selectedTemplateName.toLowerCase()}, and the latest verified save on this browser was ${workspaceView.summary.lastUpdatedLabel}.`
+                  : `Your default style is ${workspaceView.summary.selectedTemplateName.toLowerCase()}. Save your card once to record the first verified update on this browser.`}
               </p>
               <Button
-                href={workspaceView.summary.activeCardCount > 0 ? "/cards" : "/create-card"}
+                href="/create-card"
                 variant="secondary"
                 className="mt-6 rounded-full border-white/15 bg-white text-[var(--brand)] hover:bg-[#f4f6ff]"
               >
-                {workspaceView.summary.activeCardCount > 0 ? "Open my cards" : "Finish my card"}
+                {hasActiveCard ? "Edit card" : "Create card"}
               </Button>
             </div>
 

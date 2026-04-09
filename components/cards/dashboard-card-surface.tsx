@@ -1,5 +1,7 @@
-import { AtSign, Globe, Mail, Phone, QrCode, ScanLine } from "lucide-react";
+import { AtSign, Globe, Mail, Phone, ScanLine } from "lucide-react";
+import { QRCode } from "@/components/ui/qr-code";
 import { DigiCard } from "@/lib/data";
+import { getCardShareTarget } from "@/lib/site-config";
 
 type DashboardCardSurfaceProps = {
   card: DigiCard;
@@ -14,6 +16,8 @@ const quickLinks = [
 ] as const;
 
 export function DashboardCardSurface({ card, action }: DashboardCardSurfaceProps) {
+  const shareTarget = getCardShareTarget(card);
+
   return (
     <article className="relative overflow-hidden rounded-[1.9rem] border border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,rgba(22,28,48,0.96),rgba(16,20,36,0.98))] p-5 shadow-[0_20px_50px_rgba(10,14,26,0.2)]">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#5267d9] via-[#7c8eff] to-[#9bb0ff]" />
@@ -41,8 +45,8 @@ export function DashboardCardSurface({ card, action }: DashboardCardSurfaceProps
             </div>
           </div>
 
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-slate-200">
-            <QrCode className="h-5 w-5" />
+          <div className="rounded-[22px] border border-white/10 bg-white/[0.06] p-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+            <QRCode value={shareTarget.url} size={56} fgColor="#e2e8f0" />
           </div>
         </div>
 
@@ -85,7 +89,7 @@ export function DashboardCardSurface({ card, action }: DashboardCardSurfaceProps
 
         <div className="mt-5 flex items-center justify-between gap-4 border-t border-white/10 pt-4">
           <p className="max-w-[13rem] text-sm leading-6 text-slate-300">
-            Ready to share with recruiters, alumni, classmates, and new contacts.
+            QR opens your {shareTarget.label} so every scan has a working destination.
           </p>
           {action}
         </div>

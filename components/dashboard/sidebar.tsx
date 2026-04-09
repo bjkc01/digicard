@@ -6,19 +6,16 @@ import { signOutFromWorkspace } from "@/lib/workspace-actions";
 
 type SidebarProps = {
   activePath: string;
-  statusCopy?: string;
-  userLabel?: string;
-  userSubcopy?: string;
 };
 
 const icons = {
   Dashboard: Sparkles,
-  "My Cards": WalletCards,
+  "My Card": WalletCards,
   Templates: LayoutTemplate,
   Settings: Settings,
 } as const;
 
-export function Sidebar({ activePath, statusCopy, userLabel, userSubcopy }: SidebarProps) {
+export function Sidebar({ activePath }: SidebarProps) {
   return (
     <aside className="panel flex h-fit flex-col gap-8 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 lg:sticky lg:top-6">
       <div className="flex items-center gap-3 border-b border-[rgba(82,103,217,0.1)] pb-6">
@@ -54,17 +51,10 @@ export function Sidebar({ activePath, statusCopy, userLabel, userSubcopy }: Side
         })}
       </nav>
 
-      <div className="rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-white p-5 shadow-[0_12px_30px_rgba(21,32,58,0.04)]">
-        <p className="text-sm font-semibold text-[var(--ink)]">Networking status</p>
+      <div className="mt-auto rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-white p-5 shadow-[0_12px_30px_rgba(21,32,58,0.04)]">
+        <p className="text-sm font-semibold text-[var(--ink)]">Session</p>
         <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
-          {statusCopy ?? "Complete your workspace profile to keep your card ready to share."}
-        </p>
-      </div>
-
-      <div className="rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-white p-5 shadow-[0_12px_30px_rgba(21,32,58,0.04)]">
-        <p className="text-sm font-semibold text-[var(--ink)]">{userLabel ?? "Account"}</p>
-        <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
-          {userSubcopy ?? "Session controls live here so sign-out is always easy to find."}
+          Sign out from the current workspace session on this browser.
         </p>
 
         <form action={signOutFromWorkspace} className="mt-4">

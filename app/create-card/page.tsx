@@ -62,12 +62,7 @@ export default async function CreateCardPage({ searchParams }: CreateCardPagePro
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
-      <Sidebar
-        activePath="/create-card"
-        statusCopy={workspaceView.summary.sidebarStatusCopy}
-        userLabel={workspaceUser.name}
-        userSubcopy={workspaceUser.email}
-      />
+      <Sidebar activePath="/create-card" />
       <Suspense fallback={<FormSkeleton />}>
         <CreateCardForm
           key={workspaceView.settings.updatedAt}

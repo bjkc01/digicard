@@ -2,23 +2,16 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import {
-  ArrowLeft,
-  ArrowRight,
-  KeyRound,
-  Mail,
-  Sparkles,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Mail, Sparkles } from "lucide-react";
 import {
   requestEmailSignIn,
   signInWithGoogle,
-  signInWithTemporaryAccess,
   verifyEmailSignIn,
 } from "@/app/login/actions";
 import { AuthBenefitsShowcase } from "@/components/login/auth-benefits-showcase";
 import { cn } from "@/lib/utils";
 
-export type AuthModalPanel = "choices" | "email" | "verify" | "temporary";
+export type AuthModalPanel = "choices" | "email" | "verify";
 
 type HomeAuthModalCardProps = {
   callbackUrl: string;
@@ -32,7 +25,6 @@ type HomeAuthModalCardProps = {
   hasAnySignInMethod: boolean;
   initialPanel: AuthModalPanel;
   isEmailConfigured: boolean;
-  isTemporaryAccessAvailable: boolean;
   noticeCode?: string;
   noticeMessage?: string | null;
   originPath: string;
@@ -126,7 +118,6 @@ export function HomeAuthModalCard({
   hasAnySignInMethod,
   initialPanel,
   isEmailConfigured,
-  isTemporaryAccessAvailable,
   noticeCode,
   noticeMessage,
   originPath,
@@ -140,17 +131,13 @@ export function HomeAuthModalCard({
   const isChoicesPanel = panel === "choices";
   const isEmailPanel = panel === "email";
   const isVerifyPanel = panel === "verify";
-  const isTemporaryPanel = panel === "temporary";
 
   const showChoiceError =
     isChoicesPanel &&
     Boolean(errorMessage) &&
-    !errorCode?.startsWith("Email") &&
-    !errorCode?.startsWith("TempCredentials");
+    !errorCode?.startsWith("Email");
   const showEmailError =
     (isEmailPanel || isVerifyPanel) && Boolean(errorMessage) && errorCode?.startsWith("Email");
-  const showTemporaryError =
-    isTemporaryPanel && Boolean(errorMessage) && errorCode?.startsWith("TempCredentials");
   const showVerifyNotice = isVerifyPanel && Boolean(noticeMessage) && noticeCode === "EmailCodeSent";
 
   return (
@@ -213,29 +200,9 @@ export function HomeAuthModalCard({
               </div>
             ) : null}
 
-            {isTemporaryPanel ? (
-              <div className="mt-4">
-                <button
-                  type="button"
-                  onClick={() => setPanel("choices")}
-                  className="inline-flex items-center gap-2 rounded-full border border-[rgba(25,35,61,0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)] transition hover:border-[rgba(82,103,217,0.24)] hover:text-[var(--ink)]"
-                >
-                  <ArrowLeft className="h-3 w-3" />
-                  Back
-                </button>
-                <h2 className="mt-3 text-[1.5rem] font-semibold leading-[1.06] tracking-[-0.05em] text-[var(--ink)]">
-                  Temporary access
-                </h2>
-                <p className="mt-1.5 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">
-                  Use short-term credentials for a fallback route into the workspace.
-                </p>
-              </div>
-            ) : null}
-
             <div className="mt-4 space-y-3">
               {showChoiceError && errorMessage ? <StatusMessage message={errorMessage} tone="error" /> : null}
               {showEmailError && errorMessage ? <StatusMessage message={errorMessage} tone="error" /> : null}
-              {showTemporaryError && errorMessage ? <StatusMessage message={errorMessage} tone="error" /> : null}
               {showVerifyNotice && noticeMessage ? <StatusMessage message={noticeMessage} tone="success" /> : null}
             </div>
           </div>
@@ -281,17 +248,6 @@ export function HomeAuthModalCard({
                     icon={<Mail className="h-5 w-5 text-[var(--brand)]" />}
                   />
                 )}
-
-                {isTemporaryAccessAvailable ? (
-                  <button
-                    type="button"
-                    onClick={() => setPanel("temporary")}
-                    className="inline-flex items-center gap-2 rounded-full px-1 py-1 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--ink)]"
-                  >
-                    <KeyRound className="h-4 w-4" />
-                    Use temporary access
-                  </button>
-                ) : null}
 
                 {!hasAnySignInMethod ? (
                   <StatusMessage
@@ -410,56 +366,6 @@ export function HomeAuthModalCard({
               </div>
             ) : null}
 
-            {isTemporaryPanel ? (
-              <div className="rounded-[1.7rem] border border-[rgba(25,35,61,0.08)] bg-[#f6f8ff] p-4 sm:p-5">
-                <form action={signInWithTemporaryAccess} className="space-y-4">
-                  <ModalAuthContextFields callbackUrl={callbackUrl} originPath={originPath} />
-                  <label className="block space-y-2">
-                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-                      Temporary ID
-                    </span>
-                    <input
-                      name="loginId"
-                      type="text"
-                      autoComplete="username"
-                      placeholder="temp-admin"
-                      autoFocus
-                      disabled={!isTemporaryAccessAvailable}
-                      className="h-12 w-full rounded-2xl border border-[rgba(25,35,61,0.1)] px-4 text-base text-[var(--ink)] outline-none transition focus:border-[rgba(82,103,217,0.4)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-                    />
-                  </label>
-                  <label className="block space-y-2">
-                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-                      Password
-                    </span>
-                    <input
-                      name="password"
-                      type="password"
-                      autoComplete="current-password"
-                      placeholder="Temporary password"
-                      disabled={!isTemporaryAccessAvailable}
-                      className="h-12 w-full rounded-2xl border border-[rgba(25,35,61,0.1)] px-4 text-base text-[var(--ink)] outline-none transition focus:border-[rgba(82,103,217,0.4)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-                    />
-                  </label>
-
-                  <button
-                    type="submit"
-                    disabled={!isTemporaryAccessAvailable}
-                    className="flex w-full items-center justify-between rounded-2xl bg-[var(--brand)] px-5 py-4 text-left text-white shadow-[0_16px_34px_rgba(82,103,217,0.18)] transition hover:bg-[#4459cb] disabled:cursor-not-allowed disabled:bg-[rgba(82,103,217,0.55)]"
-                  >
-                    <span>
-                      <span className="block text-base font-semibold">Continue with temporary access</span>
-                      <span className="mt-1 block text-xs text-white/82">
-                        {isTemporaryAccessAvailable
-                          ? `We'll continue to ${destinationLabel}.`
-                          : "Temporary access is not available on this deployment yet."}
-                      </span>
-                    </span>
-                    <ArrowRight className="h-4 w-4 text-white/80" />
-                  </button>
-                </form>
-              </div>
-            ) : null}
           </div>
 
           <div className="mt-5 flex flex-col gap-2.5 border-t border-[rgba(25,35,61,0.08)] pt-4 sm:flex-row sm:items-center sm:justify-between">

@@ -12,22 +12,17 @@ export default async function CardsPage() {
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
-      <Sidebar
-        activePath="/cards"
-        statusCopy={workspaceView.summary.sidebarStatusCopy}
-        userLabel={workspaceUser.name}
-        userSubcopy={workspaceUser.email}
-      />
+      <Sidebar activePath="/cards" />
 
       <section className="space-y-6">
         <header className="panel flex flex-col gap-5 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="eyebrow text-[var(--brand)]">My Cards</p>
+            <p className="eyebrow text-[var(--brand)]">My Card</p>
             <h1 className="mt-2 text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
-              Saved cards for this workspace
+              Your workspace card
             </h1>
             <p className="mt-2 max-w-2xl text-[0.98rem] leading-7 text-[var(--muted)]">
-              This view shows the real card generated from your saved workspace profile,
+              This view shows the single card generated from your saved workspace profile,
               template choice, and contact details.
             </p>
           </div>
@@ -44,7 +39,7 @@ export default async function CardsPage() {
           <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="eyebrow text-[var(--brand)]">Card library</p>
+                <p className="eyebrow text-[var(--brand)]">Workspace card</p>
                 <h2 className="mt-2 max-w-[34rem] text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
                   Keep one polished card ready to share
                 </h2>
@@ -57,17 +52,17 @@ export default async function CardsPage() {
 
             <CardsSection
               cards={workspaceView.cards}
-              emptyDescription="Complete your name, email, and title in the card builder to create your first saved card."
-              emptyTitle="No saved workspace card yet"
+              emptyDescription="Complete your name, email, and title in the card builder to create your workspace card."
+              emptyTitle="No workspace card yet"
             />
           </div>
 
           <aside className="space-y-6">
             <SummaryCard
-              description="Cards currently generated from the active workspace profile."
+              description="The single workspace card generated from the active profile."
               icon={CreditCard}
-              title="Saved cards"
-              value={`${workspaceView.summary.activeCardCount}`}
+              title="Card status"
+              value={workspaceView.summary.cardStatusLabel}
             />
             <SummaryCard
               description="The template your workspace will keep using by default."
@@ -76,10 +71,10 @@ export default async function CardsPage() {
               value={workspaceView.summary.selectedTemplateName}
             />
             <SummaryCard
-              description="Current access method and storage checks are still enforced on save."
+              description="Workspace data is currently saved and reused on this browser."
               icon={ShieldCheck}
-              title="Session"
-              value={workspaceView.summary.authLabel}
+              title="Storage scope"
+              value={workspaceView.summary.storageScopeLabel}
             />
           </aside>
         </div>
