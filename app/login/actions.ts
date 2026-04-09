@@ -13,15 +13,12 @@ import {
   sendEmailSignInCode,
   verifyPendingEmailCode,
 } from "@/lib/email-auth";
-import { isGoogleAuthSupportedHost } from "@/lib/google-auth";
 import { getAuthView, getLoginUrl, getSafeCallbackUrl, getSafeOriginPath } from "@/lib/login-flow";
 
 export async function signInWithGoogle(formData: FormData) {
   const callbackUrl = getSafeCallbackUrl(formData.get("callbackUrl"));
   const authView = getAuthView(formData.get("authView"));
   const originPath = getSafeOriginPath(formData.get("originPath"));
-  const headerStore = await headers();
-  const requestHost = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
 
   if (!googleAuthEnabled) {
     redirect(
@@ -29,17 +26,6 @@ export async function signInWithGoogle(formData: FormData) {
         authView,
         callbackUrl,
         error: "GoogleOAuthNotConfigured",
-        originPath,
-      }),
-    );
-  }
-
-  if (!isGoogleAuthSupportedHost(requestHost)) {
-    redirect(
-      getLoginUrl({
-        authView,
-        callbackUrl,
-        error: "GoogleOAuthHostUnsupported",
         originPath,
       }),
     );

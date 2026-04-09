@@ -49,8 +49,6 @@ export function getLoginErrorMessage(error?: string) {
       return "Google sign-in was canceled before it finished. Please try again.";
     case "Configuration":
       return "Google sign-in is misconfigured for this deployment. Check AUTH_SECRET, AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET, and the callback URL in Google Cloud.";
-    case "GoogleOAuthHostUnsupported":
-      return "Google sign-in is only enabled on the primary DigiCard domain right now. Preview deployments use different callback URLs, so Google blocks them.";
     case "GoogleOAuthNotConfigured":
       return "Google sign-in is not configured for this deployment yet.";
     case "EmailInvalid":
