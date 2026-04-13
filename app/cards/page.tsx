@@ -29,7 +29,7 @@ export default async function CardsPage() {
 
           <Button
             href="/create-card"
-            className="rounded-full bg-[var(--brand)] px-5 py-3 text-white shadow-[0_16px_34px_rgba(82,103,217,0.22)] hover:bg-[#4459cb]"
+            className="whitespace-nowrap rounded-full bg-[var(--brand)] px-5 py-3 text-white shadow-[0_16px_34px_rgba(82,103,217,0.22)] hover:bg-[#4459cb]"
           >
             Edit card
           </Button>
