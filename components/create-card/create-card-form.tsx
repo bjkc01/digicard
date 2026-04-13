@@ -244,80 +244,83 @@ export function CreateCardForm({
               </div>
             </div>
 
-            {/* Contact + Portrait */}
-            <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
-              <div
-                role="group"
-                aria-labelledby="contact-section-label"
-                className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
-              >
-                <p id="contact-section-label" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
-                  Contact
-                </p>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {contactFields.map((field) => (
-                    <Field
-                      key={field.key}
-                      className={field.span === "full" ? "md:col-span-2" : undefined}
-                      hint={field.hint}
-                      icon={field.icon}
-                      label={field.label}
-                      maxLength={field.maxLength}
-                      name={field.key}
-                      onChange={handleChange(field.key)}
-                      placeholder={field.placeholder}
-                      required={field.required}
-                      type={field.type}
-                      value={formData[field.key]}
-                    />
-                  ))}
-                </div>
+            {/* Contact */}
+            <div
+              role="group"
+              aria-labelledby="contact-section-label"
+              className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
+            >
+              <p id="contact-section-label" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
+                Contact
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {contactFields.map((field) => (
+                  <Field
+                    key={field.key}
+                    className={field.span === "full" ? "sm:col-span-2" : undefined}
+                    hint={field.hint}
+                    icon={field.icon}
+                    label={field.label}
+                    maxLength={field.maxLength}
+                    name={field.key}
+                    onChange={handleChange(field.key)}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    type={field.type}
+                    value={formData[field.key]}
+                  />
+                ))}
               </div>
+            </div>
 
-              <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5">
-                <p id="portrait-label" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
-                  Portrait
-                </p>
-                <button
-                  type="button"
-                  aria-label="Upload profile image"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex min-h-44 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 text-center transition-all duration-150 hover:border-[#00C4CC] hover:bg-[#00C4CC]/5"
-                >
-                  {imagePreview ? (
-                    <div className="animate-fade-in flex flex-col items-center gap-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        alt="Profile preview"
-                        className="h-16 w-16 rounded-2xl object-cover shadow-sm"
-                        src={imagePreview}
-                      />
-                      <p className="text-xs text-[#293039]">Click to swap</p>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EDF0F2]">
-                        <Camera className="h-5 w-5 text-[#293039]" />
-                      </div>
-                      <p className="text-xs text-[#293039]">PNG, JPG, WEBP · 5 MB max</p>
-                    </div>
-                  )}
-                </button>
-                {imageError ? (
-                  <div className="animate-fade-in mt-3 flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2.5">
-                    <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
-                    <p className="text-xs leading-5 text-red-700">{imageError}</p>
+            {/* Portrait */}
+            <div
+              role="group"
+              aria-labelledby="portrait-label"
+              className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
+            >
+              <p id="portrait-label" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
+                Portrait
+              </p>
+              <button
+                type="button"
+                aria-label="Upload profile image"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex h-32 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 text-center transition-all duration-150 hover:border-[#00C4CC] hover:bg-[#00C4CC]/5"
+              >
+                {imagePreview ? (
+                  <div className="animate-fade-in flex items-center gap-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      alt="Profile preview"
+                      className="h-16 w-16 rounded-2xl object-cover shadow-sm"
+                      src={imagePreview}
+                    />
+                    <p className="text-xs text-[#293039]">Click to swap</p>
                   </div>
-                ) : null}
-                <input
-                  ref={fileInputRef}
-                  accept="image/png,image/jpeg,image/webp"
-                  aria-labelledby="portrait-label"
-                  className="hidden"
-                  onChange={handleImageChange}
-                  type="file"
-                />
-              </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#EDF0F2]">
+                      <Camera className="h-5 w-5 text-[#293039]" />
+                    </div>
+                    <p className="text-xs text-[#293039]">PNG, JPG, WEBP · 5 MB max</p>
+                  </div>
+                )}
+              </button>
+              {imageError ? (
+                <div className="animate-fade-in mt-3 flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2.5">
+                  <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
+                  <p className="text-xs leading-5 text-red-700">{imageError}</p>
+                </div>
+              ) : null}
+              <input
+                ref={fileInputRef}
+                accept="image/png,image/jpeg,image/webp"
+                aria-labelledby="portrait-label"
+                className="hidden"
+                onChange={handleImageChange}
+                type="file"
+              />
             </div>
 
             {/* Visual direction */}
