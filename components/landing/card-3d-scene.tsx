@@ -55,22 +55,28 @@ const PAD_LEFT = PEEK * 2; // 160px
 
 function PhoneFramedBlueprint() {
   return (
-    <div className="relative aspect-[368/772] w-[328px]">
-      <div className="absolute inset-[2.8%_6.4%_2.8%_6.8%] overflow-hidden rounded-[2.9rem] bg-[linear-gradient(180deg,rgba(24,35,64,0.92),rgba(9,13,24,0.98))] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]">
+    <div className="relative aspect-[380/790] w-[338px]">
+      <div className="absolute inset-0 rounded-[3.9rem] bg-[linear-gradient(180deg,#f8fbff_0%,#d7dee9_48%,#b9c3d2_100%)] shadow-[0_38px_90px_rgba(15,23,42,0.24),inset_0_2px_2px_rgba(255,255,255,0.95),inset_0_-4px_10px_rgba(71,85,105,0.28)]" />
+      <div className="absolute inset-y-[12%] left-[1.4%] w-[1.4%] rounded-full bg-[linear-gradient(180deg,rgba(148,163,184,0.95),rgba(226,232,240,0.45))]" />
+      <div className="absolute inset-y-[18%] left-[2.6%] h-[11%] w-[1.1%] rounded-full bg-[linear-gradient(180deg,rgba(148,163,184,0.95),rgba(226,232,240,0.5))]" />
+      <div className="absolute inset-y-[28%] left-[2.6%] h-[15%] w-[1.1%] rounded-full bg-[linear-gradient(180deg,rgba(148,163,184,0.95),rgba(226,232,240,0.5))]" />
+
+      <div className="absolute inset-[1.8%] rounded-[3.5rem] border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.75),rgba(255,255,255,0.18))] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]" />
+
+      <div className="absolute inset-[2.7%_5.8%_2.7%_5.8%] overflow-hidden rounded-[3rem] border border-[rgba(15,23,42,0.5)] bg-[linear-gradient(180deg,rgba(5,8,18,0.98),rgba(4,6,14,1))] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(82,103,217,0.22),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))]" />
         <div
-          className="absolute left-1/2 top-[2.95rem] w-[31rem] origin-top"
+          className="absolute left-1/2 top-[3.15rem] w-[31rem] origin-top"
           style={{ transform: "translateX(-50%) scale(0.64)" }}
         >
           <CardPreview card={mainCard} compact />
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-0 rounded-[3.6rem] border border-[rgba(15,23,42,0.22)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(244,247,255,0.8))] shadow-[0_36px_72px_rgba(15,23,42,0.2)]" />
-      <div className="pointer-events-none absolute inset-[1.8%] rounded-[3.1rem] border border-white/60" />
-      <div className="pointer-events-none absolute left-1/2 top-[3.2%] h-5 w-20 -translate-x-1/2 rounded-full bg-[rgba(15,23,42,0.92)] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]" />
+      <div className="pointer-events-none absolute left-1/2 top-[4%] h-6 w-24 -translate-x-1/2 rounded-full bg-black shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]" />
+      <div className="pointer-events-none absolute left-1/2 top-[4.7%] h-1.5 w-10 -translate-x-1/2 rounded-full bg-white/10" />
 
-      <div className="pointer-events-none absolute inset-0 rounded-[3.5rem] bg-[radial-gradient(circle_at_12%_10%,rgba(255,255,255,0.52),transparent_16%),radial-gradient(circle_at_82%_14%,rgba(255,255,255,0.18),transparent_18%)] opacity-75" />
+      <div className="pointer-events-none absolute inset-0 rounded-[3.8rem] bg-[radial-gradient(circle_at_14%_10%,rgba(255,255,255,0.7),transparent_14%),radial-gradient(circle_at_84%_18%,rgba(255,255,255,0.22),transparent_18%),linear-gradient(105deg,transparent_18%,rgba(255,255,255,0.2)_35%,transparent_48%)] opacity-80" />
     </div>
   );
 }
