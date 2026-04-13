@@ -1,8 +1,9 @@
 "use client";
 
-import type { ChangeEvent, ComponentType } from "react";
-import { useActionState, useRef, useState } from "react";
+import type { ChangeEvent, ComponentType, ReactNode } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import {
+  AlertCircle,
   AtSign,
   BriefcaseBusiness,
   Camera,
@@ -45,6 +46,7 @@ type FieldConfig = {
   icon: ComponentType<{ className?: string }>;
   key: keyof CardFormValues;
   label: string;
+  maxLength?: number;
   placeholder: string;
   required?: boolean;
   span?: "full";
@@ -57,28 +59,30 @@ type CreateCardFormProps = {
 };
 
 const profileFields: FieldConfig[] = [
-  { key: "name", label: "Full name", placeholder: "Your name", icon: Sparkles, required: true },
+  { key: "name", label: "Full name", placeholder: "Your name", icon: Sparkles, required: true, maxLength: 60 },
   {
     key: "title",
     label: "Professional title",
     placeholder: "Student, founder, designer, or advisor",
     icon: BriefcaseBusiness,
     required: true,
+    maxLength: 80,
   },
-  { key: "company", label: "School or company", placeholder: "University or company", icon: ShieldCheck },
+  { key: "company", label: "School or company", placeholder: "University or company", icon: ShieldCheck, maxLength: 80 },
 ];
 
 const contactFields: FieldConfig[] = [
-  { key: "email", label: "Email", placeholder: "you@example.com", type: "email", icon: Mail, required: true },
-  { key: "phone", label: "Phone", placeholder: "+1 (555) 000-0000", icon: Phone },
+  { key: "email", label: "Email", placeholder: "you@example.com", type: "email", icon: Mail, required: true, maxLength: 254 },
+  { key: "phone", label: "Phone", placeholder: "+1 (555) 000-0000", icon: Phone, maxLength: 40 },
   {
     key: "linkedin",
     label: "LinkedIn",
     placeholder: "linkedin.com/in/yourname or yourusername",
-    hint: "Paste the full LinkedIn URL or just your username.",
+    hint: "Paste the full URL or just your username — DigiCard normalizes it to linkedin.com/in/yourname.",
     icon: AtSign,
+    maxLength: 200,
   },
-  { key: "website", label: "Website", placeholder: "yourwebsite.com", icon: Globe, span: "full" },
+  { key: "website", label: "Website", placeholder: "yourwebsite.com", icon: Globe, span: "full", maxLength: 120 },
 ];
 
 function getStatusTone(state: SaveCardActionState) {
@@ -102,6 +106,8 @@ export function CreateCardForm({
   const [formData, setFormData] = useState<CardFormValues>(initialFormData);
   const [selectedTemplate, setSelectedTemplate] = useState<DigiCardTemplate>(initialTemplate);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [statusVisible, setStatusVisible] = useState(false);
   const [actionState, formAction] = useActionState(
     saveWorkspaceCardAction,
     initialSaveCardActionState,
@@ -117,6 +123,14 @@ export function CreateCardForm({
     formData.website,
   ].filter(Boolean).length;
 
+  useEffect(() => {
+    if (actionState.status !== "idle") {
+      setStatusVisible(true);
+      const timer = setTimeout(() => setStatusVisible(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [actionState]);
+
   const handleChange =
     (field: keyof CardFormValues) => (event: ChangeEvent<HTMLInputElement>) => {
       setFormData((current) => ({ ...current, [field]: event.target.value }));
@@ -124,12 +138,16 @@ export function CreateCardForm({
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    setImageError(null);
 
     if (!file) {
+      setImageError("No file selected. Please choose a PNG, JPG, or WEBP image.");
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
+      setImageError("Image is too large — must be under 5 MB. Please choose a smaller file.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
@@ -142,7 +160,7 @@ export function CreateCardForm({
 
   return (
     <section className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(420px,0.92fr)]">
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+      <div className="order-2 xl:order-1 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-[#00C4CC]/10 px-4 py-2 text-xs font-semibold text-[#00C4CC]">
@@ -163,12 +181,12 @@ export function CreateCardForm({
               {
                 label: "Identity",
                 value: `${filledIdentityCount}/3`,
-                note: "Core profile details ready",
+                note: "Name, title & company",
               },
               {
                 label: "Contact",
                 value: `${contactPointCount}/4`,
-                note: "Reachable links saved",
+                note: "Email required; rest optional",
               },
               {
                 label: "Template",
@@ -187,246 +205,280 @@ export function CreateCardForm({
           </div>
         </div>
 
-        {actionState.status !== "idle" ? (
-          <div className={cn("mt-6 rounded-2xl border px-5 py-4 text-sm font-medium", getStatusTone(actionState))}>
+        {statusVisible && actionState.status !== "idle" ? (
+          <div
+            className={cn(
+              "mt-6 rounded-2xl border px-5 py-4 text-sm font-medium animate-fade-in",
+              getStatusTone(actionState),
+            )}
+          >
             {actionState.message}
           </div>
         ) : null}
 
-        <form action={formAction} className="mt-8 space-y-5">
+        <form action={formAction} className="mt-8">
           <input name="defaultTemplateId" type="hidden" value={selectedTemplate.id} />
 
-          <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5">
-            <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-4">
-              <div>
-                <p className="text-sm font-bold text-[#0E1318]">Identity</p>
-                <p className="mt-0.5 text-sm text-[#293039]">
-                  This is the profile card the rest of the workspace reads from.
-                </p>
-              </div>
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-[#00C4CC]/10 px-3 py-1.5 text-xs font-semibold text-[#00C4CC]">
-                <Check className="h-3.5 w-3.5" />
-                Authenticated save
-              </div>
-            </div>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
-              {profileFields.map((field) => (
-                <Field
-                  key={field.key}
-                  icon={field.icon}
-                  label={field.label}
-                  name={field.key}
-                  onChange={handleChange(field.key)}
-                  placeholder={field.placeholder}
-                  required={field.required}
-                  hint={field.hint}
-                  type={field.type}
-                  value={formData[field.key]}
-                />
-              ))}
-
-              <div className="md:col-span-2">
-                <div className="rounded-xl border border-gray-200 bg-white p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl bg-[#00C4CC]/10">
-                      <QrCode className="h-4 w-4 text-[#00C4CC]" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-[#0E1318]">QR destination</p>
-                      <p className="mt-1 text-sm leading-6 text-[#293039]">
-                        Choose what the QR should try first. If that field is empty, DigiCard will
-                        fall back automatically.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid gap-3 md:grid-cols-3">
-                    {qrPreferenceOptions.map((option) => {
-                      const isSelected = formData.qrPreference === option.key;
-
-                      return (
-                        <label
-                          key={option.key}
-                          className={cn(
-                            "cursor-pointer rounded-xl border p-4 transition",
-                            isSelected
-                              ? "border-[#00C4CC] bg-[#00C4CC]/5 shadow-sm"
-                              : "border-gray-200 bg-[#F8F9F9] hover:border-gray-300",
-                          )}
-                        >
-                          <input
-                            checked={isSelected}
-                            className="sr-only"
-                            name="qrPreference"
-                            onChange={handleChange("qrPreference")}
-                            type="radio"
-                            value={option.key}
-                          />
-                          <div className="flex items-center justify-between gap-3">
-                            <p className="text-sm font-semibold text-[#0E1318]">{option.label}</p>
-                            {isSelected ? (
-                              <span className="rounded-full bg-[#00C4CC]/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-[#00C4CC]">
-                                Selected
-                              </span>
-                            ) : null}
-                          </div>
-                          <p className="mt-2 text-xs leading-5 text-[#293039]">
-                            {option.description}
-                          </p>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
-            <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5">
+          <PendingWrapper className="space-y-5">
+            <div
+              role="group"
+              aria-labelledby="identity-section-label"
+              className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
+            >
               <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-4">
                 <div>
-                  <p className="text-sm font-bold text-[#0E1318]">Contact</p>
+                  <p id="identity-section-label" className="text-sm font-bold text-[#0E1318]">Identity</p>
                   <p className="mt-0.5 text-sm text-[#293039]">
-                    Keep every tap destination useful and current.
+                    This is the profile card the rest of the workspace reads from.
                   </p>
                 </div>
-                <span className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-[#293039]">
-                  Live preview
-                </span>
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-[#00C4CC]/10 px-3 py-1.5 text-xs font-semibold text-[#00C4CC]">
+                  <Check className="h-3.5 w-3.5" />
+                  Authenticated save
+                </div>
               </div>
-              <div className="mt-5 grid gap-4 md:grid-cols-2">
-                {contactFields.map((field) => (
+              <div className="mt-5 grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+                {profileFields.map((field) => (
                   <Field
                     key={field.key}
-                    className={field.span === "full" ? "md:col-span-2" : undefined}
                     icon={field.icon}
                     label={field.label}
+                    maxLength={field.maxLength}
                     name={field.key}
                     onChange={handleChange(field.key)}
                     placeholder={field.placeholder}
                     required={field.required}
+                    hint={field.hint}
                     type={field.type}
                     value={formData[field.key]}
                   />
                 ))}
+
+                <div className="md:col-span-2">
+                  <div className="rounded-xl border border-gray-200 bg-white p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl bg-[#00C4CC]/10">
+                        <QrCode className="h-4 w-4 text-[#00C4CC]" />
+                      </div>
+                      <div>
+                        <p id="qr-preference-label" className="text-sm font-semibold text-[#0E1318]">QR destination</p>
+                        <p className="mt-1 text-sm leading-6 text-[#293039]">
+                          Choose what the QR should try first. If that field is empty, DigiCard will
+                          fall back automatically.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      role="radiogroup"
+                      aria-labelledby="qr-preference-label"
+                      className="mt-4 grid gap-3 md:grid-cols-3"
+                    >
+                      {qrPreferenceOptions.map((option) => {
+                        const isSelected = formData.qrPreference === option.key;
+
+                        return (
+                          <label
+                            key={option.key}
+                            className={cn(
+                              "cursor-pointer rounded-xl border p-4 transition-all duration-150",
+                              isSelected
+                                ? "border-[#00C4CC] bg-[#00C4CC]/5 shadow-sm ring-2 ring-[#00C4CC]/20"
+                                : "border-gray-200 bg-[#F8F9F9] hover:border-[#00C4CC]/40 hover:bg-white",
+                            )}
+                          >
+                            <input
+                              aria-label={option.label}
+                              checked={isSelected}
+                              className="sr-only"
+                              name="qrPreference"
+                              onChange={handleChange("qrPreference")}
+                              type="radio"
+                              value={option.key}
+                            />
+                            <div className="flex items-center justify-between gap-3">
+                              <p className="text-sm font-semibold text-[#0E1318]">{option.label}</p>
+                              {isSelected ? (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-[#00C4CC]/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-[#00C4CC]">
+                                  <Check className="h-3 w-3" />
+                                  On
+                                </span>
+                              ) : null}
+                            </div>
+                            <p className="mt-2 text-xs leading-5 text-[#293039]">
+                              {option.description}
+                            </p>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
+              <div
+                role="group"
+                aria-labelledby="contact-section-label"
+                className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
+              >
+                <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-4">
+                  <div>
+                    <p id="contact-section-label" className="text-sm font-bold text-[#0E1318]">Contact</p>
+                    <p className="mt-0.5 text-sm text-[#293039]">
+                      Keep every tap destination useful and current.
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-[#293039]">
+                    Live preview
+                  </span>
+                </div>
+                <div className="mt-5 grid gap-4 md:grid-cols-2">
+                  {contactFields.map((field) => (
+                    <Field
+                      key={field.key}
+                      className={field.span === "full" ? "md:col-span-2" : undefined}
+                      hint={field.hint}
+                      icon={field.icon}
+                      label={field.label}
+                      maxLength={field.maxLength}
+                      name={field.key}
+                      onChange={handleChange(field.key)}
+                      placeholder={field.placeholder}
+                      required={field.required}
+                      type={field.type}
+                      value={formData[field.key]}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00C4CC]/10">
+                    <Camera className="h-4 w-4 text-[#00C4CC]" />
+                  </div>
+                  <div>
+                    <p id="portrait-label" className="text-sm font-bold text-[#0E1318]">Portrait</p>
+                    <p className="text-xs text-[#293039]">
+                      Preview-only for now until image storage is added.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  aria-label="Upload profile image"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="mt-4 flex min-h-52 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-white px-5 text-center transition-all duration-150 hover:border-[#00C4CC] hover:bg-[#00C4CC]/5"
+                >
+                  {imagePreview ? (
+                    <div className="animate-fade-in flex flex-col items-center gap-3">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        alt="Profile preview"
+                        className="h-20 w-20 rounded-2xl object-cover shadow-sm"
+                        src={imagePreview}
+                      />
+                      <div>
+                        <p className="text-sm font-semibold text-[#0E1318]">Portrait updated</p>
+                        <p className="mt-0.5 text-xs text-[#293039]">Click to swap the preview image.</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#EDF0F2]">
+                        <Camera className="h-5 w-5 text-[#293039]" />
+                      </div>
+                      <p className="mt-4 text-sm font-semibold text-[#0E1318]">Add a profile image</p>
+                      <p className="mt-1 text-xs text-[#293039]">PNG, JPG, or WEBP up to 5 MB</p>
+                    </div>
+                  )}
+                </button>
+
+                {imageError ? (
+                  <div className="animate-fade-in mt-3 flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2.5">
+                    <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
+                    <p className="text-xs leading-5 text-red-700">{imageError}</p>
+                  </div>
+                ) : null}
+
+                <input
+                  ref={fileInputRef}
+                  accept="image/png,image/jpeg,image/webp"
+                  aria-labelledby="portrait-label"
+                  className="hidden"
+                  onChange={handleImageChange}
+                  type="file"
+                />
               </div>
             </div>
 
             <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00C4CC]/10">
-                  <Camera className="h-4 w-4 text-[#00C4CC]" />
-                </div>
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 pb-4">
                 <div>
-                  <p className="text-sm font-bold text-[#0E1318]">Portrait</p>
-                  <p className="text-xs text-[#293039]">
-                    Preview-only for now until image storage is added.
+                  <p className="text-sm font-bold text-[#0E1318]">Visual direction</p>
+                  <p className="mt-0.5 text-sm text-[#293039]">
+                    Pick the default template the workspace should reuse.
                   </p>
                 </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-[#293039]">
+                  <SwatchBook className="h-3.5 w-3.5" />
+                  {selectedTemplate.name}
+                </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="mt-4 flex min-h-52 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-white px-5 text-center transition hover:border-[#00C4CC] hover:bg-[#00C4CC]/5"
-              >
-                {imagePreview ? (
-                  <div className="flex flex-col items-center gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      alt="Profile preview"
-                      className="h-20 w-20 rounded-2xl object-cover shadow-sm"
-                      src={imagePreview}
-                    />
-                    <div>
-                      <p className="text-sm font-semibold text-[#0E1318]">Portrait updated</p>
-                      <p className="mt-0.5 text-xs text-[#293039]">Click to swap the preview image.</p>
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#EDF0F2]">
-                      <Camera className="h-5 w-5 text-[#293039]" />
-                    </div>
-                    <p className="mt-4 text-sm font-semibold text-[#0E1318]">Add a profile image</p>
-                    <p className="mt-1 text-xs text-[#293039]">PNG, JPG, or WEBP up to 5MB</p>
-                  </div>
-                )}
-              </button>
+              <div className="mt-5 grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
+                {templates.map((template) => {
+                  const isActive = template.id === selectedTemplate.id;
 
-              <input
-                ref={fileInputRef}
-                accept="image/png,image/jpeg,image/webp"
-                aria-label="Upload profile image"
-                className="hidden"
-                onChange={handleImageChange}
-                type="file"
-              />
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5">
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 pb-4">
-              <div>
-                <p className="text-sm font-bold text-[#0E1318]">Visual direction</p>
-                <p className="mt-0.5 text-sm text-[#293039]">
-                  Pick the default template the workspace should reuse.
-                </p>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-[#293039]">
-                <SwatchBook className="h-3.5 w-3.5" />
-                {selectedTemplate.name}
-              </div>
-            </div>
-
-            <div className="mt-5 grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
-              {templates.map((template) => {
-                const isActive = template.id === selectedTemplate.id;
-
-                return (
-                  <button
-                    key={template.id}
-                    type="button"
-                    onClick={() => setSelectedTemplate(template)}
-                    className={cn(
-                      "group relative overflow-hidden rounded-xl border p-4 text-left transition",
-                      isActive
-                        ? "border-[#00C4CC] bg-white shadow-sm"
-                        : "border-gray-200 bg-white hover:border-gray-300",
-                    )}
-                  >
-                    <div className={cn("h-24 rounded-lg bg-gradient-to-br p-[1px]", template.accent)}>
-                      <div className="flex h-full flex-col justify-between rounded-[7px] bg-slate-950/90 p-3">
-                        <span className="text-[9px] uppercase tracking-widest text-white/40">DigiCard</span>
-                        <div>
-                          <p className="text-sm font-bold text-white">{template.name}</p>
-                          <p className="mt-0.5 text-[10px] text-white/40">{template.description}</p>
+                  return (
+                    <button
+                      key={template.id}
+                      type="button"
+                      aria-pressed={isActive}
+                      onClick={() => setSelectedTemplate(template)}
+                      className={cn(
+                        "group relative overflow-hidden rounded-xl border p-4 text-left transition-all duration-150",
+                        isActive
+                          ? "border-[#00C4CC] bg-white shadow-sm ring-2 ring-[#00C4CC]/20"
+                          : "border-gray-200 bg-white hover:border-[#00C4CC]/40 hover:shadow-sm",
+                      )}
+                    >
+                      <div className={cn("h-24 rounded-lg bg-gradient-to-br p-[1px]", template.accent)}>
+                        <div className="flex h-full flex-col justify-between rounded-[7px] bg-slate-950/90 p-3">
+                          <span className="text-[9px] uppercase tracking-widest text-white/40">DigiCard</span>
+                          <div>
+                            <p className="text-sm font-bold text-white">{template.name}</p>
+                            <p className="mt-0.5 text-[10px] text-white/40">{template.description}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between gap-2">
-                      <div>
-                        <p className="text-sm font-semibold text-[#0E1318]">{template.name}</p>
-                        <p className="mt-0.5 text-xs text-[#293039]">{template.id}</p>
+                      <div className="mt-3 flex items-center justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-semibold text-[#0E1318]">{template.name}</p>
+                          <p className="mt-0.5 text-xs text-[#293039]">{template.id}</p>
+                        </div>
+                        {isActive ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#00C4CC]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#00C4CC]">
+                            <Check className="h-3 w-3" />
+                            Active
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-400 transition-colors duration-150 group-hover:text-[#00C4CC]">
+                            Select →
+                          </span>
+                        )}
                       </div>
-                      {isActive ? (
-                        <span className="rounded-full bg-[#00C4CC]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#00C4CC]">
-                          Selected
-                        </span>
-                      ) : (
-                        <span className="text-xs text-gray-400 transition group-hover:text-[#293039]">
-                          Select
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          </PendingWrapper>
 
-          <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-[#F8F9F9] p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-gray-200 bg-[#F8F9F9] p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-bold text-[#0E1318]">Save to your workspace</p>
               <p className="mt-0.5 text-sm text-[#293039]">
@@ -439,7 +491,7 @@ export function CreateCardForm({
         </form>
       </div>
 
-      <div className="relative">
+      <div className="relative order-1 xl:order-2">
         <div className="sticky top-6 overflow-hidden rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5 shadow-sm">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -510,6 +562,18 @@ export function CreateCardForm({
   );
 }
 
+function PendingWrapper({ className, children }: { className?: string; children: ReactNode }) {
+  const { pending } = useFormStatus();
+  return (
+    <div
+      aria-disabled={pending}
+      className={cn("transition-opacity duration-200", pending && "pointer-events-none opacity-60", className)}
+    >
+      {children}
+    </div>
+  );
+}
+
 function CreateCardSubmitButton() {
   const { pending } = useFormStatus();
 
@@ -517,7 +581,7 @@ function CreateCardSubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex min-w-[220px] items-center justify-center gap-2 rounded-full bg-[#0F172A] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#111f3a] disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex min-w-[220px] items-center justify-center gap-2 rounded-full bg-[#0F172A] px-6 py-3.5 text-sm font-semibold text-white transition-all duration-150 hover:bg-[#111f3a] disabled:cursor-not-allowed disabled:scale-[0.98] disabled:opacity-50"
     >
       {pending ? (
         <>
@@ -539,6 +603,7 @@ type FieldProps = {
   hint?: string;
   icon: ComponentType<{ className?: string }>;
   label: string;
+  maxLength?: number;
   name: keyof CardFormValues;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
@@ -552,6 +617,7 @@ function Field({
   hint,
   icon: Icon,
   label,
+  maxLength,
   name,
   onChange,
   placeholder,
@@ -559,15 +625,24 @@ function Field({
   type = "text",
   value,
 }: FieldProps) {
+  const id = `field-${name}`;
   return (
-    <label className={cn("group flex flex-col gap-1.5", className)}>
-      <span className="text-xs font-semibold text-[#293039]">{label}</span>
-      <div className="relative">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition group-focus-within:text-[#00C4CC]">
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <label htmlFor={id} className="text-xs font-semibold text-[#293039]">
+        {label}
+        {required ? (
+          <span className="ml-0.5 text-[#00C4CC]" aria-hidden="true">*</span>
+        ) : null}
+      </label>
+      <div className="group relative">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-150 group-focus-within:text-[#00C4CC]">
           <Icon className="h-4 w-4" />
         </div>
         <input
-          className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition focus:border-[#00C4CC] focus:ring-2 focus:ring-[#00C4CC]/20"
+          id={id}
+          aria-required={required}
+          className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition-colors duration-150 focus:border-[#00C4CC] focus:ring-2 focus:ring-[#00C4CC]/20"
+          maxLength={maxLength}
           name={name}
           onChange={onChange}
           placeholder={placeholder}
@@ -576,7 +651,11 @@ function Field({
           value={value}
         />
       </div>
-      {hint ? <span className="text-[11px] leading-5 text-[#5d6772]">{hint}</span> : null}
-    </label>
+      {hint ? (
+        <span id={`${id}-hint`} className="text-[11px] leading-5 text-[#5d6772]">
+          {hint}
+        </span>
+      ) : null}
+    </div>
   );
 }

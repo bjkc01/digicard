@@ -12,7 +12,7 @@ type CreateCardPageProps = {
 
 function FormSkeleton() {
   return (
-    <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+    <section className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(420px,0.92fr)]">
       <div className="panel animate-pulse p-6 md:p-8">
         <div className="h-3 w-24 rounded-full bg-slate-200" />
         <div className="mt-5 h-8 w-64 rounded-2xl bg-slate-200" />
