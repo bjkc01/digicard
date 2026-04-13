@@ -15,9 +15,11 @@ import {
   SwatchBook,
 } from "lucide-react";
 import { useFormStatus } from "react-dom";
-import type { SaveCardActionState } from "@/app/create-card/actions";
 import {
   initialSaveCardActionState,
+  type SaveCardActionState,
+} from "@/app/create-card/action-state";
+import {
   saveWorkspaceCardAction,
 } from "@/app/create-card/actions";
 import { CardPreview } from "@/components/cards/card-preview";

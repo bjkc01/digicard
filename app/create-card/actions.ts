@@ -2,21 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
+import type { SaveCardActionState } from "@/app/create-card/action-state";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import {
   saveWorkspaceCardSnapshot,
   WorkspaceSettingsValidationError,
 } from "@/lib/workspace-settings";
-
-export type SaveCardActionState = {
-  message: string;
-  status: "error" | "idle" | "success";
-};
-
-export const initialSaveCardActionState: SaveCardActionState = {
-  message: "",
-  status: "idle",
-};
 
 function getActionErrorMessage(error: unknown) {
   if (error instanceof WorkspaceSettingsValidationError) {

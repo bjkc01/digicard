@@ -95,4 +95,6 @@ export async function saveNotificationSettings(formData: FormData) {
   redirectToSettings(notice);
 }
 
-export { signOutFromWorkspace as signOutFromSettings };
+export async function signOutFromSettings() {
+  await signOutFromWorkspace();
+}
