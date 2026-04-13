@@ -6,10 +6,12 @@ import { signOutFromWorkspace } from "@/lib/workspace-actions";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import {
   notificationSettingOptions,
+  type WorkspaceNotificationKey,
+} from "@/lib/workspace-settings-options";
+import {
   saveWorkspaceNotifications,
   saveWorkspaceProfileDetails,
   saveWorkspaceTemplate,
-  type WorkspaceNotificationKey,
   WorkspaceSettingsValidationError,
 } from "@/lib/workspace-settings";
 

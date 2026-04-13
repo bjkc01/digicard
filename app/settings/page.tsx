@@ -19,8 +19,8 @@ import { Button } from "@/components/ui/button";
 import { templates } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
+import { notificationSettingOptions, qrPreferenceOptions } from "@/lib/workspace-settings-options";
 import { getWorkspaceView } from "@/lib/workspace-view";
-import { notificationSettingOptions, qrPreferenceOptions } from "@/lib/workspace-settings";
 import {
   saveNotificationSettings,
   saveProfileSettings,

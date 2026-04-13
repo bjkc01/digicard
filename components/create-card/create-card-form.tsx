@@ -27,7 +27,7 @@ import { CardPreview } from "@/components/cards/card-preview";
 import type { DigiCardTemplate } from "@/lib/data";
 import { templates } from "@/lib/data";
 import { cn } from "@/lib/utils";
-import { qrPreferenceOptions, type WorkspaceQrPreference } from "@/lib/workspace-settings";
+import { qrPreferenceOptions, type WorkspaceQrPreference } from "@/lib/workspace-settings-options";
 
 export type CardFormValues = {
   company: string;
