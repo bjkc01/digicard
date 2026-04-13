@@ -87,6 +87,38 @@ const contactFields: FieldConfig[] = [
   { key: "website", label: "Website", placeholder: "yourwebsite.com", icon: Globe, span: "full", maxLength: 120 },
 ];
 
+function formatPhone(raw: string) {
+  // Strip everything except digits and leading +
+  const hasPlus = raw.startsWith("+");
+  const digits = raw.replace(/\D/g, "");
+
+  // International: +X XXXXXXXXXX (keep as-is beyond 11 digits)
+  if (hasPlus || digits.length > 10) {
+    const country = digits.slice(0, digits.length > 10 ? digits.length - 10 : 1);
+    const local = digits.slice(digits.length > 10 ? digits.length - 10 : 1);
+    const area = local.slice(0, 3);
+    const mid = local.slice(3, 6);
+    const last = local.slice(6, 10);
+    let formatted = `+${country}`;
+    if (area) formatted += ` (${area}`;
+    if (area.length === 3) formatted += ")";
+    if (mid) formatted += ` ${mid}`;
+    if (last) formatted += `-${last}`;
+    return formatted;
+  }
+
+  // US/Canada 10-digit: (XXX) XXX-XXXX
+  const area = digits.slice(0, 3);
+  const mid = digits.slice(3, 6);
+  const last = digits.slice(6, 10);
+  let formatted = "";
+  if (area) formatted += `(${area}`;
+  if (area.length === 3) formatted += ")";
+  if (mid) formatted += ` ${mid}`;
+  if (last) formatted += `-${last}`;
+  return formatted;
+}
+
 function getStatusTone(state: SaveCardActionState) {
   if (state.status === "success") {
     return "border-[rgba(16,185,129,0.16)] bg-[rgba(236,253,245,0.92)] text-[#065f46]";
@@ -128,7 +160,8 @@ export function CreateCardForm({
 
   const handleChange =
     (field: keyof CardFormValues) => (event: ChangeEvent<HTMLInputElement>) => {
-      setFormData((current) => ({ ...current, [field]: event.target.value }));
+      const value = field === "phone" ? formatPhone(event.target.value) : event.target.value;
+      setFormData((current) => ({ ...current, [field]: value }));
     };
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
