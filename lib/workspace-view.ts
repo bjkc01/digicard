@@ -21,6 +21,8 @@ export type WorkspaceView = {
   user: WorkspaceUser;
 };
 
+const WORKSPACE_DISPLAY_TIME_ZONE = "America/New_York";
+
 function formatUpdatedAt(value: string | null) {
   if (!value) {
     return "Not saved yet";
@@ -32,10 +34,19 @@ function formatUpdatedAt(value: string | null) {
     return "Not saved yet";
   }
 
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
+  const dateLabel = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: WORKSPACE_DISPLAY_TIME_ZONE,
+    year: "numeric",
   }).format(date);
+  const timeLabel = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: WORKSPACE_DISPLAY_TIME_ZONE,
+  }).format(date);
+
+  return `${dateLabel} at ${timeLabel}`;
 }
 
 function buildWorkspaceCard(settings: Awaited<ReturnType<typeof getWorkspaceSettings>>) {

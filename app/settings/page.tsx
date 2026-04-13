@@ -588,18 +588,17 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                 Access overview
               </p>
               <h2 className="mt-3 text-2xl font-semibold tracking-[-0.04em]">
-                Keep account controls visible and accountable.
+                Keep access details clear and current.
               </h2>
               <p className="mt-3 text-sm leading-7 text-white/72">
-                The active session, storage scope, and latest save timestamp now live in one
-                place without pretending this is already a full database-backed account system.
+                See your signed-in account, sync location, and latest saved update in one place.
               </p>
               <div className="mt-6 space-y-3">
                 <AccessRow icon={Mail} label="Session email" value={workspaceUser.email} />
-                <AccessRow icon={LockKeyhole} label="Signed in as" value={workspaceUser.email} />
-                <AccessRow icon={Clock3} label="Last saved" value={summary.lastUpdatedLabel} />
-                <AccessRow icon={Smartphone} label="Storage scope" value={summary.storageScopeLabel} />
-                <AccessRow icon={Globe} label="Integrity model" value="Signed / validated" />
+                <AccessRow icon={LockKeyhole} label="Workspace profile" value={workspaceUser.name} />
+                <AccessRow icon={Clock3} label="Last updated" value={summary.lastUpdatedLabel} />
+                <AccessRow icon={Smartphone} label="Save location" value={summary.storageScopeLabel} />
+                <AccessRow icon={Globe} label="Session security" value="Signed and server-validated" />
               </div>
             </div>
           </aside>
@@ -679,12 +678,16 @@ function AccessRow({
   value: string;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-[1.3rem] border border-white/15 bg-white/10 px-4 py-3 text-sm">
-      <span className="inline-flex items-center gap-3">
-        <Icon className="h-4 w-4" />
-        {label}
-      </span>
-      <span className="max-w-[12rem] text-right text-white/78">{value}</span>
+    <div className="rounded-[1.3rem] border border-white/15 bg-white/10 px-4 py-3.5 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <span className="inline-flex items-center gap-3 text-white/92">
+          <Icon className="h-4 w-4 flex-shrink-0" />
+          <span className="font-medium">{label}</span>
+        </span>
+        <span className="pl-7 text-left font-medium leading-6 text-white/78 sm:max-w-[12rem] sm:pl-0 sm:text-right">
+          {value}
+        </span>
+      </div>
     </div>
   );
 }

@@ -135,7 +135,7 @@ export default async function DashboardPage() {
               </h3>
               <p className="mt-3 text-sm leading-7 text-white/72">
                 {hasActiveCard
-                  ? `Last updated ${workspaceView.summary.lastUpdatedLabel}. Keep your title, links, and contact details current so recruiters see the right version of you.`
+                  ? `Last updated on ${workspaceView.summary.lastUpdatedLabel}. Keep your title, links, and contact details current so recruiters see the right version of you.`
                   : `Your profile is ${profileCompletion}% complete. Fill in the remaining details to generate a card you can share at career fairs, campus events, and meetups.`}
               </p>
               <Button

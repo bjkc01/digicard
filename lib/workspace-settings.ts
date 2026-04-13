@@ -323,31 +323,35 @@ function mergeWorkspaceSettings(
 }
 
 async function persistWorkspaceSettings(user: WorkspaceUser, settings: WorkspaceSettings) {
-  const normalized = mergeWorkspaceSettings(user, {
-    ...settings,
-    updatedAt: new Date().toISOString(),
-  });
+  const baseSettings = mergeWorkspaceSettings(user, settings);
+  let updatedAt = new Date().toISOString();
 
   if (supabaseEnabled) {
     try {
-      await upsertSupabaseProfile({
-        company: normalized.card.company,
-        default_template_id: normalized.defaultTemplateId,
-        email: normalized.profile.email,
-        linkedin: normalized.card.linkedin,
-        name: normalized.profile.name,
-        notifications: normalized.notifications,
-        owner_email: normalized.owner,
-        phone: normalized.card.phone,
-        qr_preference: normalized.card.qrPreference,
-        title: normalized.profile.title,
+      const profile = await upsertSupabaseProfile({
+        company: baseSettings.card.company,
+        default_template_id: baseSettings.defaultTemplateId,
+        email: baseSettings.profile.email,
+        linkedin: baseSettings.card.linkedin,
+        name: baseSettings.profile.name,
+        notifications: baseSettings.notifications,
+        owner_email: baseSettings.owner,
+        phone: baseSettings.card.phone,
+        qr_preference: baseSettings.card.qrPreference,
+        title: baseSettings.profile.title,
         user_id: user.id,
-        website: normalized.profile.website,
+        website: baseSettings.profile.website,
       });
+      updatedAt = profile.updated_at;
     } catch (error) {
       console.error("Failed to persist workspace settings to Supabase. Falling back to cookie-only.", error);
     }
   }
+
+  const normalized = mergeWorkspaceSettings(user, {
+    ...baseSettings,
+    updatedAt,
+  });
 
   const cookieStore = await cookies();
 
