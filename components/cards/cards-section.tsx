@@ -44,7 +44,8 @@ export function CardsSection({
               </Button>
               <Button
                 href="/settings"
-                className="rounded-full border border-[rgba(82,103,217,0.2)] bg-white px-4 py-2 text-sm font-medium text-[var(--ink)] transition hover:border-[rgba(82,103,217,0.4)] hover:bg-[var(--soft)]"
+                variant="secondary"
+                className="rounded-full px-4 py-2 text-sm font-medium"
               >
                 Settings
               </Button>
