@@ -329,20 +329,24 @@ async function persistWorkspaceSettings(user: WorkspaceUser, settings: Workspace
   });
 
   if (supabaseEnabled) {
-    await upsertSupabaseProfile({
-      company: normalized.card.company,
-      default_template_id: normalized.defaultTemplateId,
-      email: normalized.profile.email,
-      linkedin: normalized.card.linkedin,
-      name: normalized.profile.name,
-      notifications: normalized.notifications,
-      owner_email: normalized.owner,
-      phone: normalized.card.phone,
-      qr_preference: normalized.card.qrPreference,
-      title: normalized.profile.title,
-      user_id: user.id,
-      website: normalized.profile.website,
-    });
+    try {
+      await upsertSupabaseProfile({
+        company: normalized.card.company,
+        default_template_id: normalized.defaultTemplateId,
+        email: normalized.profile.email,
+        linkedin: normalized.card.linkedin,
+        name: normalized.profile.name,
+        notifications: normalized.notifications,
+        owner_email: normalized.owner,
+        phone: normalized.card.phone,
+        qr_preference: normalized.card.qrPreference,
+        title: normalized.profile.title,
+        user_id: user.id,
+        website: normalized.profile.website,
+      });
+    } catch (error) {
+      console.error("Failed to persist workspace settings to Supabase. Falling back to cookie-only.", error);
+    }
   }
 
   const cookieStore = await cookies();

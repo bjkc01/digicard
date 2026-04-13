@@ -60,7 +60,8 @@ export async function saveWorkspaceCardAction(
       throw error;
     }
 
-    console.error("Failed to save workspace card.", error);
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error("Failed to save workspace card.", detail);
 
     return {
       message: getActionErrorMessage(error),
