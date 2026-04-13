@@ -7,7 +7,7 @@ import type { DigiCard } from "@/lib/data";
 
 // rotateY positive → right side leans toward viewer
 // main card is the rightmost element → it's the closest ✓
-const RESTING = "perspective(1100px) rotateX(5deg) rotateY(16deg)";
+const RESTING = "perspective(1100px) rotateX(4deg) rotateY(10deg)";
 
 const mainCard: DigiCard = {
   color: "from-blue-700 via-cyan-500 to-emerald-400",
@@ -22,61 +22,29 @@ const mainCard: DigiCard = {
   website: "maya.dev",
 };
 
-const ghost1: DigiCard = {
-  color: "from-violet-600 via-purple-500 to-pink-400",
-  company: "Cornell University",
-  email: "alex.kim@cornell.edu",
-  id: 102,
-  linkedin: "linkedin.com/in/alexkim",
-  name: "Alex Kim",
-  phone: "",
-  template: "Horizon",
-  title: "Product Design Intern",
-  website: "alexkim.io",
-};
-
-const ghost2: DigiCard = {
-  color: "from-amber-500 via-orange-400 to-rose-400",
-  company: "NYU Stern",
-  email: "j.patel@nyu.edu",
-  id: 103,
-  linkedin: "linkedin.com/in/jaypatel",
-  name: "Jay Patel",
-  phone: "",
-  template: "Ember",
-  title: "Finance & Strategy",
-  website: "",
-};
-
-// Ghost cards peek 80px each from behind the main card on the left.
-// paddingLeft = 80 * 2 = 160px creates the space for them to be visible.
-const PEEK = 80;
-const PAD_LEFT = PEEK * 2; // 160px
-
 function PhoneFramedBlueprint() {
   return (
-    <div className="relative aspect-[380/790] w-[338px]">
-      <div className="absolute inset-0 rounded-[3.9rem] bg-[linear-gradient(180deg,#f8fbff_0%,#d7dee9_48%,#b9c3d2_100%)] shadow-[0_38px_90px_rgba(15,23,42,0.24),inset_0_2px_2px_rgba(255,255,255,0.95),inset_0_-4px_10px_rgba(71,85,105,0.28)]" />
-      <div className="absolute inset-y-[12%] left-[1.4%] w-[1.4%] rounded-full bg-[linear-gradient(180deg,rgba(148,163,184,0.95),rgba(226,232,240,0.45))]" />
-      <div className="absolute inset-y-[18%] left-[2.6%] h-[11%] w-[1.1%] rounded-full bg-[linear-gradient(180deg,rgba(148,163,184,0.95),rgba(226,232,240,0.5))]" />
-      <div className="absolute inset-y-[28%] left-[2.6%] h-[15%] w-[1.1%] rounded-full bg-[linear-gradient(180deg,rgba(148,163,184,0.95),rgba(226,232,240,0.5))]" />
+    <div className="relative aspect-[380/790] w-[350px]">
+      <div className="absolute inset-0 rounded-[4rem] bg-[linear-gradient(180deg,#fafcff_0%,#dfe5ed_46%,#c1cad6_100%)] shadow-[0_42px_95px_rgba(15,23,42,0.24),inset_0_2px_2px_rgba(255,255,255,0.95),inset_0_-7px_18px_rgba(100,116,139,0.24)]" />
+      <div className="absolute inset-y-[8%] left-[1.1%] w-[3.4%] rounded-full bg-[linear-gradient(180deg,#b9c3cf,#eef2f7)]" />
+      <div className="absolute left-[2.5%] top-[18%] h-[12%] w-[1.15%] rounded-full bg-[linear-gradient(180deg,#aab4c3,#e9edf4)]" />
+      <div className="absolute left-[2.5%] top-[32%] h-[17%] w-[1.15%] rounded-full bg-[linear-gradient(180deg,#aab4c3,#e9edf4)]" />
+      <div className="absolute inset-[1.8%] rounded-[3.6rem] border border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.62),rgba(255,255,255,0.14))] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]" />
 
-      <div className="absolute inset-[1.8%] rounded-[3.5rem] border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.75),rgba(255,255,255,0.18))] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]" />
-
-      <div className="absolute inset-[2.7%_5.8%_2.7%_5.8%] overflow-hidden rounded-[3rem] border border-[rgba(15,23,42,0.5)] bg-[linear-gradient(180deg,rgba(5,8,18,0.98),rgba(4,6,14,1))] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
+      <div className="absolute inset-[2.9%_5.7%_2.9%_5.7%] overflow-hidden rounded-[3.15rem] border-[3px] border-[rgba(17,24,39,0.94)] bg-[linear-gradient(180deg,#0a1020_0%,#060a15_100%)] shadow-[0_0_0_1px_rgba(255,255,255,0.06),inset_0_0_0_1px_rgba(255,255,255,0.03)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(82,103,217,0.22),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))]" />
         <div
-          className="absolute left-1/2 top-[3.15rem] w-[31rem] origin-top"
-          style={{ transform: "translateX(-50%) scale(0.64)" }}
+          className="absolute left-1/2 top-[3.3rem] w-[31rem] origin-top"
+          style={{ transform: "translateX(-50%) scale(0.62)" }}
         >
           <CardPreview card={mainCard} compact />
         </div>
       </div>
 
-      <div className="pointer-events-none absolute left-1/2 top-[4%] h-6 w-24 -translate-x-1/2 rounded-full bg-black shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]" />
-      <div className="pointer-events-none absolute left-1/2 top-[4.7%] h-1.5 w-10 -translate-x-1/2 rounded-full bg-white/10" />
+      <div className="pointer-events-none absolute left-1/2 top-[3.7%] h-7 w-24 -translate-x-1/2 rounded-full bg-[rgba(10,10,12,0.98)] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]" />
+      <div className="pointer-events-none absolute left-1/2 top-[4.6%] h-1.5 w-10 -translate-x-1/2 rounded-full bg-white/10" />
 
-      <div className="pointer-events-none absolute inset-0 rounded-[3.8rem] bg-[radial-gradient(circle_at_14%_10%,rgba(255,255,255,0.7),transparent_14%),radial-gradient(circle_at_84%_18%,rgba(255,255,255,0.22),transparent_18%),linear-gradient(105deg,transparent_18%,rgba(255,255,255,0.2)_35%,transparent_48%)] opacity-80" />
+      <div className="pointer-events-none absolute inset-0 rounded-[4rem] bg-[radial-gradient(circle_at_14%_10%,rgba(255,255,255,0.75),transparent_14%),radial-gradient(circle_at_86%_18%,rgba(255,255,255,0.24),transparent_16%),linear-gradient(105deg,transparent_20%,rgba(255,255,255,0.18)_36%,transparent_48%)] opacity-80" />
     </div>
   );
 }
@@ -90,7 +58,7 @@ export function Card3DScene() {
     const rect = el.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    el.style.transform = `perspective(1100px) rotateX(${5 + y * -14}deg) rotateY(${16 + x * 16}deg)`;
+    el.style.transform = `perspective(1100px) rotateX(${4 + y * -10}deg) rotateY(${10 + x * 10}deg)`;
   }
 
   function handleMouseLeave() {
@@ -131,42 +99,27 @@ export function Card3DScene() {
           transform: RESTING,
           transition: "transform 0.55s cubic-bezier(0.23, 1, 0.32, 1)",
           willChange: "transform",
-          paddingLeft: `${PAD_LEFT}px`,
-          paddingBottom: "72px",
+          paddingBottom: "78px",
         }}
         className="relative"
       >
         {/* Ghost 2 — furthest back (amber/orange Ember card) */}
-        <div
-          className="pointer-events-none absolute top-[14px] z-[1] w-[276px] opacity-[0.38]"
-          style={{ left: 0 }}
-        >
-          <CardPreview card={ghost2} compact />
-        </div>
-
         {/* Ghost 1 — middle depth (purple Horizon card) */}
-        <div
-          className="pointer-events-none absolute top-[7px] z-[2] w-[276px] opacity-[0.62]"
-          style={{ left: `${PEEK}px` }}
-        >
-          <CardPreview card={ghost1} compact />
-        </div>
-
         {/* Main card — front (Blueprint card inside phone casing) */}
-        <div className="relative z-[3] w-[328px]">
+        <div className="relative z-[3] w-[350px]">
           <PhoneFramedBlueprint />
         </div>
 
         {/* Ground shadow under main card */}
         <div
           className="absolute h-8 rounded-full bg-[rgba(17,26,60,0.2)] blur-2xl"
-          style={{ bottom: "52px", left: `${PAD_LEFT + 26}px`, right: "18px" }}
+          style={{ bottom: "54px", left: "24px", right: "24px" }}
         />
 
         {/* QR badge — in the paddingBottom space, below the card, tilts with scene */}
         <div
           className="absolute z-[10] hidden rounded-2xl border border-white/10 bg-[rgba(8,12,26,0.86)] px-4 py-3 shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl lg:block"
-          style={{ bottom: "8px", left: `${PAD_LEFT + 58}px` }}
+          style={{ bottom: "8px", left: "50%", transform: "translateX(-50%)" }}
         >
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[rgba(82,103,217,0.22)]">
