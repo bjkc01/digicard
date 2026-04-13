@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { QrCode, ScanLine, Sparkles } from "lucide-react";
 import { CardPreview } from "@/components/cards/card-preview";
 import type { DigiCard } from "@/lib/data";
@@ -52,6 +53,33 @@ const ghost2: DigiCard = {
 // paddingLeft = 80 * 2 = 160px creates the space for them to be visible.
 const PEEK = 80;
 const PAD_LEFT = PEEK * 2; // 160px
+
+function PhoneFramedBlueprint() {
+  return (
+    <div className="relative aspect-[368/772] w-[328px]">
+      <div className="absolute inset-[2.8%_6.4%_2.8%_6.8%] overflow-hidden rounded-[2.9rem] bg-[linear-gradient(180deg,rgba(24,35,64,0.92),rgba(9,13,24,0.98))] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(82,103,217,0.22),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))]" />
+        <div
+          className="absolute left-1/2 top-[2.95rem] w-[31rem] origin-top"
+          style={{ transform: "translateX(-50%) scale(0.64)" }}
+        >
+          <CardPreview card={mainCard} compact />
+        </div>
+      </div>
+
+      <Image
+        src="/iphone-frame.png"
+        alt="Phone frame previewing the DigiCard blueprint template"
+        fill
+        sizes="(max-width: 1024px) 280px, 328px"
+        className="pointer-events-none select-none object-contain drop-shadow-[0_36px_72px_rgba(15,23,42,0.24)]"
+        priority
+      />
+
+      <div className="pointer-events-none absolute inset-0 rounded-[3.5rem] bg-[radial-gradient(circle_at_12%_10%,rgba(255,255,255,0.52),transparent_16%),radial-gradient(circle_at_82%_14%,rgba(255,255,255,0.18),transparent_18%)] opacity-75" />
+    </div>
+  );
+}
 
 export function Card3DScene() {
   const sceneRef = useRef<HTMLDivElement>(null);
@@ -124,21 +152,21 @@ export function Card3DScene() {
           <CardPreview card={ghost1} compact />
         </div>
 
-        {/* Main card — front (Blueprint card) */}
-        <div className="relative z-[3] w-[280px]">
-          <CardPreview card={mainCard} compact />
+        {/* Main card — front (Blueprint card inside phone casing) */}
+        <div className="relative z-[3] w-[328px]">
+          <PhoneFramedBlueprint />
         </div>
 
         {/* Ground shadow under main card */}
         <div
           className="absolute h-8 rounded-full bg-[rgba(17,26,60,0.2)] blur-2xl"
-          style={{ bottom: "60px", left: `${PAD_LEFT + 16}px`, right: "16px" }}
+          style={{ bottom: "52px", left: `${PAD_LEFT + 26}px`, right: "18px" }}
         />
 
         {/* QR badge — in the paddingBottom space, below the card, tilts with scene */}
         <div
           className="absolute z-[10] hidden rounded-2xl border border-white/10 bg-[rgba(8,12,26,0.86)] px-4 py-3 shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl lg:block"
-          style={{ bottom: "8px", left: `${PAD_LEFT}px` }}
+          style={{ bottom: "8px", left: `${PAD_LEFT + 58}px` }}
         >
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[rgba(82,103,217,0.22)]">
