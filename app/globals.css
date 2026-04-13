@@ -63,15 +63,17 @@ body[data-auth-modal-open="true"] main {
   @apply text-xs font-semibold uppercase tracking-[0.22em] text-slate-500;
 }
 
-@keyframes fadeUp {
+@keyframes heroIn {
   from {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translateY(30px);
+    filter: blur(8px);
   }
 
   to {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
   }
 }
 
@@ -82,7 +84,43 @@ body[data-auth-modal-open="true"] main {
   }
 
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-9px);
+  }
+}
+
+@keyframes orbDrift1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.85;
+  }
+
+  35% {
+    transform: translate(55px, -35px) scale(1.1);
+    opacity: 1;
+  }
+
+  65% {
+    transform: translate(-28px, 22px) scale(0.94);
+    opacity: 0.7;
+  }
+}
+
+@keyframes orbDrift2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.65;
+  }
+
+  40% {
+    transform: translate(-45px, 28px) scale(1.08);
+    opacity: 0.85;
+  }
+
+  70% {
+    transform: translate(32px, -18px) scale(0.95);
+    opacity: 0.5;
   }
 }
 
@@ -108,26 +146,52 @@ body[data-auth-modal-open="true"] main {
   }
 }
 
+/* ── Hero stagger: each element gets its own entrance ─────────────────── */
 .anim-1 {
-  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: 0.05s;
+  animation: heroIn 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.04s;
 }
 
 .anim-2 {
-  animation:
-    fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both,
-    floatCard 10s ease-in-out infinite 1.1s;
-  animation-delay: 0.18s, 1.1s;
+  animation: heroIn 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.11s;
 }
 
 .anim-3 {
-  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: 0.3s;
+  animation: heroIn 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.18s;
 }
 
 .anim-4 {
-  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: heroIn 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.26s;
+}
+
+.anim-5 {
+  animation: heroIn 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.34s;
+}
+
+.anim-6 {
+  animation: heroIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: 0.42s;
+}
+
+/* 3D card scene: entrance + perpetual float */
+.anim-card {
+  animation:
+    heroIn 1.1s cubic-bezier(0.22, 1, 0.36, 1) both,
+    floatCard 10s ease-in-out infinite;
+  animation-delay: 0.14s, 1.3s;
+}
+
+/* Ambient hero orbs */
+.orb-drift-1 {
+  animation: orbDrift1 16s ease-in-out infinite;
+}
+
+.orb-drift-2 {
+  animation: orbDrift2 21s ease-in-out infinite;
 }
 
 .auth-modal-backdrop {
@@ -139,19 +203,88 @@ body[data-auth-modal-open="true"] main {
   transform-origin: center center;
 }
 
+/* ── Scroll reveal ────────────────────────────────────────────────────── */
 .scroll-reveal {
   opacity: 0;
-  transform: translateY(28px);
+  transform: translateY(38px);
+  filter: blur(4px);
   transition:
-    opacity 720ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 720ms cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 950ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 700ms cubic-bezier(0.22, 1, 0.36, 1);
   transition-delay: var(--scroll-reveal-delay, 0ms);
-  will-change: opacity, transform;
+  will-change: opacity, transform, filter;
 }
 
 .scroll-reveal--visible {
   opacity: 1;
   transform: translateY(0);
+  filter: blur(0);
+}
+
+/* ── Stagger children mode ────────────────────────────────────────────── */
+/* Parent is instantly transparent container; only children animate */
+.scroll-reveal.stagger-children {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
+}
+
+.scroll-reveal.stagger-children > * {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(3px);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scroll-reveal--visible.stagger-children > *:nth-child(1) {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition-delay: 0ms;
+}
+
+.scroll-reveal--visible.stagger-children > *:nth-child(2) {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition-delay: 110ms;
+}
+
+.scroll-reveal--visible.stagger-children > *:nth-child(3) {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition-delay: 220ms;
+}
+
+.scroll-reveal--visible.stagger-children > *:nth-child(4) {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition-delay: 330ms;
+}
+
+.scroll-reveal--visible.stagger-children > *:nth-child(n + 5) {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition-delay: 440ms;
+}
+
+/* ── Smooth lift for interactive cards ───────────────────────────────── */
+.hover-lift {
+  transition:
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
 }
 
 ::selection {

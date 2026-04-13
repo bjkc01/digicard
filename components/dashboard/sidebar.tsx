@@ -6,19 +6,25 @@ import { signOutFromWorkspace } from "@/lib/workspace-actions";
 
 type SidebarProps = {
   activePath: string;
-  statusCopy?: string;
-  userLabel?: string;
-  userSubcopy?: string;
+  authLabel: string;
+  userName: string;
 };
 
 const icons = {
   Dashboard: Sparkles,
-  "My Cards": WalletCards,
+  "My Card": WalletCards,
   Templates: LayoutTemplate,
   Settings: Settings,
 } as const;
 
-export function Sidebar({ activePath, statusCopy, userLabel, userSubcopy }: SidebarProps) {
+export function Sidebar({ activePath, authLabel, userName }: SidebarProps) {
+  const initials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
   return (
     <aside className="panel flex h-fit flex-col gap-8 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 lg:sticky lg:top-6">
       <div className="flex items-center gap-3 border-b border-[rgba(82,103,217,0.1)] pb-6">
@@ -31,7 +37,7 @@ export function Sidebar({ activePath, statusCopy, userLabel, userSubcopy }: Side
         </div>
       </div>
 
-      <nav className="flex flex-col gap-2">
+      <nav className="flex flex-col gap-1">
         {navigationItems.map((item) => {
           const Icon = icons[item.label as keyof typeof icons];
           const isActive = activePath === item.href;
@@ -43,7 +49,7 @@ export function Sidebar({ activePath, statusCopy, userLabel, userSubcopy }: Side
               className={cn(
                 "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition",
                 isActive
-                  ? "bg-[rgba(82,103,217,0.12)] text-[var(--ink)]"
+                  ? "bg-[var(--brand)] text-white shadow-[0_8px_20px_rgba(82,103,217,0.28)]"
                   : "text-[var(--muted)] hover:bg-white hover:text-[var(--ink)]",
               )}
             >
@@ -54,31 +60,25 @@ export function Sidebar({ activePath, statusCopy, userLabel, userSubcopy }: Side
         })}
       </nav>
 
-      <div className="rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-white p-5 shadow-[0_12px_30px_rgba(21,32,58,0.04)]">
-        <p className="text-sm font-semibold text-[var(--ink)]">Networking status</p>
-        <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
-          {statusCopy ?? "Complete your workspace profile to keep your card ready to share."}
-        </p>
-      </div>
-
-      <div className="rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-white p-5 shadow-[0_12px_30px_rgba(21,32,58,0.04)]">
-        <p className="text-sm font-semibold text-[var(--ink)]">{userLabel ?? "Account"}</p>
-        <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
-          {userSubcopy ?? "Session controls live here so sign-out is always easy to find."}
-        </p>
-
-        <form action={signOutFromWorkspace} className="mt-4">
-          <button
-            type="submit"
-            className="flex w-full items-center justify-between rounded-[1.25rem] border border-[rgba(25,35,61,0.08)] bg-[var(--soft)] px-4 py-3 text-left text-sm font-semibold text-[var(--ink)] transition hover:border-[rgba(82,103,217,0.18)] hover:bg-white"
-          >
-            <span className="inline-flex items-center gap-3">
-              <LogOut className="h-4 w-4 text-[var(--brand)]" />
-              Sign out
-            </span>
-            <span className="text-xs font-medium text-[var(--muted)]">Account</span>
-          </button>
-        </form>
+      <div className="mt-auto border-t border-[rgba(82,103,217,0.08)] pt-6">
+        <div className="flex items-center gap-3 rounded-[1.35rem] bg-[var(--soft)] px-4 py-3">
+          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,_#172340,_#5267d9)] text-xs font-bold text-white">
+            {initials}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-[var(--ink)]">{userName}</p>
+            <p className="truncate text-xs text-[var(--muted)]">{authLabel}</p>
+          </div>
+          <form action={signOutFromWorkspace}>
+            <button
+              type="submit"
+              title="Sign out"
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[rgba(25,35,61,0.08)] bg-white text-[var(--muted)] transition hover:border-red-200 hover:text-red-500"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
+          </form>
+        </div>
       </div>
     </aside>
   );

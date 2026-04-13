@@ -11,12 +11,7 @@ export default async function TemplatesPage() {
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
-      <Sidebar
-        activePath="/templates"
-        statusCopy={workspaceView.summary.sidebarStatusCopy}
-        userLabel={workspaceUser.name}
-        userSubcopy={workspaceUser.email}
-      />
+      <Sidebar activePath="/templates" authLabel={workspaceUser.authLabel} userName={workspaceUser.name} />
 
       <section className="panel p-6 md:p-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">

@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import {
-  saveWorkspaceProfileDetails,
-  saveWorkspaceTemplate,
+  saveWorkspaceCardSnapshot,
   WorkspaceSettingsValidationError,
 } from "@/lib/workspace-settings";
 
@@ -37,11 +37,12 @@ export async function saveWorkspaceCardAction(
   _previousState: SaveCardActionState,
   formData: FormData,
 ): Promise<SaveCardActionState> {
-  const user = await requireWorkspaceUser("/create-card");
-
   try {
-    await saveWorkspaceProfileDetails(user, {
+    const user = await requireWorkspaceUser("/create-card");
+
+    await saveWorkspaceCardSnapshot(user, {
       company: String(formData.get("company") ?? ""),
+      defaultTemplateId: String(formData.get("defaultTemplateId") ?? ""),
       email: String(formData.get("email") ?? ""),
       linkedin: String(formData.get("linkedin") ?? ""),
       name: String(formData.get("name") ?? ""),
@@ -49,7 +50,6 @@ export async function saveWorkspaceCardAction(
       title: String(formData.get("title") ?? ""),
       website: String(formData.get("website") ?? ""),
     });
-    await saveWorkspaceTemplate(user, String(formData.get("defaultTemplateId") ?? ""));
 
     revalidatePath("/dashboard");
     revalidatePath("/cards");
@@ -62,6 +62,12 @@ export async function saveWorkspaceCardAction(
       status: "success",
     };
   } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
+    console.error("Failed to save workspace card.", error);
+
     return {
       message: getActionErrorMessage(error),
       status: "error",

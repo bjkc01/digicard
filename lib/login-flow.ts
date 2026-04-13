@@ -36,7 +36,7 @@ export function getAuthView(value?: FormDataEntryValue | string | null): AuthVie
 
 export function getDestinationLabel(callbackUrl: string) {
   if (callbackUrl === "/dashboard") return "your dashboard";
-  if (callbackUrl.startsWith("/cards")) return "your saved cards";
+  if (callbackUrl.startsWith("/cards")) return "your workspace card";
   if (callbackUrl.startsWith("/create-card")) return "the create-card flow";
   if (callbackUrl.startsWith("/settings")) return "settings";
   if (callbackUrl.startsWith("/templates")) return "template selection";
@@ -65,12 +65,6 @@ export function getLoginErrorMessage(error?: string) {
       return "That code expired. Request a new one and try again.";
     case "EmailSigninFailed":
       return "We could not finish email sign-in. Please try again.";
-    case "TempCredentialsRequired":
-      return "Enter the temporary ID and password to continue.";
-    case "TempCredentialsUnavailable":
-      return "Temporary access is not configured for this deployment yet.";
-    case "TempCredentialsInvalid":
-      return "That temporary ID or password was not correct.";
     default:
       return error ? "We couldn't complete sign-in. Please try again." : null;
   }

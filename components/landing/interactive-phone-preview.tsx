@@ -31,17 +31,17 @@ const statusPills = [
   },
 ] as const;
 
+export function InteractivePhonePreview() {
   return (
-    <div className="relative mx-auto max-w-[31rem]">
-      <div className="absolute left-5 top-8 h-28 w-28 rounded-full bg-[rgba(82,103,217,0.18)] blur-3xl" />
-      <div className="absolute bottom-10 right-3 h-32 w-32 rounded-full bg-[rgba(255,141,87,0.18)] blur-3xl" />
-
-      <div className="absolute -left-3 top-14 hidden rounded-full border border-white/70 bg-white/88 px-4 py-2 text-sm font-semibold text-[var(--ink)] shadow-[0_18px_36px_rgba(21,32,58,0.12)] backdrop-blur md:inline-flex">
+    <div className="relative mx-auto max-w-[34rem] px-4">
+      {/* Floating badge — original light style */}
+      <div className="absolute -left-3 top-14 z-10 hidden rounded-full border border-white/70 bg-white/88 px-4 py-2 text-sm font-semibold text-[var(--ink)] shadow-[0_18px_36px_rgba(21,32,58,0.12)] backdrop-blur md:inline-flex">
         <Sparkles className="mr-2 h-4 w-4 text-[var(--brand)]" />
         Built for in-person networking
       </div>
 
-      <div className="absolute -right-2 bottom-14 hidden rounded-[1.35rem] border border-[rgba(25,35,61,0.08)] bg-white/92 p-4 shadow-[0_18px_36px_rgba(21,32,58,0.12)] backdrop-blur md:block">
+      {/* Floating "Why it clicks" card — original light style */}
+      <div className="absolute -right-2 bottom-14 z-10 hidden rounded-[1.35rem] border border-[rgba(25,35,61,0.08)] bg-white/92 p-4 shadow-[0_18px_36px_rgba(21,32,58,0.12)] backdrop-blur md:block">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
           Why it clicks
         </p>

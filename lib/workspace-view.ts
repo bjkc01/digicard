@@ -5,13 +5,12 @@ import { getWorkspaceSettings } from "@/lib/workspace-settings";
 
 export type WorkspaceSummary = {
   activeCardCount: number;
-  alertsEnabledCount: number;
-  authLabel: string;
+  cardStatusLabel: string;
+  enabledNotificationCount: number;
   lastUpdatedLabel: string;
   profileCompletion: number;
-  selectedTemplateDescription: string;
   selectedTemplateName: string;
-  sidebarStatusCopy: string;
+  storageScopeLabel: string;
 };
 
 export type WorkspaceView = {
@@ -21,14 +20,24 @@ export type WorkspaceView = {
   user: WorkspaceUser;
 };
 
-function formatUpdatedAt(value: string) {
+function formatUpdatedAt(value: string | null) {
+  if (!value) {
+    return "Not saved yet";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Not saved yet";
+  }
+
   return new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(new Date(value));
+  }).format(date);
 }
 
-function buildWorkspaceCard(user: WorkspaceUser, settings: Awaited<ReturnType<typeof getWorkspaceSettings>>) {
+function buildWorkspaceCard(settings: Awaited<ReturnType<typeof getWorkspaceSettings>>) {
   const selectedTemplate =
     templates.find((template) => template.id === settings.defaultTemplateId) ?? templates[0]!;
   const hasMinimumProfile = Boolean(
@@ -62,7 +71,7 @@ function buildWorkspaceCard(user: WorkspaceUser, settings: Awaited<ReturnType<ty
 
 export async function getWorkspaceView(user: WorkspaceUser): Promise<WorkspaceView> {
   const settings = await getWorkspaceSettings(user);
-  const cards = buildWorkspaceCard(user, settings);
+  const cards = buildWorkspaceCard(settings);
   const selectedTemplate =
     templates.find((template) => template.id === settings.defaultTemplateId) ?? templates[0]!;
   const profileCompletion = Math.round(
@@ -78,23 +87,20 @@ export async function getWorkspaceView(user: WorkspaceUser): Promise<WorkspaceVi
       ].filter(Boolean).length / 7
     ) * 100,
   );
-  const alertsEnabledCount = Object.values(settings.notifications).filter(Boolean).length;
+  const enabledNotificationCount = Object.values(settings.notifications).filter(Boolean).length;
+  const hasActiveCard = cards.length > 0;
 
   return {
     cards,
     settings,
     summary: {
       activeCardCount: cards.length,
-      alertsEnabledCount,
-      authLabel: user.authLabel,
+      cardStatusLabel: hasActiveCard ? "Ready" : "Needs setup",
+      enabledNotificationCount,
       lastUpdatedLabel: formatUpdatedAt(settings.updatedAt),
       profileCompletion,
-      selectedTemplateDescription: selectedTemplate.description,
       selectedTemplateName: selectedTemplate.name,
-      sidebarStatusCopy:
-        cards.length > 0
-          ? `${cards.length} saved card${cards.length === 1 ? "" : "s"} and ${alertsEnabledCount} alert signal${alertsEnabledCount === 1 ? "" : "s"} enabled.`
-          : "No saved cards yet. Complete your workspace card to get this area ready to share.",
+      storageScopeLabel: "Current browser",
     },
     user,
   };

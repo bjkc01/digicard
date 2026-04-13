@@ -12,17 +12,10 @@ import {
 } from "@/lib/email-auth";
 
 const protectedRoutes = ["/dashboard", "/cards", "/create-card", "/settings", "/templates"];
-const temporaryAccessConfigured = Boolean(
-  authSecret && process.env.AUTH_TEMP_LOGIN_ID && process.env.AUTH_TEMP_LOGIN_PASSWORD,
-);
 
 export const googleAuthEnabled = Boolean(
   authSecret && googleClientId && googleClientSecret,
 );
-export { temporaryAccessConfigured };
-export const temporaryAccessEnabled =
-  temporaryAccessConfigured &&
-  (process.env.NODE_ENV !== "production" || process.env.AUTH_TEMP_LOGIN_ENABLED === "true");
 export const devAuthBypassEnabled =
   process.env.NODE_ENV !== "production" && process.env.AUTH_DEV_BYPASS === "true";
 export { emailAuthEnabled, emailAuthUsesConsoleFallback };
@@ -61,37 +54,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 typeof credentials.token === "string" ? credentials.token : undefined;
 
               return verifyEmailLoginToken(token, email ?? undefined);
-            },
-          }),
-        ]
-      : []),
-    ...(temporaryAccessEnabled
-      ? [
-          Credentials({
-            id: "temp-access",
-            name: "Temporary Access",
-            credentials: {
-              loginId: { label: "Temporary ID", type: "text" },
-              password: { label: "Password", type: "password" },
-            },
-            async authorize(credentials) {
-              const loginId =
-                typeof credentials.loginId === "string" ? credentials.loginId.trim() : "";
-              const password =
-                typeof credentials.password === "string" ? credentials.password : "";
-
-              if (
-                loginId !== process.env.AUTH_TEMP_LOGIN_ID ||
-                password !== process.env.AUTH_TEMP_LOGIN_PASSWORD
-              ) {
-                return null;
-              }
-
-              return {
-                email: process.env.AUTH_TEMP_LOGIN_EMAIL ?? `${loginId}@temporary.local`,
-                id: `temp-access:${loginId}`,
-                name: process.env.AUTH_TEMP_LOGIN_NAME ?? "Temporary Access",
-              };
             },
           }),
         ]

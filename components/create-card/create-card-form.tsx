@@ -140,7 +140,7 @@ export function CreateCardForm({
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-[#293039]">
               Save one polished identity, keep your default template aligned, and make sure
-              Dashboard, My Cards, and Settings all stay in sync.
+              Dashboard, My Card, and Settings all stay in sync.
             </p>
           </div>
 
@@ -360,7 +360,7 @@ export function CreateCardForm({
             <div>
               <p className="text-sm font-bold text-[#0E1318]">Save to your workspace</p>
               <p className="mt-0.5 text-sm text-[#293039]">
-                Dashboard, My Cards, Settings, and the default template will update from this save.
+                Dashboard, My Card, Settings, and the default template will update from this save.
               </p>
             </div>
 
@@ -420,7 +420,7 @@ export function CreateCardForm({
             <p className="text-sm font-bold text-[#0E1318]">What this updates</p>
             <div className="mt-4 space-y-2.5">
               {[
-                "The saved workspace card on Dashboard and My Cards.",
+                "The saved workspace card on Dashboard and My Card.",
                 "The profile fields shown inside Settings.",
                 "The default template used for the next card iteration.",
               ].map((point) => (

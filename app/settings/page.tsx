@@ -79,13 +79,6 @@ function getNoticeContent(notice?: string) {
 }
 
 function getSessionTone(provider: string) {
-  if (provider === "temp-access") {
-    return {
-      badge: "bg-[rgba(245,158,11,0.12)] text-[#b45309]",
-      card: "border-[rgba(245,158,11,0.16)] bg-[rgba(255,251,235,0.92)]",
-    };
-  }
-
   if (provider === "dev-bypass") {
     return {
       badge: "bg-[rgba(14,165,233,0.12)] text-[#0369a1]",
@@ -117,12 +110,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
-      <Sidebar
-        activePath="/settings"
-        statusCopy={summary.sidebarStatusCopy}
-        userLabel={workspaceUser.name}
-        userSubcopy={workspaceUser.email}
-      />
+      <Sidebar activePath="/settings" authLabel={workspaceUser.authLabel} userName={workspaceUser.name} />
 
       <section className="space-y-6">
         <header className="panel flex flex-col gap-5 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 lg:flex-row lg:items-end lg:justify-between">
@@ -133,7 +121,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
             </h1>
             <p className="mt-2 max-w-2xl text-[0.98rem] leading-7 text-[var(--muted)]">
               Update the identity details, template default, and notification settings that
-              the signed-in workspace uses across Dashboard, My Cards, and the card builder.
+              the signed-in workspace uses across dashboard pages on this browser.
             </p>
           </div>
 
@@ -417,7 +405,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                   </p>
                 </div>
                 <span className="inline-flex h-fit rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold text-[var(--brand)]">
-                  {summary.alertsEnabledCount} of {notificationSettingOptions.length} enabled
+                  {summary.enabledNotificationCount} of {notificationSettingOptions.length} enabled
                 </span>
               </div>
 
@@ -508,16 +496,16 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                   value={`${summary.profileCompletion}%`}
                 />
                 <SnapshotCard
-                  description="Cards generated from the active profile right now."
+                  description="The single workspace card generated from the active profile."
                   icon={LayoutTemplate}
-                  title="Saved cards"
-                  value={`${summary.activeCardCount}`}
+                  title="Card status"
+                  value={summary.cardStatusLabel}
                 />
                 <SnapshotCard
-                  description="Alert preferences currently enabled in this browser."
+                  description="Notification preferences currently enabled in this browser."
                   icon={BellRing}
-                  title="Alerts"
-                  value={`${summary.alertsEnabledCount} active`}
+                  title="Notifications"
+                  value={`${summary.enabledNotificationCount} active`}
                 />
               </div>
             </div>

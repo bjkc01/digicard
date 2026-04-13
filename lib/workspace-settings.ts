@@ -57,7 +57,7 @@ export type WorkspaceSettings = {
   notifications: WorkspaceNotificationSettings;
   owner: string;
   profile: WorkspaceProfile;
-  updatedAt: string;
+  updatedAt: string | null;
   version: number;
 };
 
@@ -75,6 +75,26 @@ const defaultNotificationSettings: WorkspaceNotificationSettings = {
 };
 
 const validTemplateIds = new Set(templates.map((template) => template.id));
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getOptionalString(value: unknown, fallback = "") {
+  return typeof value === "string" ? value : fallback;
+}
+
+function getOptionalBoolean(value: unknown, fallback = false) {
+  return typeof value === "boolean" ? value : fallback;
+}
+
+function isValidDateString(value: unknown): value is string {
+  if (typeof value !== "string" || !value) {
+    return false;
+  }
+
+  return !Number.isNaN(new Date(value).getTime());
+}
 
 export class WorkspaceSettingsValidationError extends Error {
   code: string;
@@ -133,7 +153,7 @@ function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings 
       title: "",
       website: "",
     },
-    updatedAt: new Date().toISOString(),
+    updatedAt: null,
     version: SETTINGS_VERSION,
   };
 }
@@ -184,16 +204,22 @@ async function decodePayload(value: string | undefined) {
     return null;
   }
 
-  const [encodedPayload, signature] = value.split(".");
-
-  if (!encodedPayload || !signature || (await signValue(encodedPayload)) !== signature) {
-    return null;
-  }
-
   try {
-    return JSON.parse(
+    const [encodedPayload, signature] = value.split(".");
+
+    if (!encodedPayload || !signature || (await signValue(encodedPayload)) !== signature) {
+      return null;
+    }
+
+    const parsed = JSON.parse(
       decoder.decode(fromBase64Url(encodedPayload)),
-    ) as WorkspaceSettingsCookiePayload;
+    ) as unknown;
+
+    if (!isRecord(parsed) || !isRecord(parsed.value)) {
+      return null;
+    }
+
+    return parsed as WorkspaceSettingsCookiePayload;
   } catch {
     return null;
   }
@@ -204,6 +230,11 @@ function mergeWorkspaceSettings(
   candidate: Partial<WorkspaceSettings> | null | undefined,
 ) {
   const defaults = createDefaultWorkspaceSettings(user);
+  const candidateCard = isRecord(candidate?.card) ? candidate.card : undefined;
+  const candidateNotifications = isRecord(candidate?.notifications)
+    ? candidate.notifications
+    : undefined;
+  const candidateProfile = isRecord(candidate?.profile) ? candidate.profile : undefined;
   const templateId =
     typeof candidate?.defaultTemplateId === "string" && validTemplateIds.has(candidate.defaultTemplateId)
       ? candidate.defaultTemplateId
@@ -211,23 +242,29 @@ function mergeWorkspaceSettings(
 
   return {
     card: {
-      ...defaults.card,
-      ...candidate?.card,
+      company: getOptionalString(candidateCard?.company, defaults.card.company),
+      linkedin: getOptionalString(candidateCard?.linkedin, defaults.card.linkedin),
+      phone: getOptionalString(candidateCard?.phone, defaults.card.phone),
     },
     defaultTemplateId: templateId,
-    notifications: {
-      ...defaults.notifications,
-      ...candidate?.notifications,
-    },
+    notifications: notificationSettingOptions.reduce<WorkspaceNotificationSettings>(
+      (accumulator, option) => {
+        accumulator[option.key] = getOptionalBoolean(
+          candidateNotifications?.[option.key],
+          defaults.notifications[option.key],
+        );
+        return accumulator;
+      },
+      { ...defaults.notifications },
+    ),
     owner: defaults.owner,
     profile: {
-      ...defaults.profile,
-      ...candidate?.profile,
+      email: getOptionalString(candidateProfile?.email, defaults.profile.email),
+      name: getOptionalString(candidateProfile?.name, defaults.profile.name),
+      title: getOptionalString(candidateProfile?.title, defaults.profile.title),
+      website: getOptionalString(candidateProfile?.website, defaults.profile.website),
     },
-    updatedAt:
-      typeof candidate?.updatedAt === "string" && candidate.updatedAt
-        ? candidate.updatedAt
-        : defaults.updatedAt,
+    updatedAt: isValidDateString(candidate?.updatedAt) ? candidate.updatedAt : defaults.updatedAt,
     version: SETTINGS_VERSION,
   } satisfies WorkspaceSettings;
 }
@@ -372,6 +409,70 @@ export async function saveWorkspaceTemplate(user: WorkspaceUser, templateId: str
   return persistWorkspaceSettings(user, {
     ...current,
     defaultTemplateId: templateId,
+  });
+}
+
+export async function saveWorkspaceCardSnapshot(
+  user: WorkspaceUser,
+  input: {
+    company: string;
+    defaultTemplateId: string;
+    email: string;
+    linkedin: string;
+    name: string;
+    phone: string;
+    title: string;
+    website: string;
+  },
+) {
+  if (!validTemplateIds.has(input.defaultTemplateId)) {
+    throw new WorkspaceSettingsValidationError(
+      "template-invalid",
+      "Choose a valid template before saving.",
+    );
+  }
+
+  const current = await getWorkspaceSettings(user);
+  const name = cleanText(input.name, 60);
+  const email = normalizeEmail(input.email);
+  const title = cleanText(input.title, 80);
+  const website = normalizeWebsite(input.website);
+
+  if (name.length < 2) {
+    throw new WorkspaceSettingsValidationError(
+      "profile-invalid",
+      "Display name must be at least 2 characters.",
+    );
+  }
+
+  if (!email) {
+    throw new WorkspaceSettingsValidationError(
+      "profile-invalid",
+      "A valid email address is required.",
+    );
+  }
+
+  if (!title) {
+    throw new WorkspaceSettingsValidationError(
+      "profile-invalid",
+      "Professional title is required.",
+    );
+  }
+
+  return persistWorkspaceSettings(user, {
+    ...current,
+    card: {
+      company: cleanText(input.company, 80),
+      linkedin: normalizeLinkedIn(input.linkedin),
+      phone: cleanText(input.phone, 40),
+    },
+    defaultTemplateId: input.defaultTemplateId,
+    profile: {
+      email,
+      name,
+      title,
+      website,
+    },
   });
 }
 

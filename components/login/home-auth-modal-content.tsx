@@ -3,7 +3,6 @@ import {
   emailAuthEnabled,
   emailAuthUsesConsoleFallback,
   googleAuthEnabled,
-  temporaryAccessEnabled,
 } from "@/auth";
 import {
   getDestinationLabel,
@@ -37,10 +36,6 @@ function getInitialPanel(searchParams: LoginSearchParams): AuthModalPanel {
     return "email";
   }
 
-  if (searchParams.error?.startsWith("TempCredentials")) {
-    return "temporary";
-  }
-
   return "choices";
 }
 
@@ -61,10 +56,9 @@ export function HomeAuthModalContent({
       errorCode={resolvedSearchParams.error}
       errorMessage={getLoginErrorMessage(resolvedSearchParams.error)}
       googleConfigured={googleAuthEnabled}
-      hasAnySignInMethod={googleAuthEnabled || emailAuthEnabled || temporaryAccessEnabled}
+      hasAnySignInMethod={googleAuthEnabled || emailAuthEnabled}
       initialPanel={getInitialPanel(resolvedSearchParams)}
       isEmailConfigured={emailAuthEnabled}
-      isTemporaryAccessAvailable={temporaryAccessEnabled}
       noticeCode={resolvedSearchParams.notice}
       noticeMessage={getLoginNoticeMessage(resolvedSearchParams.notice)}
       originPath={originPath}
