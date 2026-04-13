@@ -157,16 +157,15 @@ export function CreateCardForm({
     if (!cardRef.current) return;
     setIsDownloading(true);
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: null,
-        scale: 3,
-        useCORS: true,
-        logging: false,
+      await document.fonts.ready;
+      const { toPng } = await import("html-to-image");
+      const dataUrl = await toPng(cardRef.current, {
+        pixelRatio: 3,
+        cacheBust: true,
       });
       const link = document.createElement("a");
       link.download = `digicard-${(formData.name || "card").toLowerCase().replace(/\s+/g, "-")}.png`;
-      link.href = canvas.toDataURL("image/png");
+      link.href = dataUrl;
       link.click();
     } finally {
       setIsDownloading(false);
