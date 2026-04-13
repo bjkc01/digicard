@@ -32,7 +32,7 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.04),transparent_60%)]" />
 
         <div className="relative flex flex-col p-4">
-          {/* Avatar + template */}
+          {/* Avatar */}
           <div className="flex items-center gap-2.5">
             {imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -42,7 +42,6 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
                 {initials}
               </div>
             )}
-            <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-slate-500">{card.template}</span>
           </div>
 
           {/* Name + title + company */}
@@ -60,7 +59,7 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
                 const Icon = item.icon;
                 return (
                   <div key={item.key} className={cn("flex items-center gap-2.5 py-2", i > 0 && "border-t border-white/[0.06]")}>
-                    <Icon className="h-3 w-3 shrink-0 text-slate-600" />
+                    <Icon className="h-3 w-3 shrink-0 text-slate-500" />
                     <p className="truncate text-[11px] text-slate-300">{value}</p>
                   </div>
                 );
@@ -68,15 +67,18 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
             </div>
           )}
 
-          {/* QR code — bottom center */}
+          {/* QR code */}
           <div className="mt-5 flex justify-center">
             <div className="rounded-[16px] bg-white p-2.5 shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
               <QRCodeSVG value={qrValue} size={72} bgColor="#ffffff" fgColor="#0f172a" />
             </div>
           </div>
 
-          {/* Footer */}
-          <p className="mt-3 text-center text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-700">DigiCard</p>
+          {/* DigiCard branding */}
+          <div className="mt-3 flex items-center justify-center gap-1.5">
+            <span className="text-[8px] font-medium uppercase tracking-[0.18em] text-slate-600">Scan to connect ·</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">DigiCard</span>
+          </div>
         </div>
       </div>
     );
@@ -88,7 +90,7 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.05),transparent_55%)]" />
 
       <div className="relative flex flex-col p-7">
-        {/* Avatar + template badge */}
+        {/* Avatar */}
         <div className="flex items-center gap-3">
           {imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -98,7 +100,6 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
               {initials}
             </div>
           )}
-          <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">{card.template}</span>
         </div>
 
         {/* Name */}
@@ -114,7 +115,7 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
           <p className="mt-1 text-sm text-slate-600">{card.company}</p>
         ) : null}
 
-        {/* Contact rows — clean lines, no boxes */}
+        {/* Contact rows */}
         {filledContacts.length > 0 && (
           <div className="mt-8 flex flex-col">
             {filledContacts.map((item, i) => {
@@ -130,14 +131,18 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
           </div>
         )}
 
-        {/* QR code — large, centered, bottom */}
-        <div className="mt-10 flex flex-col items-center gap-3">
+        {/* QR code — large, centered */}
+        <div className="mt-10 flex justify-center">
           <div className="rounded-[22px] bg-white p-4 shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
             <QRCodeSVG value={qrValue} size={120} bgColor="#ffffff" fgColor="#0f172a" />
           </div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-700">
-            Scan to connect · DigiCard
-          </p>
+        </div>
+
+        {/* DigiCard branding footer */}
+        <div className="mt-5 flex items-center justify-center gap-2">
+          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-600">Scan to connect</span>
+          <span className="text-slate-700">·</span>
+          <span className="text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-300">DigiCard</span>
         </div>
       </div>
     </div>
