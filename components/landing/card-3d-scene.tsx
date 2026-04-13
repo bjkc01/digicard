@@ -3,34 +3,26 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { Sparkles } from "lucide-react";
-import { CardPreview } from "@/components/cards/card-preview";
-import type { DigiCard } from "@/lib/data";
 
 // rotateY positive → right side leans toward viewer
 // main card is the rightmost element → it's the closest ✓
 const RESTING = "perspective(1100px) rotateX(4deg) rotateY(10deg)";
 
-const mainCard: DigiCard = {
-  color: "from-blue-700 via-cyan-500 to-emerald-400",
-  company: "University of Maryland",
-  email: "maya.carter@umd-ex.edu",
-  id: 101,
-  linkedin: "linkedin.com/in/mayacarter",
-  name: "Maya Carter",
-  phone: "+1 (555) 210-0284",
-  template: "Blueprint",
-  title: "Computer Science Student",
-  website: "maya.dev",
-};
-
 function PhoneFramedBlueprint() {
   return (
     <div className="relative aspect-[1920/1440] w-[620px] max-w-full">
       <div className="pointer-events-none absolute inset-0 rounded-[3rem] bg-[radial-gradient(circle_at_52%_24%,rgba(82,103,217,0.2),transparent_22%),radial-gradient(circle_at_48%_58%,rgba(56,189,248,0.12),transparent_26%),radial-gradient(circle_at_38%_75%,rgba(255,255,255,0.62),transparent_28%)] blur-[2px]" />
-      <div className="absolute left-[36.3%] top-[7.65%] h-[64.8%] w-[24.7%] overflow-hidden rounded-[2.35rem] bg-[linear-gradient(180deg,#0a1020_0%,#060a15_100%)] shadow-[0_24px_40px_rgba(15,23,42,0.2)]">
+      <div className="absolute left-[36.3%] top-[7.65%] h-[64.8%] w-[24.7%] overflow-hidden rounded-[2.45rem] bg-[linear-gradient(180deg,#0a1020_0%,#060a15_100%)] shadow-[0_24px_40px_rgba(15,23,42,0.2)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(82,103,217,0.18),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))]" />
-        <div className="absolute inset-[0.45rem_0.55rem_0.5rem_0.5rem]">
-          <CardPreview card={mainCard} compact phoneHero />
+        <div className="absolute inset-[0.18rem] overflow-hidden rounded-[2.28rem]">
+          <Image
+            src="/jordan-lin-card.png"
+            alt="Jordan Lin DigiCard example displayed inside the homepage phone mockup"
+            fill
+            sizes="(max-width: 768px) 28vw, 160px"
+            className="object-contain object-center"
+            priority
+          />
         </div>
       </div>
       <Image
