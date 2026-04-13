@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CreditCard, LayoutTemplate, LogOut, Settings, Sparkles, WalletCards } from "lucide-react";
 import { navigationItems } from "@/lib/data";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { signOutFromWorkspace } from "@/lib/workspace-actions";
 
@@ -61,22 +62,28 @@ export function Sidebar({ activePath, email, userName }: SidebarProps) {
       </nav>
 
       <div className="mt-auto border-t border-[rgba(82,103,217,0.08)] pt-6">
-        <div className="flex items-center gap-3 rounded-[1.35rem] bg-[var(--soft)] px-4 py-3">
-          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,_#172340,_#5267d9)] text-xs font-bold text-white">
-            {initials}
+        <div className="rounded-[1.35rem] bg-[var(--soft)] px-4 py-4 shadow-[0_10px_24px_rgba(21,32,58,0.04)]">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,_#172340,_#5267d9)] text-xs font-bold text-white shadow-[0_12px_24px_rgba(82,103,217,0.22)]">
+              {initials}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-[var(--ink)]">{userName}</p>
+              <p className="truncate text-xs text-[var(--muted)]">{email}</p>
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-[var(--ink)]">{userName}</p>
-            <p className="truncate text-xs text-[var(--muted)]">{email}</p>
-          </div>
-          <form action={signOutFromWorkspace}>
-            <button
+
+          <form action={signOutFromWorkspace} className="mt-4">
+            <Button
               type="submit"
-              title="Sign out"
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[rgba(25,35,61,0.08)] bg-white text-[var(--muted)] transition hover:border-red-200 hover:text-red-500"
+              variant="secondary"
+              className="w-full justify-center rounded-2xl border-[rgba(25,35,61,0.08)] bg-white px-4 py-2.5 text-[var(--ink)] shadow-[0_10px_24px_rgba(21,32,58,0.04)] hover:border-red-200 hover:bg-red-50 hover:text-red-600"
             >
-              <LogOut className="h-3.5 w-3.5" />
-            </button>
+              <span className="inline-flex items-center gap-2">
+                <LogOut className="h-4 w-4" />
+                Sign out
+              </span>
+            </Button>
           </form>
         </div>
       </div>

@@ -44,7 +44,7 @@ export default async function DashboardPage() {
 
       <section className="space-y-6">
         <DashboardHeader
-          authLabel={workspaceUser.authLabel}
+          email={workspaceUser.email}
           subtitle={hasActiveCard ? "Your card is ready to share. Keep it updated before your next event." : "Complete your profile to generate your first shareable card."}
           userName={workspaceUser.name}
         />
