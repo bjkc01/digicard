@@ -27,10 +27,10 @@ function PhoneFramedBlueprint() {
   return (
     <div className="relative aspect-[1920/1440] w-[620px] max-w-full">
       <div className="pointer-events-none absolute inset-0 rounded-[3rem] bg-[radial-gradient(circle_at_52%_24%,rgba(82,103,217,0.2),transparent_22%),radial-gradient(circle_at_48%_58%,rgba(56,189,248,0.12),transparent_26%),radial-gradient(circle_at_38%_75%,rgba(255,255,255,0.62),transparent_28%)] blur-[2px]" />
-      <div className="absolute left-[35.6%] top-[6.75%] h-[70.2%] w-[27.8%] overflow-hidden rounded-[2.55rem] bg-[linear-gradient(180deg,#0a1020_0%,#060a15_100%)] shadow-[0_24px_40px_rgba(15,23,42,0.2)]">
+      <div className="absolute left-[36.3%] top-[7.65%] h-[64.8%] w-[24.7%] overflow-hidden rounded-[2.35rem] bg-[linear-gradient(180deg,#0a1020_0%,#060a15_100%)] shadow-[0_24px_40px_rgba(15,23,42,0.2)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(82,103,217,0.18),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))]" />
-        <div className="absolute inset-[0.35rem_0.45rem_0.35rem_0.4rem]">
-          <CardPreview card={mainCard} compact />
+        <div className="absolute inset-[0.45rem_0.55rem_0.5rem_0.5rem]">
+          <CardPreview card={mainCard} compact phoneHero />
         </div>
       </div>
       <Image

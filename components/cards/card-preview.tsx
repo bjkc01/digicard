@@ -10,6 +10,7 @@ type CardPreviewProps = {
   card: DigiCard;
   compact?: boolean;
   imageUrl?: string;
+  phoneHero?: boolean;
 };
 
 const contactItems = [
@@ -19,11 +20,109 @@ const contactItems = [
   { key: "website", label: "Website", icon: Globe },
 ] as const;
 
-export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProps) {
+export function CardPreview({ card, compact = false, imageUrl, phoneHero = false }: CardPreviewProps) {
   const shareTarget = getCardShareTarget(card);
   const qrValue = shareTarget.url;
   const filledContacts = contactItems.filter((item) => Boolean(card[item.key]));
   const initials = card.name.split(" ").slice(0, 2).map((p) => p[0]).join("");
+
+  if (compact && phoneHero) {
+    return (
+      <div className="relative flex h-full w-full flex-col overflow-hidden rounded-[1.85rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,19,31,0.99),rgba(8,10,18,1))] shadow-[0_18px_36px_rgba(0,0,0,0.35)]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.18),transparent_34%),radial-gradient(circle_at_85%_12%,rgba(34,211,238,0.1),transparent_20%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))]" />
+        <div className={cn("absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r", card.color)} />
+
+        <div className="relative flex h-full flex-col gap-2 p-2.5">
+          <div className="flex items-start gap-2">
+            {imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={imageUrl}
+                alt={card.name}
+                className="h-8 w-8 shrink-0 rounded-2xl object-cover ring-1 ring-white/10"
+              />
+            ) : (
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.08] text-[11px] font-semibold text-white">
+                {card.name
+                  .split(" ")
+                  .slice(0, 2)
+                  .map((part) => part[0])
+                  .join("")}
+              </div>
+            )}
+
+            <div className="min-w-0">
+              <p className="truncate text-[8px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                DigiCard
+              </p>
+              <p className="truncate text-[13px] font-semibold leading-[1.1] tracking-[-0.04em] text-white">
+                {card.name}
+              </p>
+              <p className="mt-0.5 text-[9px] font-medium leading-3 text-cyan-100/85">{card.title}</p>
+              {card.company ? (
+                <p className="mt-1 text-[8px] leading-3 text-slate-400">{card.company}</p>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {contactItems.map((item) => {
+              const value = card[item.key];
+              if (!value) return null;
+              const Icon = item.icon;
+
+              return (
+                <div
+                  key={item.key}
+                  className="rounded-[14px] border border-white/10 bg-white/[0.05] px-2 py-1.5 backdrop-blur"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/20 text-cyan-100">
+                      <Icon className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[7px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                        {item.label}
+                      </p>
+                      <p className="truncate text-[9px] font-medium leading-3 text-slate-100">
+                        {value}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            {statusItems.map((metric) => (
+              <div
+                key={metric.label}
+                className="rounded-[14px] border border-white/10 bg-black/20 px-1.5 py-1.5 text-center"
+              >
+                <p className="truncate text-[10px] font-semibold text-white">{metric.value}</p>
+                <p className="mt-0.5 text-[7px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  {metric.label}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-auto rounded-[16px] border border-white/10 bg-[linear-gradient(180deg,rgba(41,48,78,0.95),rgba(24,28,51,0.98))] px-2.5 py-2 shadow-[0_16px_28px_rgba(0,0,0,0.3)]">
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[rgba(82,103,217,0.28)] text-cyan-100">
+                <QRCodeSVG value={qrValue} size={12} bgColor="transparent" fgColor="#c7d2fe" />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-[10px] font-semibold leading-3 text-white">Scan to connect</p>
+                <p className="truncate text-[8px] leading-3 text-slate-400">Opens your profile instantly</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (compact) {
     return (
