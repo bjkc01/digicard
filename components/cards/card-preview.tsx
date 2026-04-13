@@ -22,12 +22,6 @@ const contactItems = [
 export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProps) {
   const shareTarget = getCardShareTarget(card);
   const qrValue = shareTarget.url;
-  const contactPointCount = contactItems.filter((item) => Boolean(card[item.key])).length;
-  const statusItems = [
-    { value: card.template, label: "Template" },
-    { value: `${contactPointCount}`, label: "Links" },
-    { value: card.title ? "Ready" : "Draft", label: "Status" },
-  ];
 
   return (
     <div
@@ -143,25 +137,6 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
               </div>
             );
           })}
-        </div>
-
-        <div className={cn("grid gap-3 sm:grid-cols-3", compact ? "mt-5" : "mt-8")}>
-          {statusItems.map((metric) => (
-            <div
-              key={metric.label}
-              className={cn(
-                "rounded-[22px] border border-white/10 bg-black/20 text-center",
-                compact ? "px-3 py-3" : "px-4 py-4",
-              )}
-            >
-              <p className={cn("font-semibold tracking-[-0.04em] text-white", compact ? "text-[16px]" : "text-2xl")}>
-                {metric.value}
-              </p>
-              <p className={cn("mt-1 uppercase tracking-[0.2em] text-slate-500", compact ? "text-[10px]" : "text-xs")}>
-                {metric.label}
-              </p>
-            </div>
-          ))}
         </div>
 
         <div className={cn("mt-auto", compact ? "pt-5" : "pt-8")}>
