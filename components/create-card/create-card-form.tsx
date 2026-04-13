@@ -137,7 +137,11 @@ export function CreateCardForm({
     templates.find((t) => t.id === initialTemplateId) ?? templates[2]!;
   const [formData, setFormData] = useState<CardFormValues>(initialFormData);
   const [selectedTemplate, setSelectedTemplate] = useState<DigiCardTemplate>(initialTemplate);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const imageStorageKey = `digicard-portrait-${initialFormData.email}`;
+  const [imagePreview, setImagePreview] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem(`digicard-portrait-${initialFormData.email}`) ?? null;
+  });
   const [imageError, setImageError] = useState<string | null>(null);
   const [statusVisible, setStatusVisible] = useState(false);
   const [actionState, formAction] = useActionState(
@@ -181,7 +185,11 @@ export function CreateCardForm({
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      setImagePreview(typeof e.target?.result === "string" ? e.target.result : null);
+      const dataUrl = typeof e.target?.result === "string" ? e.target.result : null;
+      setImagePreview(dataUrl);
+      if (dataUrl) {
+        try { localStorage.setItem(imageStorageKey, dataUrl); } catch { /* quota exceeded */ }
+      }
     };
     reader.readAsDataURL(file);
   };
@@ -363,6 +371,19 @@ export function CreateCardForm({
                   </div>
                 )}
               </button>
+              {imagePreview ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImagePreview(null);
+                    localStorage.removeItem(imageStorageKey);
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  }}
+                  className="mt-2 text-[11px] text-[#9ca3af] underline underline-offset-2 hover:text-red-500 transition-colors"
+                >
+                  Remove photo
+                </button>
+              ) : null}
               {imageError ? (
                 <div className="animate-fade-in mt-3 flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2.5">
                   <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
