@@ -62,7 +62,7 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
             </div>
           </div>
 
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2">
             {contactItems.map((item) => {
               const value = card[item.key];
               if (!value) return null;
@@ -71,17 +71,17 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
               return (
                 <div
                   key={item.key}
-                  className="rounded-[16px] border border-white/10 bg-white/[0.05] px-2.5 py-2 backdrop-blur"
+                  className="rounded-[14px] border border-white/10 bg-white/[0.05] px-2.5 py-2 backdrop-blur"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5">
                     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/20 text-cyan-100">
-                      <Icon className="h-4 w-4" />
+                      <Icon className="h-3.5 w-3.5" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                      <p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-slate-500">
                         {item.label}
                       </p>
-                      <p className="mt-0.5 break-all text-[11px] font-medium leading-4 text-slate-100">
+                      <p className="mt-0.5 truncate text-[11px] font-medium leading-4 text-slate-100">
                         {value}
                       </p>
                     </div>
@@ -147,7 +147,7 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
           </div>
         </div>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+        <div className="mt-8 flex flex-col gap-2.5">
           {contactItems.map((item) => {
             const value = card[item.key];
             if (!value) return null;
@@ -156,17 +156,17 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
             return (
               <div
                 key={item.key}
-                className="rounded-[22px] border border-white/10 bg-white/[0.05] px-4 py-4 backdrop-blur"
+                className="rounded-[22px] border border-white/10 bg-white/[0.05] px-4 py-3 backdrop-blur"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-black/20 text-cyan-100">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-black/20 text-cyan-100">
                     <Icon className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">
                       {item.label}
                     </p>
-                    <p className="mt-1 break-all text-sm text-slate-200">{value}</p>
+                    <p className="mt-0.5 truncate text-sm text-slate-200">{value}</p>
                   </div>
                 </div>
               </div>
