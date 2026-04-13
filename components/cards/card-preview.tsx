@@ -22,12 +22,6 @@ const contactItems = [
 export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProps) {
   const shareTarget = getCardShareTarget(card);
   const qrValue = shareTarget.url;
-  const contactPointCount = contactItems.filter((item) => Boolean(card[item.key])).length;
-  const statusItems = [
-    { value: card.template, label: "Template" },
-    { value: `${contactPointCount}`, label: "Links" },
-    { value: card.title ? "Ready" : "Draft", label: "Status" },
-  ];
 
   if (compact) {
     return (
@@ -87,7 +81,7 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
                       <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-500">
                         {item.label}
                       </p>
-                      <p className="mt-0.5 truncate text-[11px] font-medium leading-4 text-slate-100">
+                      <p className="mt-0.5 break-all text-[11px] font-medium leading-4 text-slate-100">
                         {value}
                       </p>
                     </div>
@@ -95,20 +89,6 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
                 </div>
               );
             })}
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {statusItems.map((metric) => (
-              <div
-                key={metric.label}
-                className="rounded-[15px] border border-white/10 bg-black/20 px-3 py-2"
-              >
-                <p className="text-[11px] font-semibold text-white">{metric.value}</p>
-                <p className="mt-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-                  {metric.label}
-                </p>
-              </div>
-            ))}
           </div>
 
           <div className="border-t border-white/10 pt-2.5">
@@ -186,24 +166,12 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
                     <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
                       {item.label}
                     </p>
-                    <p className="mt-1 truncate text-sm text-slate-200">{value}</p>
+                    <p className="mt-1 break-all text-sm text-slate-200">{value}</p>
                   </div>
                 </div>
               </div>
             );
           })}
-        </div>
-
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          {statusItems.map((metric) => (
-            <div
-              key={metric.label}
-              className="rounded-[22px] border border-white/10 bg-black/20 px-4 py-4 text-center"
-            >
-              <p className="text-2xl font-semibold tracking-[-0.04em] text-white">{metric.value}</p>
-              <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">{metric.label}</p>
-            </div>
-          ))}
         </div>
 
         <div className="mt-auto pt-8">
