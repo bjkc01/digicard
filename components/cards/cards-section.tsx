@@ -38,13 +38,13 @@ export function CardsSection({
             <div className="flex flex-wrap gap-2">
               <Button
                 href="/create-card"
-                className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/[0.1]"
+                className="rounded-full bg-[var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4459cb]"
               >
                 Edit
               </Button>
               <Button
                 href="/settings"
-                className="rounded-full border border-white/10 bg-transparent px-4 py-2 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/[0.06]"
+                className="rounded-full border border-[rgba(82,103,217,0.2)] bg-white px-4 py-2 text-sm font-medium text-[var(--ink)] transition hover:border-[rgba(82,103,217,0.4)] hover:bg-[var(--soft)]"
               >
                 Settings
               </Button>
