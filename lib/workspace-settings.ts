@@ -2,6 +2,12 @@ import { cookies } from "next/headers";
 import { authSecret } from "@/lib/auth-env";
 import { normalizeEmail } from "@/lib/email-auth";
 import { templates } from "@/lib/data";
+import { supabaseEnabled } from "@/lib/supabase-env";
+import {
+  getSupabaseProfileByOwnerEmail,
+  getSupabaseProfileByUserId,
+  upsertSupabaseProfile,
+} from "@/lib/supabase/profiles";
 import type { WorkspaceUser } from "@/lib/workspace-auth";
 
 const SETTINGS_COOKIE_NAME = "digicard-workspace-settings";
@@ -158,6 +164,33 @@ function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings 
   };
 }
 
+function mapSupabaseProfileToWorkspaceSettings(
+  user: WorkspaceUser,
+  profile: Awaited<ReturnType<typeof getSupabaseProfileByUserId>>,
+) {
+  if (!profile) {
+    return null;
+  }
+
+  return mergeWorkspaceSettings(user, {
+    card: {
+      company: profile.company ?? "",
+      linkedin: profile.linkedin ?? "",
+      phone: profile.phone ?? "",
+    },
+    defaultTemplateId: profile.default_template_id,
+    notifications: profile.notifications,
+    owner: profile.owner_email,
+    profile: {
+      email: profile.email,
+      name: profile.name,
+      title: profile.title ?? "",
+      website: profile.website ?? "",
+    },
+    updatedAt: profile.updated_at,
+  });
+}
+
 function toBase64Url(bytes: Uint8Array) {
   let binary = "";
 
@@ -225,6 +258,18 @@ async function decodePayload(value: string | undefined) {
   }
 }
 
+async function getCookieWorkspaceSettings(user: WorkspaceUser) {
+  const cookieStore = await cookies();
+  const payload = await decodePayload(cookieStore.get(SETTINGS_COOKIE_NAME)?.value);
+  const owner = getWorkspaceOwner(user);
+
+  if (!payload || payload.owner !== owner || payload.version !== SETTINGS_VERSION) {
+    return createDefaultWorkspaceSettings(user);
+  }
+
+  return mergeWorkspaceSettings(user, payload.value);
+}
+
 function mergeWorkspaceSettings(
   user: WorkspaceUser,
   candidate: Partial<WorkspaceSettings> | null | undefined,
@@ -270,11 +315,28 @@ function mergeWorkspaceSettings(
 }
 
 async function persistWorkspaceSettings(user: WorkspaceUser, settings: WorkspaceSettings) {
-  const cookieStore = await cookies();
   const normalized = mergeWorkspaceSettings(user, {
     ...settings,
     updatedAt: new Date().toISOString(),
   });
+
+  if (supabaseEnabled) {
+    await upsertSupabaseProfile({
+      company: normalized.card.company,
+      default_template_id: normalized.defaultTemplateId,
+      email: normalized.profile.email,
+      linkedin: normalized.card.linkedin,
+      name: normalized.profile.name,
+      notifications: normalized.notifications,
+      owner_email: normalized.owner,
+      phone: normalized.card.phone,
+      title: normalized.profile.title,
+      user_id: user.id,
+      website: normalized.profile.website,
+    });
+  }
+
+  const cookieStore = await cookies();
 
   cookieStore.set(SETTINGS_COOKIE_NAME, await encodePayload({
     owner: normalized.owner,
@@ -292,15 +354,22 @@ async function persistWorkspaceSettings(user: WorkspaceUser, settings: Workspace
 }
 
 export async function getWorkspaceSettings(user: WorkspaceUser) {
-  const cookieStore = await cookies();
-  const payload = await decodePayload(cookieStore.get(SETTINGS_COOKIE_NAME)?.value);
-  const owner = getWorkspaceOwner(user);
+  const cookieSettings = await getCookieWorkspaceSettings(user);
 
-  if (!payload || payload.owner !== owner || payload.version !== SETTINGS_VERSION) {
-    return createDefaultWorkspaceSettings(user);
+  if (!supabaseEnabled) {
+    return cookieSettings;
   }
 
-  return mergeWorkspaceSettings(user, payload.value);
+  try {
+    const profile =
+      (await getSupabaseProfileByUserId(user.id)) ??
+      (await getSupabaseProfileByOwnerEmail(getWorkspaceOwner(user)));
+
+    return mapSupabaseProfileToWorkspaceSettings(user, profile) ?? cookieSettings;
+  } catch (error) {
+    console.error("Failed to load workspace settings from Supabase. Falling back to cookies.", error);
+    return cookieSettings;
+  }
 }
 
 export async function saveWorkspaceProfile(

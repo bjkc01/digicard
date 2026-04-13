@@ -1,5 +1,6 @@
 import type { DigiCard } from "@/lib/data";
 import { templates } from "@/lib/data";
+import { supabaseEnabled } from "@/lib/supabase-env";
 import type { WorkspaceUser } from "@/lib/workspace-auth";
 import { getWorkspaceSettings } from "@/lib/workspace-settings";
 
@@ -100,7 +101,7 @@ export async function getWorkspaceView(user: WorkspaceUser): Promise<WorkspaceVi
       lastUpdatedLabel: formatUpdatedAt(settings.updatedAt),
       profileCompletion,
       selectedTemplateName: selectedTemplate.name,
-      storageScopeLabel: "Current browser",
+      storageScopeLabel: supabaseEnabled ? "Supabase cloud sync" : "Current browser",
     },
     user,
   };

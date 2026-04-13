@@ -23,6 +23,31 @@ Create `.env.local` from `.env.example` and make sure this value is set:
 NEXT_PUBLIC_APP_URL=https://getmycard.vercel.app
 ```
 
+## Supabase foundation
+
+The repo now includes a minimal Supabase setup so we can move the workspace profile out of signed browser cookies and into a real database.
+
+Files added for the integration:
+
+- `lib/supabase-env.ts` for safe environment variable access
+- `lib/supabase/browser.ts` and `lib/supabase/server.ts` for typed Supabase clients
+- `lib/supabase/profiles.ts` for the first profile-table queries
+- `supabase/migrations/20260413_create_profiles.sql` for the initial database table
+
+To connect your own Supabase project:
+
+1. Create a Supabase project.
+2. Copy these values into `.env.local` and your deployment environment variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+3. Open the Supabase SQL editor and run each SQL file inside `supabase/migrations` in filename order.
+4. Restart the dev server after adding the environment variables.
+
+`SUPABASE_SERVICE_ROLE_KEY` is server-only. In this repo it is meant for server actions, route handlers, and server utilities such as `lib/supabase/profiles.ts`. The first `profiles` table is also locked behind Row Level Security, so browser-side writes are not expected until you later switch to Supabase Auth or add explicit policies.
+
+The current UI still reads workspace data from the signed cookie flow in `lib/workspace-settings.ts`. The new Supabase files are the foundation for the next step, which is swapping the profile save/load path over to the `profiles` table.
+
 ## Google login setup
 
 The app already uses Auth.js with a Google provider. To turn login on locally or on Vercel:
