@@ -8,6 +8,7 @@ import {
   LockKeyhole,
   LogOut,
   Mail,
+  QrCode,
   ShieldCheck,
   Smartphone,
   UserRound,
@@ -19,7 +20,7 @@ import { templates } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import { getWorkspaceView } from "@/lib/workspace-view";
-import { notificationSettingOptions } from "@/lib/workspace-settings";
+import { notificationSettingOptions, qrPreferenceOptions } from "@/lib/workspace-settings";
 import {
   saveNotificationSettings,
   saveProfileSettings,
@@ -42,8 +43,9 @@ function getNoticeContent(notice?: string) {
         title: "Profile updated",
       };
     case "profile-invalid":
+    case "qr-invalid":
       return {
-        body: "Check the name, email, and title fields before saving again.",
+        body: "Check the name, email, title, and QR destination fields before saving again.",
         tone: "border-[rgba(245,158,11,0.18)] bg-[rgba(255,251,235,0.95)] text-[#92400e]",
         title: "Profile needs attention",
       };
@@ -262,9 +264,10 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                   />
                   <SettingsField
                     defaultValue={settings.card.linkedin}
+                    hint="Paste the full LinkedIn URL or just your username."
                     label="LinkedIn"
                     name="linkedin"
-                    placeholder="linkedin.com/in/yourname"
+                    placeholder="linkedin.com/in/yourname or yourusername"
                   />
                 </div>
 
@@ -275,6 +278,52 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                   name="phone"
                   placeholder="+1 (555) 000-0000"
                 />
+
+                <div className="rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-5">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-[0_10px_22px_rgba(21,32,58,0.05)]">
+                      <QrCode className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[var(--ink)]">QR destination</p>
+                      <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                        Choose whether the QR should prefer your website, your LinkedIn profile, or
+                        automatically pick the best available option.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 md:grid-cols-3">
+                    {qrPreferenceOptions.map((option) => {
+                      const isSelected = settings.card.qrPreference === option.key;
+
+                      return (
+                        <label key={option.key} className="cursor-pointer">
+                          <input
+                            className="peer sr-only"
+                            defaultChecked={isSelected}
+                            name="qrPreference"
+                            type="radio"
+                            value={option.key}
+                          />
+                          <div className="rounded-[1.3rem] border border-transparent bg-white p-4 transition hover:border-[rgba(82,103,217,0.14)] peer-checked:border-[var(--brand)] peer-checked:bg-[rgba(82,103,217,0.04)] peer-checked:shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
+                            <div className="flex items-center justify-between gap-3">
+                              <p className="text-sm font-semibold text-[var(--ink)]">{option.label}</p>
+                              {isSelected ? (
+                                <span className="rounded-full bg-[rgba(82,103,217,0.1)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
+                                  Current
+                                </span>
+                              ) : null}
+                            </div>
+                            <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
+                              {option.description}
+                            </p>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
 
                 <div className="rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(247,249,255,0.94),_rgba(255,255,255,0.96))] p-4">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -554,7 +603,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                 <AccessRow icon={Mail} label="Session email" value={workspaceUser.email} />
                 <AccessRow icon={LockKeyhole} label="Sign-in method" value={workspaceUser.authLabel} />
                 <AccessRow icon={Clock3} label="Last saved" value={summary.lastUpdatedLabel} />
-                <AccessRow icon={Smartphone} label="Storage scope" value="Current browser" />
+                <AccessRow icon={Smartphone} label="Storage scope" value={summary.storageScopeLabel} />
                 <AccessRow icon={Globe} label="Integrity model" value="Signed / validated" />
               </div>
             </div>
@@ -568,6 +617,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
 type SettingsFieldProps = {
   autoComplete?: string;
   defaultValue?: string;
+  hint?: string;
   label: string;
   name: string;
   placeholder?: string;
@@ -578,6 +628,7 @@ type SettingsFieldProps = {
 function SettingsField({
   autoComplete,
   defaultValue,
+  hint,
   label,
   name,
   placeholder,
@@ -596,6 +647,7 @@ function SettingsField({
         required={required}
         type={type}
       />
+      {hint ? <span className="text-xs font-normal leading-5 text-[var(--muted)]">{hint}</span> : null}
     </label>
   );
 }

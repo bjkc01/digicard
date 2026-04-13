@@ -56,6 +56,7 @@ export default async function CreateCardPage({ searchParams }: CreateCardPagePro
     linkedin: workspaceView.settings.card.linkedin,
     name: workspaceView.settings.profile.name,
     phone: workspaceView.settings.card.phone,
+    qrPreference: workspaceView.settings.card.qrPreference,
     title: workspaceView.settings.profile.title,
     website: workspaceView.settings.profile.website,
   };

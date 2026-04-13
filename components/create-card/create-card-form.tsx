@@ -10,6 +10,7 @@ import {
   Globe,
   Mail,
   Phone,
+  QrCode,
   ShieldCheck,
   Sparkles,
   SwatchBook,
@@ -26,6 +27,7 @@ import { CardPreview } from "@/components/cards/card-preview";
 import type { DigiCardTemplate } from "@/lib/data";
 import { templates } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { qrPreferenceOptions, type WorkspaceQrPreference } from "@/lib/workspace-settings";
 
 export type CardFormValues = {
   company: string;
@@ -33,11 +35,13 @@ export type CardFormValues = {
   linkedin: string;
   name: string;
   phone: string;
+  qrPreference: WorkspaceQrPreference;
   title: string;
   website: string;
 };
 
 type FieldConfig = {
+  hint?: string;
   icon: ComponentType<{ className?: string }>;
   key: keyof CardFormValues;
   label: string;
@@ -67,7 +71,13 @@ const profileFields: FieldConfig[] = [
 const contactFields: FieldConfig[] = [
   { key: "email", label: "Email", placeholder: "you@example.com", type: "email", icon: Mail, required: true },
   { key: "phone", label: "Phone", placeholder: "+1 (555) 000-0000", icon: Phone },
-  { key: "linkedin", label: "LinkedIn", placeholder: "linkedin.com/in/yourname", icon: AtSign },
+  {
+    key: "linkedin",
+    label: "LinkedIn",
+    placeholder: "linkedin.com/in/yourname or yourusername",
+    hint: "Paste the full LinkedIn URL or just your username.",
+    icon: AtSign,
+  },
   { key: "website", label: "Website", placeholder: "yourwebsite.com", icon: Globe, span: "full" },
 ];
 
@@ -97,6 +107,8 @@ export function CreateCardForm({
     initialSaveCardActionState,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const selectedQrPreference =
+    qrPreferenceOptions.find((option) => option.key === formData.qrPreference) ?? qrPreferenceOptions[0]!;
   const filledIdentityCount = [formData.name, formData.title, formData.company].filter(Boolean).length;
   const contactPointCount = [
     formData.email,
@@ -207,10 +219,66 @@ export function CreateCardForm({
                   onChange={handleChange(field.key)}
                   placeholder={field.placeholder}
                   required={field.required}
+                  hint={field.hint}
                   type={field.type}
                   value={formData[field.key]}
                 />
               ))}
+
+              <div className="md:col-span-2">
+                <div className="rounded-xl border border-gray-200 bg-white p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl bg-[#00C4CC]/10">
+                      <QrCode className="h-4 w-4 text-[#00C4CC]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#0E1318]">QR destination</p>
+                      <p className="mt-1 text-sm leading-6 text-[#293039]">
+                        Choose what the QR should try first. If that field is empty, DigiCard will
+                        fall back automatically.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 md:grid-cols-3">
+                    {qrPreferenceOptions.map((option) => {
+                      const isSelected = formData.qrPreference === option.key;
+
+                      return (
+                        <label
+                          key={option.key}
+                          className={cn(
+                            "cursor-pointer rounded-xl border p-4 transition",
+                            isSelected
+                              ? "border-[#00C4CC] bg-[#00C4CC]/5 shadow-sm"
+                              : "border-gray-200 bg-[#F8F9F9] hover:border-gray-300",
+                          )}
+                        >
+                          <input
+                            checked={isSelected}
+                            className="sr-only"
+                            name="qrPreference"
+                            onChange={handleChange("qrPreference")}
+                            type="radio"
+                            value={option.key}
+                          />
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="text-sm font-semibold text-[#0E1318]">{option.label}</p>
+                            {isSelected ? (
+                              <span className="rounded-full bg-[#00C4CC]/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-[#00C4CC]">
+                                Selected
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="mt-2 text-xs leading-5 text-[#293039]">
+                            {option.description}
+                          </p>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -395,6 +463,7 @@ export function CreateCardForm({
                 linkedin: formData.linkedin,
                 name: formData.name || "Your name",
                 phone: formData.phone,
+                qrPreference: formData.qrPreference,
                 template: selectedTemplate.name,
                 title: formData.title || "Professional title",
                 website: formData.website,
@@ -407,7 +476,7 @@ export function CreateCardForm({
             {[
               { label: "Template", value: selectedTemplate.name },
               { label: "Contact points", value: `${contactPointCount}` },
-              { label: "Save model", value: "Validated" },
+              { label: "QR target", value: selectedQrPreference.label },
             ].map((item) => (
               <div key={item.label} className="rounded-xl border border-gray-100 bg-white px-4 py-3">
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-[#293039]">
@@ -467,6 +536,7 @@ function CreateCardSubmitButton() {
 
 type FieldProps = {
   className?: string;
+  hint?: string;
   icon: ComponentType<{ className?: string }>;
   label: string;
   name: keyof CardFormValues;
@@ -479,6 +549,7 @@ type FieldProps = {
 
 function Field({
   className,
+  hint,
   icon: Icon,
   label,
   name,
@@ -505,6 +576,7 @@ function Field({
           value={value}
         />
       </div>
+      {hint ? <span className="text-[11px] leading-5 text-[#5d6772]">{hint}</span> : null}
     </label>
   );
 }

@@ -63,6 +63,7 @@ function buildWorkspaceCard(settings: Awaited<ReturnType<typeof getWorkspaceSett
       linkedin: settings.card.linkedin,
       name: settings.profile.name,
       phone: settings.card.phone,
+      qrPreference: settings.card.qrPreference,
       template: selectedTemplate.name,
       title: settings.profile.title,
       website: settings.profile.website,

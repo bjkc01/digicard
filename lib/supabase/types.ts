@@ -28,6 +28,7 @@ export type Database = {
           notifications: WorkspaceNotifications;
           owner_email: string;
           phone: string | null;
+          qr_preference: "auto" | "linkedin" | "website";
           title: string | null;
           updated_at: string;
           user_id: string;
@@ -44,6 +45,7 @@ export type Database = {
           notifications?: WorkspaceNotifications;
           owner_email: string;
           phone?: string | null;
+          qr_preference?: "auto" | "linkedin" | "website";
           title?: string | null;
           updated_at?: string;
           user_id: string;
@@ -60,6 +62,7 @@ export type Database = {
           notifications?: WorkspaceNotifications;
           owner_email?: string;
           phone?: string | null;
+          qr_preference?: "auto" | "linkedin" | "website";
           title?: string | null;
           updated_at?: string;
           user_id?: string;

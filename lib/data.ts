@@ -11,6 +11,8 @@ export type DigiCardTemplate = {
   tone: string;
 };
 
+export type CardQrPreference = "auto" | "linkedin" | "website";
+
 export type DigiCard = {
   id: number;
   name: string;
@@ -22,6 +24,7 @@ export type DigiCard = {
   website: string;
   template: string;
   color: string;
+  qrPreference?: CardQrPreference;
 };
 
 export const navigationItems: NavItem[] = [

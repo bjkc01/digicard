@@ -21,11 +21,13 @@ create table if not exists public.profiles (
   phone text,
   website text,
   linkedin text,
+  qr_preference text not null default 'auto',
   default_template_id text not null default 'blueprint',
   notifications jsonb not null default '{"cardOpens": true, "newSaves": false, "qrScans": true, "weeklyDigest": true}'::jsonb,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now()),
-  constraint profiles_owner_email_lowercase check (owner_email = lower(owner_email))
+  constraint profiles_owner_email_lowercase check (owner_email = lower(owner_email)),
+  constraint profiles_qr_preference_valid check (qr_preference in ('auto', 'website', 'linkedin'))
 );
 
 comment on table public.profiles is 'Stores one DigiCard workspace profile per authenticated user.';

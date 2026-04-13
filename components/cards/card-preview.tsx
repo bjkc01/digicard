@@ -171,7 +171,8 @@ export function CardPreview({ card, compact = false, imageUrl }: CardPreviewProp
                 Share identity
               </p>
               <p className={cn("mt-1 text-slate-300", compact ? "text-[12px]" : "text-sm")}>
-                QR opens your {shareTarget.label} so every scan has a working destination.
+                QR opens: {shareTarget.label}. DigiCard falls back automatically if a preferred
+                link is missing.
               </p>
             </div>
             <span className={cn("font-semibold uppercase tracking-[0.24em] text-slate-500", compact ? "text-[9px]" : "text-[11px]")}>

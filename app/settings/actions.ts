@@ -36,6 +36,7 @@ export async function saveProfileSettings(formData: FormData) {
       linkedin: String(formData.get("linkedin") ?? ""),
       name: String(formData.get("name") ?? ""),
       phone: String(formData.get("phone") ?? ""),
+      qrPreference: String(formData.get("qrPreference") ?? ""),
       title: String(formData.get("title") ?? ""),
       website: String(formData.get("website") ?? ""),
     });

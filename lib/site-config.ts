@@ -46,6 +46,36 @@ function normalizePublicUrl(value: string | undefined) {
   }
 }
 
+function normalizeLinkedInUrl(value: string | undefined) {
+  if (!value) {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return undefined;
+  }
+
+  const withoutProtocol = trimmed.replace(/^https?:\/\//i, "").replace(/^www\./i, "");
+  const withoutQuery = withoutProtocol.replace(/[?#].*$/, "").replace(/\/+$/, "");
+  const withoutAtSign = withoutQuery.replace(/^@/, "");
+  const withoutDomain = withoutAtSign
+    .replace(/^linkedin\.com\//i, "")
+    .replace(/^linkedin\//i, "")
+    .replace(/^\/+/, "");
+
+  if (!withoutDomain) {
+    return undefined;
+  }
+
+  const normalizedPath = /^(in|company|school)\//i.test(withoutDomain)
+    ? withoutDomain
+    : `in/${withoutDomain}`;
+
+  return `https://linkedin.com/${normalizedPath}`;
+}
+
 function normalizeEmail(value: string | undefined) {
   const trimmed = value?.trim().toLowerCase();
 
@@ -68,32 +98,37 @@ export function getAbsoluteUrl(path = "/") {
   return new URL(resolvedPath, siteConfig.url).toString();
 }
 
-export function getCardShareTarget(card: Pick<DigiCard, "email" | "linkedin" | "website">) {
+export function getCardShareTarget(
+  card: Pick<DigiCard, "email" | "linkedin" | "website" | "qrPreference">,
+) {
   const websiteUrl = normalizePublicUrl(card.website);
-
-  if (websiteUrl) {
-    return {
-      label: "website",
-      url: websiteUrl,
-    };
-  }
-
-  const linkedInUrl = normalizePublicUrl(card.linkedin);
-
-  if (linkedInUrl) {
-    return {
-      label: "LinkedIn",
-      url: linkedInUrl,
-    };
-  }
-
+  const linkedInUrl = normalizeLinkedInUrl(card.linkedin);
   const email = normalizeEmail(card.email);
+  const preference = card.qrPreference ?? "auto";
 
-  if (email) {
-    return {
-      label: "email",
-      url: `mailto:${email}`,
-    };
+  const candidates =
+    preference === "linkedin"
+      ? [
+          linkedInUrl ? { label: "LinkedIn", url: linkedInUrl } : null,
+          websiteUrl ? { label: "Website", url: websiteUrl } : null,
+          email ? { label: "Email", url: `mailto:${email}` } : null,
+        ]
+      : preference === "website"
+        ? [
+            websiteUrl ? { label: "Website", url: websiteUrl } : null,
+            linkedInUrl ? { label: "LinkedIn", url: linkedInUrl } : null,
+            email ? { label: "Email", url: `mailto:${email}` } : null,
+          ]
+        : [
+            websiteUrl ? { label: "Website", url: websiteUrl } : null,
+            linkedInUrl ? { label: "LinkedIn", url: linkedInUrl } : null,
+            email ? { label: "Email", url: `mailto:${email}` } : null,
+          ];
+
+  const selectedTarget = candidates.find(Boolean);
+
+  if (selectedTarget) {
+    return selectedTarget;
   }
 
   return {

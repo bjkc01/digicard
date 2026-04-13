@@ -14,6 +14,8 @@ function getActionErrorMessage(error: unknown) {
     switch (error.code) {
       case "profile-invalid":
         return "Add a valid name, email, and professional title before saving.";
+      case "qr-invalid":
+        return "Choose whether the QR should open your website, LinkedIn, or use auto mode.";
       case "template-invalid":
         return "Choose one of the available templates before saving.";
       default:
@@ -38,6 +40,7 @@ export async function saveWorkspaceCardAction(
       linkedin: String(formData.get("linkedin") ?? ""),
       name: String(formData.get("name") ?? ""),
       phone: String(formData.get("phone") ?? ""),
+      qrPreference: String(formData.get("qrPreference") ?? ""),
       title: String(formData.get("title") ?? ""),
       website: String(formData.get("website") ?? ""),
     });

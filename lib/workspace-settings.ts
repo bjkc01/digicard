@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { authSecret } from "@/lib/auth-env";
 import { normalizeEmail } from "@/lib/email-auth";
-import { templates } from "@/lib/data";
+import { templates, type CardQrPreference } from "@/lib/data";
 import { supabaseEnabled } from "@/lib/supabase-env";
 import {
   getSupabaseProfileByOwnerEmail,
@@ -44,6 +44,26 @@ export type WorkspaceNotificationKey = (typeof notificationSettingOptions)[numbe
 
 export type WorkspaceNotificationSettings = Record<WorkspaceNotificationKey, boolean>;
 
+export const qrPreferenceOptions = [
+  {
+    description: "Use website first, then LinkedIn, then email if a field is missing.",
+    key: "auto",
+    label: "Auto",
+  },
+  {
+    description: "Prefer the website QR when one is available.",
+    key: "website",
+    label: "Website",
+  },
+  {
+    description: "Prefer the LinkedIn QR when one is available.",
+    key: "linkedin",
+    label: "LinkedIn",
+  },
+] as const;
+
+export type WorkspaceQrPreference = (typeof qrPreferenceOptions)[number]["key"];
+
 export type WorkspaceProfile = {
   email: string;
   name: string;
@@ -55,6 +75,7 @@ export type WorkspaceCardDetails = {
   company: string;
   linkedin: string;
   phone: string;
+  qrPreference: WorkspaceQrPreference;
 };
 
 export type WorkspaceSettings = {
@@ -81,6 +102,7 @@ const defaultNotificationSettings: WorkspaceNotificationSettings = {
 };
 
 const validTemplateIds = new Set(templates.map((template) => template.id));
+const validQrPreferences = new Set<CardQrPreference>(qrPreferenceOptions.map((option) => option.key));
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -135,10 +157,30 @@ function normalizeWebsite(value: string) {
   return cleanText(value, 120).replace(/^https?:\/\//i, "");
 }
 
+function isValidQrPreference(value: unknown): value is WorkspaceQrPreference {
+  return typeof value === "string" && validQrPreferences.has(value as WorkspaceQrPreference);
+}
+
 function normalizeLinkedIn(value: string) {
-  return cleanText(value, 120)
+  const cleaned = cleanText(value, 120)
     .replace(/^https?:\/\//i, "")
-    .replace(/^www\./i, "");
+    .replace(/^www\./i, "")
+    .replace(/^@/, "")
+    .replace(/[?#].*$/, "")
+    .replace(/\/+$/, "");
+
+  if (!cleaned) {
+    return "";
+  }
+
+  const withoutDomain = cleaned.replace(/^linkedin\.com\//i, "").replace(/^linkedin\//i, "");
+  const normalizedPath = withoutDomain.replace(/^\/+/, "");
+
+  if (/^(in|company|school)\//i.test(normalizedPath)) {
+    return `linkedin.com/${normalizedPath}`;
+  }
+
+  return `linkedin.com/in/${normalizedPath}`;
 }
 
 function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings {
@@ -147,6 +189,7 @@ function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings 
       company: "",
       linkedin: "",
       phone: "",
+      qrPreference: "auto",
     },
     defaultTemplateId: validTemplateIds.has(defaultTemplateId)
       ? defaultTemplateId
@@ -177,6 +220,7 @@ function mapSupabaseProfileToWorkspaceSettings(
       company: profile.company ?? "",
       linkedin: profile.linkedin ?? "",
       phone: profile.phone ?? "",
+      qrPreference: isValidQrPreference(profile.qr_preference) ? profile.qr_preference : "auto",
     },
     defaultTemplateId: profile.default_template_id,
     notifications: profile.notifications,
@@ -290,6 +334,9 @@ function mergeWorkspaceSettings(
       company: getOptionalString(candidateCard?.company, defaults.card.company),
       linkedin: getOptionalString(candidateCard?.linkedin, defaults.card.linkedin),
       phone: getOptionalString(candidateCard?.phone, defaults.card.phone),
+      qrPreference: isValidQrPreference(candidateCard?.qrPreference)
+        ? candidateCard.qrPreference
+        : defaults.card.qrPreference,
     },
     defaultTemplateId: templateId,
     notifications: notificationSettingOptions.reduce<WorkspaceNotificationSettings>(
@@ -330,6 +377,7 @@ async function persistWorkspaceSettings(user: WorkspaceUser, settings: Workspace
       notifications: normalized.notifications,
       owner_email: normalized.owner,
       phone: normalized.card.phone,
+      qr_preference: normalized.card.qrPreference,
       title: normalized.profile.title,
       user_id: user.id,
       website: normalized.profile.website,
@@ -387,6 +435,7 @@ export async function saveWorkspaceProfile(
     company: current.card.company,
     linkedin: current.card.linkedin,
     phone: current.card.phone,
+    qrPreference: current.card.qrPreference,
   });
 }
 
@@ -398,6 +447,7 @@ export async function saveWorkspaceProfileDetails(
     linkedin: string;
     name: string;
     phone: string;
+    qrPreference: string;
     title: string;
     website: string;
   },
@@ -405,6 +455,7 @@ export async function saveWorkspaceProfileDetails(
   const current = await getWorkspaceSettings(user);
   const name = cleanText(input.name, 60);
   const email = normalizeEmail(input.email);
+  const qrPreference = isValidQrPreference(input.qrPreference) ? input.qrPreference : null;
   const title = cleanText(input.title, 80);
   const website = normalizeWebsite(input.website);
 
@@ -429,12 +480,20 @@ export async function saveWorkspaceProfileDetails(
     );
   }
 
+  if (!qrPreference) {
+    throw new WorkspaceSettingsValidationError(
+      "qr-invalid",
+      "Choose how the QR code should behave before saving.",
+    );
+  }
+
   return persistWorkspaceSettings(user, {
     ...current,
     card: {
       company: cleanText(input.company, 80),
       linkedin: normalizeLinkedIn(input.linkedin),
       phone: cleanText(input.phone, 40),
+      qrPreference,
     },
     profile: {
       email,
@@ -460,6 +519,7 @@ export async function saveWorkspaceCardDetails(
     linkedin: input.linkedin,
     name: current.profile.name,
     phone: input.phone,
+    qrPreference: current.card.qrPreference,
     title: current.profile.title,
     website: current.profile.website,
   });
@@ -490,6 +550,7 @@ export async function saveWorkspaceCardSnapshot(
     linkedin: string;
     name: string;
     phone: string;
+    qrPreference: string;
     title: string;
     website: string;
   },
@@ -504,6 +565,7 @@ export async function saveWorkspaceCardSnapshot(
   const current = await getWorkspaceSettings(user);
   const name = cleanText(input.name, 60);
   const email = normalizeEmail(input.email);
+  const qrPreference = isValidQrPreference(input.qrPreference) ? input.qrPreference : null;
   const title = cleanText(input.title, 80);
   const website = normalizeWebsite(input.website);
 
@@ -528,12 +590,20 @@ export async function saveWorkspaceCardSnapshot(
     );
   }
 
+  if (!qrPreference) {
+    throw new WorkspaceSettingsValidationError(
+      "qr-invalid",
+      "Choose how the QR code should behave before saving.",
+    );
+  }
+
   return persistWorkspaceSettings(user, {
     ...current,
     card: {
       company: cleanText(input.company, 80),
       linkedin: normalizeLinkedIn(input.linkedin),
       phone: cleanText(input.phone, 40),
+      qrPreference,
     },
     defaultTemplateId: input.defaultTemplateId,
     profile: {
