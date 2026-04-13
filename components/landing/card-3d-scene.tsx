@@ -2,8 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { QrCode, ScanLine, Sparkles } from "lucide-react";
-import { CardPreview } from "@/components/cards/card-preview";
+import { AtSign, Globe, Mail, Phone, QrCode, ScanLine, Sparkles } from "lucide-react";
 import type { DigiCard } from "@/lib/data";
 
 // rotateY positive → right side leans toward viewer
@@ -23,6 +22,80 @@ const mainCard: DigiCard = {
   website: "maya.dev",
 };
 
+const phoneDetails = [
+  { icon: Mail, label: "Email", value: "maya.car..." },
+  { icon: Phone, label: "Phone", value: "+1 (555)..." },
+  { icon: AtSign, label: "LinkedIn", value: "linkedin.c..." },
+  { icon: Globe, label: "Website", value: "maya.dev" },
+] as const;
+
+function PhoneScreenDemo() {
+  return (
+    <div className="relative flex h-full flex-col overflow-hidden rounded-[2.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,19,31,0.98),rgba(7,10,20,1))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(82,103,217,0.24),transparent_34%),radial-gradient(circle_at_100%_0%,rgba(34,211,238,0.14),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))]" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-700 via-cyan-500 to-emerald-400" />
+      <div className="relative flex h-full flex-col px-4 pb-4 pt-3">
+        <div className="mx-auto inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[8px] font-semibold uppercase tracking-[0.22em] text-slate-300">
+          Blueprint
+        </div>
+
+        <div className="mt-4 flex items-start gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.08] text-sm font-semibold shadow-[0_10px_24px_rgba(0,0,0,0.22)]">
+            MC
+          </div>
+          <div className="min-w-0">
+            <p className="text-[15px] font-semibold leading-[1.05] tracking-[-0.04em] text-white">Maya Carter</p>
+            <p className="mt-1 text-[10px] font-medium leading-4 text-cyan-100/90">Computer Science Student</p>
+            <p className="mt-1 text-[10px] leading-4 text-slate-400">University of Maryland</p>
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-2.5">
+          {phoneDetails.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div key={item.label} className="rounded-[18px] border border-white/10 bg-white/[0.05] px-2.5 py-2.5 backdrop-blur">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-white/10 bg-black/20 text-cyan-100">
+                    <Icon className="h-3.5 w-3.5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[7px] font-semibold uppercase tracking-[0.22em] text-slate-500">{item.label}</p>
+                    <p className="mt-0.5 truncate text-[10px] font-medium leading-4 text-slate-200">{item.value}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {[
+            { label: "Template", value: "Blueprint" },
+            { label: "Links", value: "4" },
+            { label: "Status", value: "Ready" },
+          ].map((item) => (
+            <div key={item.label} className="rounded-[18px] border border-white/10 bg-black/20 px-2 py-2.5 text-center">
+              <p className="text-[12px] font-semibold tracking-[-0.04em] text-white">{item.value}</p>
+              <p className="mt-1 text-[7px] font-semibold uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-auto border-t border-white/10 pt-3">
+          <p className="text-[7px] font-semibold uppercase tracking-[0.24em] text-slate-500">Share identity</p>
+          <div className="mt-1 flex items-end justify-between gap-3">
+            <p className="max-w-[12rem] text-[9px] leading-4 text-slate-300">
+              QR opens your website so every scan has a working destination.
+            </p>
+            <span className="text-[7px] font-semibold uppercase tracking-[0.24em] text-slate-500">DigiCard</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PhoneFramedBlueprint() {
   return (
     <div className="relative aspect-[1920/1440] w-[560px] max-w-full">
@@ -33,7 +106,7 @@ function PhoneFramedBlueprint() {
           className="absolute left-1/2 top-[0.5rem] w-[280px] origin-top"
           style={{ transform: "translateX(-50%) perspective(900px) rotateZ(1.2deg) rotateY(-7deg) scale(0.54)" }}
         >
-          <CardPreview card={mainCard} compact />
+          <PhoneScreenDemo />
         </div>
       </div>
       <Image
