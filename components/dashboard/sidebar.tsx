@@ -6,7 +6,7 @@ import { signOutFromWorkspace } from "@/lib/workspace-actions";
 
 type SidebarProps = {
   activePath: string;
-  authLabel: string;
+  email: string;
   userName: string;
 };
 
@@ -17,7 +17,7 @@ const icons = {
   Settings: Settings,
 } as const;
 
-export function Sidebar({ activePath, authLabel, userName }: SidebarProps) {
+export function Sidebar({ activePath, email, userName }: SidebarProps) {
   const initials = userName
     .split(" ")
     .map((n) => n[0])
@@ -67,7 +67,7 @@ export function Sidebar({ activePath, authLabel, userName }: SidebarProps) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-[var(--ink)]">{userName}</p>
-            <p className="truncate text-xs text-[var(--muted)]">{authLabel}</p>
+            <p className="truncate text-xs text-[var(--muted)]">{email}</p>
           </div>
           <form action={signOutFromWorkspace}>
             <button

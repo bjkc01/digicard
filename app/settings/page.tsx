@@ -112,7 +112,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
-      <Sidebar activePath="/settings" authLabel={workspaceUser.authLabel} userName={workspaceUser.name} />
+      <Sidebar activePath="/settings" email={workspaceUser.email} userName={workspaceUser.name} />
 
       <section className="space-y-6">
         <header className="panel flex flex-col gap-5 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 lg:flex-row lg:items-end lg:justify-between">
@@ -157,12 +157,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
             <div className={cn("panel border p-6 shadow-[0_12px_30px_rgba(15,23,42,0.04)]", sessionTone.card)}>
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <h2 className="text-lg font-semibold text-[var(--ink)]">Session & security</h2>
-                    <span className={cn("rounded-full px-3 py-1 text-xs font-semibold", sessionTone.badge)}>
-                      {workspaceUser.authLabel}
-                    </span>
-                  </div>
+                  <h2 className="text-lg font-semibold text-[var(--ink)]">Session & security</h2>
                   <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--muted)]">
                     {workspaceUser.authDescription}
                   </p>
@@ -601,7 +596,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
               </p>
               <div className="mt-6 space-y-3">
                 <AccessRow icon={Mail} label="Session email" value={workspaceUser.email} />
-                <AccessRow icon={LockKeyhole} label="Sign-in method" value={workspaceUser.authLabel} />
+                <AccessRow icon={LockKeyhole} label="Signed in as" value={workspaceUser.email} />
                 <AccessRow icon={Clock3} label="Last saved" value={summary.lastUpdatedLabel} />
                 <AccessRow icon={Smartphone} label="Storage scope" value={summary.storageScopeLabel} />
                 <AccessRow icon={Globe} label="Integrity model" value="Signed / validated" />

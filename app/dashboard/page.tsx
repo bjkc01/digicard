@@ -38,7 +38,7 @@ export default async function DashboardPage() {
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
       <Sidebar
         activePath="/dashboard"
-        authLabel={workspaceUser.authLabel}
+        email={workspaceUser.email}
         userName={workspaceUser.name}
       />
 
