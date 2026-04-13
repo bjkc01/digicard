@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import { QrCode, ScanLine, Sparkles } from "lucide-react";
 import { CardPreview } from "@/components/cards/card-preview";
 import type { DigiCard } from "@/lib/data";
@@ -67,14 +66,9 @@ function PhoneFramedBlueprint() {
         </div>
       </div>
 
-      <Image
-        src="/iphone-frame.png"
-        alt="Phone frame previewing the DigiCard blueprint template"
-        fill
-        sizes="(max-width: 1024px) 280px, 328px"
-        className="pointer-events-none select-none object-contain drop-shadow-[0_36px_72px_rgba(15,23,42,0.24)]"
-        priority
-      />
+      <div className="pointer-events-none absolute inset-0 rounded-[3.6rem] border border-[rgba(15,23,42,0.22)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(244,247,255,0.8))] shadow-[0_36px_72px_rgba(15,23,42,0.2)]" />
+      <div className="pointer-events-none absolute inset-[1.8%] rounded-[3.1rem] border border-white/60" />
+      <div className="pointer-events-none absolute left-1/2 top-[3.2%] h-5 w-20 -translate-x-1/2 rounded-full bg-[rgba(15,23,42,0.92)] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]" />
 
       <div className="pointer-events-none absolute inset-0 rounded-[3.5rem] bg-[radial-gradient(circle_at_12%_10%,rgba(255,255,255,0.52),transparent_16%),radial-gradient(circle_at_82%_14%,rgba(255,255,255,0.18),transparent_18%)] opacity-75" />
     </div>
