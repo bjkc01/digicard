@@ -34,23 +34,6 @@ export function CardsSection({
         <DashboardCardSurface
           key={card.id}
           card={card}
-          action={
-            <div className="flex flex-wrap gap-2">
-              <Button
-                href="/create-card"
-                className="rounded-full bg-[var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4459cb]"
-              >
-                Edit
-              </Button>
-              <Button
-                href="/settings"
-                variant="secondary"
-                className="rounded-full px-4 py-2 text-sm font-medium"
-              >
-                Settings
-              </Button>
-            </div>
-          }
         />
       ))}
     </div>
