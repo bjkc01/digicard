@@ -60,22 +60,22 @@ export function InteractivePhonePreview() {
         </div>
       </div>
 
-      {/* iPhone frame with card preview overlay */}
+      {/* OIP tilted phone frame with card preview overlay */}
       <div
         className="relative mx-auto flex items-center justify-center"
-        style={{ width: 260, height: 520 }}
+        style={{ width: 300, height: 600 }}
       >
         <Image
-          src="/iphone-frame.png"
-          alt="iPhone frame"
+          src="/iphone-oip-tilted.png"
+          alt="OIP iPhone frame"
           fill
-          style={{ objectFit: "contain", transform: "rotate(-12deg)" }}
+          style={{ objectFit: "contain", transform: "rotate(-16deg)" }}
           className="pointer-events-none select-none"
           priority
         />
         <div
-          className="absolute left-[22px] top-[38px] w-[216px] h-[444px] flex items-center justify-center"
-          style={{ transform: "rotate(-12deg)" }}
+          className="absolute left-[38px] top-[60px] w-[220px] h-[480px] flex items-center justify-center"
+          style={{ transform: "rotate(-16deg)" }}
         >
           <div className="w-full h-full overflow-hidden rounded-[2.2rem] border border-white/6 bg-[linear-gradient(180deg,_rgba(24,35,64,0.92),_rgba(9,13,24,0.98))] px-2 pb-2 pt-10 flex items-center justify-center">
             <div className="rounded-[1.8rem] border border-white/5 bg-[radial-gradient(circle_at_top,_rgba(82,103,217,0.18),_transparent_40%),linear-gradient(180deg,_rgba(255,255,255,0.04),_rgba(255,255,255,0.02))] p-2 w-full">
