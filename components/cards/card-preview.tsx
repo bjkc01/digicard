@@ -36,24 +36,11 @@ function Av({
   if (imageUrl) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={imageUrl}
-        alt={name}
-        className={cn(size, rounded, "object-cover flex-shrink-0 shadow-[0_12px_30px_rgba(2,6,23,0.28)]", ring)}
-      />
+      <img src={imageUrl} alt={name} className={cn(size, rounded, "object-cover flex-shrink-0", ring)} />
     );
   }
   return (
-    <div
-      className={cn(
-        size,
-        rounded,
-        bg,
-        ring,
-        "flex items-center justify-center font-bold flex-shrink-0 shadow-[0_12px_30px_rgba(2,6,23,0.22)]",
-        textColor ?? "text-white/50",
-      )}
-    >
+    <div className={cn(size, rounded, bg, ring, "flex items-center justify-center font-bold flex-shrink-0", textColor ?? "text-white/50")}>
       {inits(name)}
     </div>
   );
@@ -314,114 +301,73 @@ function SignalMono({ card, imageUrl, qrValue, compact }: TP) {
 
 function ClassicNight({ card, imageUrl, qrValue, compact }: TP) {
   const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
-  const labelsWidth = compact ? "w-[54px]" : "w-[88px]";
-
-  if (compact) {
-    return (
-      <div className="relative overflow-hidden rounded-[22px] border border-white/10 bg-[linear-gradient(180deg,#1a2132_0%,#141b2b_100%)] shadow-[0_18px_44px_rgba(0,0,0,0.52)]">
-        <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.08),transparent_26%)] pointer-events-none" />
-
-        <div className="relative flex h-full flex-col px-4 pb-4 pt-5">
-          <div className="flex items-center justify-between">
-            <div className="flex h-5 w-5 items-center justify-center rounded-md border border-white/22 bg-white/8">
-              <div className="h-2 w-2 rounded-[2px] bg-white/58" />
-            </div>
-            <span className="text-[7px] font-semibold uppercase tracking-[0.22em] text-white/18">DigiCard</span>
-          </div>
-
-          <div className="mt-4 h-px bg-white/10" />
-
-          <div className="mt-4 flex items-start gap-3">
-            <Av
-              imageUrl={imageUrl}
-              name={card.name}
-              size="h-11 w-11 text-sm"
-              rounded="rounded-xl"
-              bg="bg-white/10 border border-white/16"
-              ring="ring-1 ring-cyan-400/20"
-            />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-[18px] font-bold tracking-[-0.04em] text-white">{card.name}</p>
-              {card.title ? <p className="mt-0.5 truncate text-[10px] font-medium text-slate-300">{card.title}</p> : null}
-              {card.company ? <p className="mt-0.5 truncate text-[9px] text-slate-500">{card.company}</p> : null}
-            </div>
-          </div>
-
-          {contacts.length > 0 ? (
-            <div className="mt-4 flex flex-col">
-              {contacts.slice(0, 3).map((c, index) => (
-                <div key={c.key} className={cn("flex items-center gap-2 border-white/8 py-2", index > 0 && "border-t")}>
-                  <span className={cn(labelsWidth, "shrink-0 text-[7px] uppercase tracking-[0.22em] text-slate-600")}>{c.label}</span>
-                  <p className="truncate text-[10px] text-slate-300">{card[c.key]}</p>
-                </div>
-              ))}
-            </div>
-          ) : null}
-
-          <div className="mt-auto flex items-end justify-between border-t border-white/8 pt-3">
-            <p className="text-[7px] uppercase tracking-[0.22em] text-slate-600">Scan to connect</p>
-            <div className="rounded-2xl bg-white p-2 shadow-[0_10px_24px_rgba(0,0,0,0.28)]">
-              <QRCodeSVG value={qrValue} size={44} bgColor="#ffffff" fgColor="#111827" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const p = compact ? "p-4" : "p-8";
+  const qrSize = compact ? 52 : 128;
 
   return (
-    <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-[linear-gradient(180deg,#20283b_0%,#2b3349_100%)] shadow-[0_34px_90px_rgba(0,0,0,0.56)]">
+    <div
+      className={cn(
+        "relative overflow-hidden border border-white/10 bg-[linear-gradient(180deg,#121827_0%,#0b1020_100%)] shadow-[0_32px_80px_rgba(0,0,0,0.58)]",
+        compact ? "rounded-[22px]" : "rounded-[34px]",
+      )}
+    >
       <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.08),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.05),transparent_24%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.08),transparent_28%),radial-gradient(circle_at_bottom,rgba(59,130,246,0.05),transparent_24%)] pointer-events-none" />
 
-      <div className="relative flex h-full flex-col px-7 pb-8 pt-9">
-        <div className="flex items-center justify-between">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md border border-white/22 bg-white/8">
-            <div className="h-3 w-3 rounded-[3px] bg-white/58" />
-          </div>
-          <span className="text-[9px] font-semibold uppercase tracking-[0.28em] text-white/14">DigiCard</span>
-        </div>
+      <div className={cn(p, "relative flex h-full flex-col")}>
+        <Av
+          imageUrl={imageUrl}
+          name={card.name}
+          size={compact ? "h-12 w-12 text-sm" : "h-14 w-14 text-base"}
+          rounded="rounded-2xl"
+          bg="bg-white/10 border border-white/14"
+          ring={compact ? undefined : "ring-1 ring-white/12"}
+        />
 
-        <div className="mt-8 h-px bg-white/10" />
-
-        <div className="mt-6 flex items-start gap-4">
-          <Av
-            imageUrl={imageUrl}
-            name={card.name}
-            size="h-[60px] w-[60px] text-base"
-            rounded="rounded-xl"
-            bg="bg-white/10 border border-white/16"
-            ring="ring-1 ring-cyan-400/22"
-          />
-          <div className="min-w-0 flex-1">
-            <p className="text-[44px] font-bold tracking-[-0.05em] leading-[0.94] text-white">{card.name}</p>
-            {card.title ? <p className="mt-2 text-[17px] font-medium text-slate-300">{card.title}</p> : null}
-            {card.company ? <p className="mt-1 text-[13px] text-slate-500">{card.company}</p> : null}
-          </div>
+        <div className={compact ? "mt-5" : "mt-8"}>
+          <p className={cn(compact ? "text-[28px]" : "text-[42px]", "font-bold tracking-[-0.04em] leading-none text-white")}>
+            {card.name}
+          </p>
+          {card.title ? (
+            <p className={cn(compact ? "mt-2 text-[10px]" : "mt-3 text-[16px]", "font-medium text-slate-300")}>
+              {card.title}
+            </p>
+          ) : null}
+          {card.company ? (
+            <p className={cn(compact ? "mt-1 text-[9px]" : "mt-1.5 text-[12px]", "text-slate-500")}>
+              {card.company}
+            </p>
+          ) : null}
         </div>
 
         {contacts.length > 0 ? (
-          <div className="mt-10 flex flex-col">
-            {contacts.map((c, index) => (
-              <div key={c.key} className={cn("flex items-center gap-4 border-white/8 py-4", index > 0 && "border-t")}>
-                <span className={cn(labelsWidth, "shrink-0 text-[10px] font-medium uppercase tracking-[0.24em] text-slate-600")}>
-                  {c.label}
-                </span>
-                <p className="truncate text-[14px] font-medium text-slate-200">{card[c.key]}</p>
-              </div>
-            ))}
+          <div className={cn(compact ? "mt-5" : "mt-8", "flex flex-col")}>
+            {contacts.map((c, index) => {
+              const Icon = c.icon;
+              return (
+                <div
+                  key={c.key}
+                  className={cn(
+                    "flex items-center gap-3 border-slate-800/95",
+                    compact ? "py-2.5" : "py-3.5",
+                    index > 0 && "border-t",
+                  )}
+                >
+                  <Icon className={cn(compact ? "h-4 w-4" : "h-[18px] w-[18px]", "shrink-0 text-slate-500")} />
+                  <p className={cn(compact ? "text-[10px]" : "text-[12px]", "truncate text-slate-300")}>{card[c.key]}</p>
+                </div>
+              );
+            })}
           </div>
         ) : null}
 
-        <div className="mt-auto flex items-end justify-between border-t border-white/8 pt-7">
-          <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-slate-600">Scan to connect</p>
-            <p className="mt-2 text-[10px] uppercase tracking-[0.28em] text-slate-700">Premium DigiCard</p>
+        <div className={cn(compact ? "mt-6" : "mt-auto pt-8", "flex flex-col items-center")}>
+          <div className={cn("bg-white shadow-[0_12px_34px_rgba(0,0,0,0.35)]", compact ? "rounded-[20px] p-2.5" : "rounded-[28px] p-4")}>
+            <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor="#111827" />
           </div>
-          <div className="rounded-[22px] bg-white p-3 shadow-[0_16px_40px_rgba(0,0,0,0.28)]">
-            <QRCodeSVG value={qrValue} size={92} bgColor="#ffffff" fgColor="#111827" />
-          </div>
+          <p className={cn(compact ? "mt-4 text-[8px]" : "mt-7 text-[10px]", "tracking-[0.28em] uppercase text-slate-600")}>
+            SCAN TO CONNECT | DIGICARD
+          </p>
         </div>
       </div>
     </div>
