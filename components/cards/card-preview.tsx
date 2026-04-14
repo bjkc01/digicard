@@ -60,7 +60,7 @@ function ExecutiveSlate({ card, imageUrl, qrValue, compact }: TP) {
       {/* Left accent bar */}
       <div className="absolute left-0 inset-y-0 w-1 bg-white/20" />
 
-      <div className={cn(p, "pl-6 flex flex-col gap-0")}>
+      <div className={cn(p, "pl-6 flex h-full flex-col gap-0")}>
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="h-4 w-4 rounded-sm bg-white/10 border border-white/12 flex items-center justify-center">
@@ -104,7 +104,7 @@ function ExecutiveSlate({ card, imageUrl, qrValue, compact }: TP) {
         )}
 
         {/* Footer */}
-        <div className={cn(compact ? "mt-3" : "mt-5", "pt-3 border-t border-white/[0.06] flex items-center justify-between")}>
+        <div className={cn(compact ? "mt-4" : "mt-auto pt-5", "border-t border-white/[0.06] flex items-center justify-between")}>
           <span className="text-[8px] tracking-[0.18em] uppercase text-slate-700">Scan to connect</span>
           <div className="rounded-[5px] bg-white p-1">
             <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor="#0f172a" />
@@ -128,7 +128,7 @@ function StudioIvory({ card, imageUrl, qrValue, compact }: TP) {
       {/* Left thick editorial stripe */}
       <div className="absolute left-0 inset-y-0 w-3 bg-gradient-to-b from-stone-800 to-stone-500" />
 
-      <div className={cn(p, "pl-8 flex flex-col")}>
+      <div className={cn(p, "pl-8 flex h-full flex-col")}>
         {/* Avatar + brand */}
         <div className="flex items-center justify-between">
           <Av imageUrl={imageUrl} name={card.name}
@@ -167,7 +167,7 @@ function StudioIvory({ card, imageUrl, qrValue, compact }: TP) {
         )}
 
         {/* QR */}
-        <div className={cn(compact ? "mt-3" : "mt-5", "flex items-center justify-between")}>
+        <div className={cn(compact ? "mt-4" : "mt-auto pt-5", "flex items-center justify-between")}>
           <div className="rounded-xl bg-white border border-stone-200 p-2 shadow-sm">
             <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor="#1c1917" />
           </div>
@@ -192,7 +192,7 @@ function Blueprint({ card, imageUrl, qrValue, compact }: TP) {
     <div className={cn("relative overflow-hidden bg-gradient-to-br from-blue-700 to-cyan-500 shadow-[0_24px_60px_rgba(0,0,0,0.45)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.09),transparent_55%)] pointer-events-none" />
 
-      <div className={cn(p, "relative flex flex-col")}>
+      <div className={cn(p, "relative flex h-full flex-col")}>
         {/* Identity row */}
         <div className="flex items-start gap-3">
           <Av imageUrl={imageUrl} name={card.name}
@@ -233,7 +233,7 @@ function Blueprint({ card, imageUrl, qrValue, compact }: TP) {
         )}
 
         {/* QR footer */}
-        <div className={cn(compact ? "mt-3" : "mt-4", "pt-3 border-t border-white/15 flex items-center justify-between")}>
+        <div className={cn(compact ? "mt-4" : "mt-auto pt-5", "border-t border-white/15 flex items-center justify-between")}>
           <div>
             <p className={cn(compact ? "text-[9px]" : "text-xs", "font-semibold text-white/85")}>Scan to connect</p>
             {!compact && <p className="text-[9px] text-white/45 mt-0.5">Opens your profile instantly</p>}
@@ -256,7 +256,7 @@ function SignalMono({ card, imageUrl, qrValue, compact }: TP) {
 
   return (
     <div className={cn("relative overflow-hidden bg-gradient-to-br from-zinc-950 to-zinc-800 shadow-[0_24px_60px_rgba(0,0,0,0.65)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
-      <div className={cn(p, "flex flex-col")}>
+      <div className={cn(p, "flex h-full flex-col")}>
         {/* Top rule */}
         <div className="h-px w-full bg-white/8" />
 
@@ -285,7 +285,7 @@ function SignalMono({ card, imageUrl, qrValue, compact }: TP) {
         )}
 
         {/* Bottom rules + QR */}
-        <div className={cn(compact ? "mt-4" : "mt-8", "flex items-end justify-between")}>
+        <div className={cn(compact ? "mt-4" : "mt-auto pt-8", "flex items-end justify-between")}>
           <div className="flex flex-col gap-1">
             <div className="h-px w-16 bg-white/8" />
             <div className="h-px w-10 bg-white/5" />
@@ -383,7 +383,7 @@ function Crest({ card, imageUrl, qrValue, compact }: TP) {
 
   return (
     <div className={cn("relative overflow-hidden bg-slate-50 border border-slate-200 shadow-[0_16px_40px_rgba(0,0,0,0.06)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
-      <div className={cn(p, "flex flex-col items-center text-center")}>
+      <div className={cn(p, "flex h-full flex-col items-center text-center")}>
         {/* Top flanking rule */}
         <div className="flex items-center gap-2 w-full">
           <div className="h-px flex-1 bg-slate-200" />
@@ -425,7 +425,7 @@ function Crest({ card, imageUrl, qrValue, compact }: TP) {
         )}
 
         {/* QR centered */}
-        <div className={cn(compact ? "mt-3" : "mt-5", "flex flex-col items-center gap-1.5")}>
+        <div className={cn(compact ? "mt-4" : "mt-auto pt-5", "flex flex-col items-center gap-1.5")}>
           <div className="rounded-xl bg-white border border-slate-200 p-2 shadow-sm">
             <QRCodeSVG value={qrValue} size={compact ? 40 : 60} bgColor="#ffffff" fgColor="#0f172a" />
           </div>
@@ -453,7 +453,7 @@ function Horizon({ card, imageUrl, qrValue, compact }: TP) {
     return (
       <div className="relative overflow-hidden rounded-[22px] bg-gradient-to-br from-indigo-700 to-sky-500 shadow-[0_16px_40px_rgba(0,0,0,0.4)]">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.1),transparent_45%)] pointer-events-none" />
-        <div className="relative p-4 flex flex-col gap-3">
+        <div className="relative flex h-full flex-col gap-3 p-4">
           {/* Identity */}
           <div className="flex items-center gap-2.5">
             <Av imageUrl={imageUrl} name={card.name} size="h-10 w-10 text-sm"
@@ -472,7 +472,7 @@ function Horizon({ card, imageUrl, qrValue, compact }: TP) {
             ))}
           </div>
           {/* QR row */}
-          <div className="flex items-center justify-between pt-1.5 border-t border-white/15">
+          <div className="mt-auto flex items-center justify-between border-t border-white/15 pt-2.5">
             <p className="text-[8px] text-white/45 tracking-wide">Scan to connect</p>
             <div className="rounded-lg bg-white p-1">
               <QRCodeSVG value={qrValue} size={32} bgColor="#ffffff" fgColor="#3730a3" />
@@ -503,22 +503,24 @@ function Horizon({ card, imageUrl, qrValue, compact }: TP) {
         </div>
 
         {/* Right panel — contacts + QR */}
-        <div className="flex-1 p-5 flex flex-col justify-center gap-3">
-          {contacts.map((c) => {
-            const Icon = c.icon;
-            return (
-              <div key={c.key} className="flex items-center gap-2.5">
-                <div className="h-7 w-7 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center flex-shrink-0">
-                  <Icon className="h-3 w-3 text-white/75" />
+        <div className="flex h-full flex-1 flex-col p-5">
+          <div className="flex flex-col gap-3">
+            {contacts.map((c) => {
+              const Icon = c.icon;
+              return (
+                <div key={c.key} className="flex items-center gap-2.5">
+                  <div className="h-7 w-7 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center flex-shrink-0">
+                    <Icon className="h-3 w-3 text-white/75" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[7px] tracking-[0.14em] uppercase text-white/38">{c.label}</p>
+                    <p className="text-[10px] text-white/80 truncate leading-none mt-0.5">{card[c.key]}</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[7px] tracking-[0.14em] uppercase text-white/38">{c.label}</p>
-                  <p className="text-[10px] text-white/80 truncate leading-none mt-0.5">{card[c.key]}</p>
-                </div>
-              </div>
-            );
-          })}
-          <div className="mt-2 pt-3 border-t border-white/15 flex items-center gap-3">
+              );
+            })}
+          </div>
+          <div className="mt-auto flex items-center gap-3 border-t border-white/15 pt-4">
             <div className="rounded-xl bg-white p-1.5 shadow-lg">
               <QRCodeSVG value={qrValue} size={44} bgColor="#ffffff" fgColor="#3730a3" />
             </div>
@@ -545,7 +547,7 @@ function Ember({ card, imageUrl, qrValue, compact }: TP) {
       <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-white/10 pointer-events-none" />
       <div className="absolute -right-3 -bottom-8 h-32 w-32 rounded-full bg-white/[0.07] pointer-events-none" />
 
-      <div className={cn(p, "relative flex flex-col")}>
+      <div className={cn(p, "relative flex h-full flex-col")}>
         {/* Brand + avatar */}
         <div className="flex items-center justify-between">
           <span className="text-[8px] tracking-[0.24em] uppercase text-white/55 font-semibold">DigiCard</span>
@@ -589,7 +591,7 @@ function Ember({ card, imageUrl, qrValue, compact }: TP) {
         )}
 
         {/* QR */}
-        <div className={cn(compact ? "mt-3" : "mt-5", "flex justify-end")}>
+        <div className={cn(compact ? "mt-4" : "mt-auto pt-5", "flex justify-end")}>
           <div className="rounded-xl bg-white/88 p-1.5 shadow-lg">
             <QRCodeSVG value={qrValue} size={compact ? 36 : 52} bgColor="rgba(255,255,255,0.9)" fgColor="#92400e" />
           </div>
@@ -610,7 +612,7 @@ function Forest({ card, imageUrl, qrValue, compact }: TP) {
     <div className={cn("relative overflow-hidden bg-gradient-to-b from-emerald-950 via-emerald-900 to-teal-700 shadow-[0_24px_60px_rgba(0,0,0,0.55)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(52,211,153,0.07),transparent_50%)] pointer-events-none" />
 
-      <div className={cn(p, "relative flex flex-col")}>
+      <div className={cn(p, "relative flex h-full flex-col")}>
         {/* Top zone — identity */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -653,7 +655,7 @@ function Forest({ card, imageUrl, qrValue, compact }: TP) {
         )}
 
         {/* QR footer */}
-        <div className={cn(compact ? "mt-3" : "mt-5", "pt-3 border-t border-white/[0.07] flex items-center justify-between")}>
+        <div className={cn(compact ? "mt-4" : "mt-auto pt-5", "border-t border-white/[0.07] flex items-center justify-between")}>
           <div>
             <p className="text-[8px] tracking-[0.18em] uppercase text-emerald-300/35">Scan to connect</p>
             {!compact && <p className="text-[7px] text-white/18 mt-0.5">DigiCard</p>}
@@ -681,7 +683,7 @@ function Obsidian({ card, imageUrl, qrValue, compact }: TP) {
       {/* Radial glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_15%,rgba(167,139,250,0.16),transparent_45%)] pointer-events-none" />
 
-      <div className={cn(p, "relative flex flex-col")}>
+      <div className={cn(p, "relative flex h-full flex-col")}>
         {/* Brand row */}
         <div className="flex items-center gap-2">
           <div className="h-1.5 w-1.5 rotate-45 bg-violet-300/45" />
@@ -717,7 +719,7 @@ function Obsidian({ card, imageUrl, qrValue, compact }: TP) {
         )}
 
         {/* Shimmer + QR */}
-        <div className={cn(compact ? "mt-3" : "mt-5")}>
+        <div className={cn(compact ? "mt-4" : "mt-auto pt-5")}>
           <div className="h-px bg-gradient-to-r from-violet-300/18 via-violet-300/8 to-transparent mb-3" />
           <div className="flex items-center justify-between">
             <p className="text-[8px] tracking-[0.2em] uppercase text-violet-300/30">Scan to connect</p>
@@ -742,7 +744,7 @@ function Dawn({ card, imageUrl, qrValue, compact }: TP) {
     <div className={cn("relative overflow-hidden bg-gradient-to-br from-pink-500 to-purple-500 shadow-[0_24px_60px_rgba(0,0,0,0.4)]", compact ? "rounded-[22px]" : "rounded-[32px]")}>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.1),transparent_50%)] pointer-events-none" />
 
-      <div className={cn(p, "relative flex flex-col items-center text-center")}>
+      <div className={cn(p, "relative flex h-full flex-col items-center text-center")}>
         {/* Dot row */}
         <div className="flex gap-1.5 items-center">
           <div className="h-1.5 w-1.5 rounded-full bg-white/70" />
@@ -782,7 +784,7 @@ function Dawn({ card, imageUrl, qrValue, compact }: TP) {
         )}
 
         {/* QR */}
-        <div className={cn(compact ? "mt-3" : "mt-5", "flex flex-col items-center gap-1.5")}>
+        <div className={cn(compact ? "mt-4" : "mt-auto pt-5", "flex flex-col items-center gap-1.5")}>
           <div className="rounded-2xl bg-white p-2 shadow-[0_8px_20px_rgba(0,0,0,0.2)]">
             <QRCodeSVG value={qrValue} size={compact ? 38 : 58} bgColor="#ffffff" fgColor="#7c3aed" />
           </div>
