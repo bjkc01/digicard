@@ -1,6 +1,39 @@
 import Image from "next/image";
 import { Sparkles } from "lucide-react";
 
+function RealisticPhoneFrame() {
+  return (
+    <div className="relative mx-auto w-[18.5rem] sm:w-[20rem] lg:w-[21rem]">
+      <div className="absolute left-0 top-[18%] z-0 h-[12%] w-[1.35%] rounded-full bg-[linear-gradient(180deg,#42464f,#0e1118)] shadow-[0_1px_4px_rgba(0,0,0,0.22)]" />
+      <div className="absolute -left-[0.45%] top-[31%] z-0 h-[9.5%] w-[1.75%] rounded-full bg-[linear-gradient(180deg,#4a4f58,#141821)] shadow-[0_1px_4px_rgba(0,0,0,0.22)]" />
+      <div className="absolute right-0 top-[27%] z-0 h-[14%] w-[1.4%] rounded-full bg-[linear-gradient(180deg,#4e535c,#141821)] shadow-[0_1px_4px_rgba(0,0,0,0.22)]" />
+
+      <div className="relative aspect-[467/700] rounded-[3.7rem] bg-[linear-gradient(135deg,#d8dbe3_0%,#767d88_12%,#11141a_24%,#737984_38%,#0d1016_62%,#c9ccd4_100%)] p-[0.22rem] shadow-[0_26px_60px_rgba(15,23,42,0.18),0_5px_12px_rgba(15,23,42,0.12)]">
+        <div className="absolute inset-[0.22rem] rounded-[3.55rem] border border-white/18 bg-[linear-gradient(180deg,rgba(255,255,255,0.24),rgba(255,255,255,0.04)_14%,rgba(0,0,0,0.08)_55%,rgba(255,255,255,0.18)_100%)] opacity-85" />
+
+        <div className="relative h-full w-full rounded-[3.45rem] bg-[linear-gradient(180deg,#22252d,#0a0d13)] p-[0.28rem]">
+          <div className="relative h-full w-full overflow-hidden rounded-[3.15rem] bg-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
+            <Image
+              src="/jordan-lin-card.png"
+              alt="Jordan Lin DigiCard demo preview"
+              fill
+              sizes="(max-width: 768px) 55vw, 336px"
+              className="pointer-events-none select-none object-cover object-center"
+              priority
+            />
+
+            <div className="pointer-events-none absolute inset-x-[34%] top-[2.4%] z-20 h-[4.6%] rounded-full bg-[linear-gradient(180deg,#020304,#0b0d12)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.35)]" />
+            <div className="pointer-events-none absolute right-[39.2%] top-[3.55%] z-30 h-[1.18%] w-[1.75%] rounded-full bg-[radial-gradient(circle_at_35%_35%,#2d6bff,#08152d_72%)] opacity-90" />
+
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.12)_0%,transparent_18%,transparent_72%,rgba(255,255,255,0.08)_100%)]" />
+            <div className="pointer-events-none absolute inset-[0.16rem] rounded-[3rem] ring-1 ring-white/6" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function InteractivePhonePreview() {
   return (
     <div className="relative mx-auto flex max-w-[40rem] justify-center py-10">
@@ -18,33 +51,11 @@ export function InteractivePhonePreview() {
       </div>
 
       <div className="relative w-full max-w-[620px]">
-        <div className="relative aspect-[1920/1440] w-full">
+        <div className="relative flex aspect-[1920/1440] w-full items-center justify-center">
           <div className="pointer-events-none absolute inset-0 rounded-[3rem] bg-[radial-gradient(circle_at_50%_24%,rgba(82,103,217,0.2),transparent_22%),radial-gradient(circle_at_48%_58%,rgba(56,189,248,0.12),transparent_26%),radial-gradient(circle_at_38%_75%,rgba(255,255,255,0.62),transparent_28%)] blur-[2px]" />
-
-          <div className="absolute left-[36.48%] top-[8.74%] h-[68.92%] w-[26.16%] overflow-hidden rounded-[2.88rem] bg-[#060912] shadow-[0_24px_40px_rgba(15,23,42,0.2)]">
-            <div className="absolute inset-[0.12rem] overflow-hidden rounded-[2.76rem] bg-[#060912]">
-              <div className="absolute inset-0">
-                <Image
-                  src="/jordan-lin-card.png"
-                  alt="Jordan Lin DigiCard demo preview"
-                  fill
-                  sizes="(max-width: 768px) 30vw, 180px"
-                  className="pointer-events-none select-none object-cover object-center scale-[1.085]"
-                  priority
-                />
-              </div>
-            </div>
+          <div className="relative z-10 translate-y-2 sm:translate-y-3">
+            <RealisticPhoneFrame />
           </div>
-
-          <Image
-            src="/hand-phone-hero.png"
-            alt="Hand holding a phone previewing the DigiCard blueprint template"
-            fill
-            sizes="(max-width: 768px) 90vw, 620px"
-            className="pointer-events-none select-none object-contain drop-shadow-[0_34px_80px_rgba(15,23,42,0.24)]"
-            priority
-          />
-
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_36%_72%,rgba(255,255,255,0.26),transparent_18%),radial-gradient(circle_at_53%_13%,rgba(255,255,255,0.12),transparent_14%)]" />
         </div>
       </div>
