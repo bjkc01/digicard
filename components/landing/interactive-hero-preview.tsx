@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type WheelEvent } from "react";
 import { AtSign, Globe, Mail, Phone } from "lucide-react";
-import QRCode from "react-qr-code";
+import { QRCodeSVG } from "qrcode.react";
 
 function sanitizeFragment(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
@@ -161,7 +161,7 @@ export function InteractiveHeroPreview() {
                       <div className="shrink-0 pt-8">
                         <div className="flex shrink-0 justify-center pb-2">
                           <div className="flex h-24 w-24 items-center justify-center rounded-xl bg-white p-2 shadow-[0_18px_40px_rgba(4,9,18,0.45)]">
-                            <QRCode
+                            <QRCodeSVG
                               bgColor="transparent"
                               fgColor="#151a29"
                               size={80}
