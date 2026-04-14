@@ -260,7 +260,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
             </p>
           </div>
 
-          <div className="relative" id="live-preview">
+          <div className="anim-card relative" id="live-preview">
             <InteractivePhonePreview />
           </div>
         </div>
