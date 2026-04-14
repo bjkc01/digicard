@@ -3,9 +3,25 @@ import { Sidebar } from "@/components/dashboard/sidebar";
 import { Button } from "@/components/ui/button";
 import { TemplateTile } from "@/components/cards/template-tile";
 import { TemplatesFilter } from "@/components/cards/templates-filter";
-import { templates, type TemplateCategory } from "@/lib/data";
+import { templates, type DigiCard, type DigiCardTemplate, type TemplateCategory } from "@/lib/data";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import { getWorkspaceView } from "@/lib/workspace-view";
+
+function buildPreviewCard(template: DigiCardTemplate, workspaceView: Awaited<ReturnType<typeof getWorkspaceView>>): DigiCard {
+  return {
+    color: template.accent,
+    company: workspaceView.settings.card.company || "University or Company",
+    email: workspaceView.settings.profile.email || "you@example.com",
+    id: `gallery-preview-${template.id}`,
+    linkedin: workspaceView.settings.card.linkedin || "linkedin.com/in/yourname",
+    name: workspaceView.settings.profile.name || "Your Name",
+    phone: workspaceView.settings.card.phone || "+1 (555) 000-0000",
+    qrPreference: workspaceView.settings.card.qrPreference,
+    template: template.name,
+    title: workspaceView.settings.profile.title || "Student or Early Professional",
+    website: workspaceView.settings.profile.website || "yourportfolio.com",
+  };
+}
 
 export default async function TemplatesPage({
   searchParams,
@@ -65,6 +81,7 @@ export default async function TemplatesPage({
             <TemplateTile
               key={template.id}
               isSelected={template.id === workspaceView.settings.defaultTemplateId}
+              previewCard={buildPreviewCard(template, workspaceView)}
               template={template}
             />
           ))}

@@ -3,34 +3,25 @@ import type { DigiCard, DigiCardTemplate } from "@/lib/data";
 import { CardPreview } from "@/components/cards/card-preview";
 import { cn } from "@/lib/utils";
 
-function buildTemplatePreviewCard(template: DigiCardTemplate): DigiCard {
-  return {
-    color: template.accent,
-    company: "The University of Akron",
-    email: "bijaykhatri2020@gmail.com",
-    id: `gallery-preview-${template.id}`,
-    linkedin: "linkedin.com/in/bijaykcc",
-    name: "Samosa Alert!!",
-    phone: "(232) 332-3330",
-    template: template.name,
-    title: "Student Assistant",
-    website: "www.samosaalert.com",
-  };
-}
-
-function TemplateCardPreview({ template }: { template: DigiCardTemplate }) {
+function TemplateCardPreview({
+  previewCard,
+}: {
+  previewCard: DigiCard;
+}) {
   return (
     <div className="mx-auto w-[148px] max-w-full">
-      <CardPreview card={buildTemplatePreviewCard(template)} compact />
+      <CardPreview card={previewCard} compact />
     </div>
   );
 }
 
 export function TemplateTile({
   isSelected = false,
+  previewCard,
   template,
 }: {
   isSelected?: boolean;
+  previewCard: DigiCard;
   template: DigiCardTemplate;
 }) {
   return (
@@ -42,7 +33,7 @@ export function TemplateTile({
       )}
     >
       <div className={cn("rounded-[22px] p-4", template.tone)}>
-        <TemplateCardPreview template={template} />
+        <TemplateCardPreview previewCard={previewCard} />
       </div>
 
       <div className="mt-4 px-1">

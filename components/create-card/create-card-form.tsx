@@ -174,16 +174,16 @@ export function CreateCardForm({
     qrPreferenceOptions.find((o) => o.key === formData.qrPreference) ?? qrPreferenceOptions[0]!;
   const buildTemplatePreviewCard = (template: DigiCardTemplate) => ({
     color: template.accent,
-    company: formData.company || "The University of Akron",
+    company: formData.company || "University or Company",
     email: formData.email || "you@example.com",
     id: `template-preview-${template.id}`,
     linkedin: formData.linkedin || "linkedin.com/in/yourname",
-    name: formData.name || "Samosa Alert!!",
-    phone: formData.phone || "(232) 332-3330",
+    name: formData.name || "Your Name",
+    phone: formData.phone || "+1 (555) 000-0000",
     qrPreference: formData.qrPreference,
     template: template.name,
-    title: formData.title || "Student Assistant",
-    website: formData.website || "www.digicard.app",
+    title: formData.title || "Student or Early Professional",
+    website: formData.website || "yourportfolio.com",
   });
 
   useEffect(() => {
