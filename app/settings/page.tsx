@@ -2,15 +2,10 @@ import {
   AlertTriangle,
   BadgeCheck,
   BellRing,
-  Clock3,
-  Globe,
   LayoutTemplate,
-  LockKeyhole,
   LogOut,
-  Mail,
   QrCode,
   ShieldCheck,
-  Smartphone,
   UserRound,
 } from "lucide-react";
 import type { ComponentType } from "react";
@@ -582,35 +577,6 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                 {selectedTemplate.description}
               </p>
             </div>
-
-            <div className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(135deg,_#172340_0%,_#2d4177_48%,_#5267d9_100%)] p-6 text-white shadow-[0_24px_54px_rgba(35,51,103,0.22)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/58">
-                Access overview
-              </p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-[-0.04em]">
-                Keep access details clear and current.
-              </h2>
-              <p className="mt-3 text-sm leading-7 text-white/72">
-                See your signed-in account, sync location, and latest saved update in one place.
-              </p>
-              <div className="mt-6 space-y-3">
-                <AccessRow
-                  icon={Mail}
-                  label="Session email"
-                  value={workspaceUser.email}
-                  valueClassName="break-words"
-                />
-                <AccessRow icon={LockKeyhole} label="Workspace profile" value={workspaceUser.name} />
-                <AccessRow
-                  icon={Clock3}
-                  label="Last updated"
-                  value={summary.lastUpdatedLabel}
-                  valueClassName="whitespace-nowrap"
-                />
-                <AccessRow icon={Smartphone} label="Save location" value={summary.storageScopeLabel} />
-                <AccessRow icon={Globe} label="Session security" value="Signed and server-validated" />
-              </div>
-            </div>
           </aside>
         </div>
       </section>
@@ -674,35 +640,6 @@ function SnapshotCard({ description, icon: Icon, title, value }: SnapshotCardPro
       </div>
       <p className="mt-3 text-xl font-semibold text-[var(--ink)]">{value}</p>
       <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{description}</p>
-    </div>
-  );
-}
-
-function AccessRow({
-  icon: Icon,
-  label,
-  value,
-  valueClassName,
-}: {
-  icon: ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-  valueClassName?: string;
-}) {
-  return (
-    <div className="rounded-[1.3rem] border border-white/15 bg-white/10 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-      <div className="flex items-center gap-3 text-white/62">
-        <Icon className="h-4 w-4 flex-shrink-0" />
-        <span className="text-[11px] font-semibold uppercase tracking-[0.16em]">{label}</span>
-      </div>
-      <p
-        className={cn(
-          "mt-3 pl-7 text-base font-semibold leading-7 text-white",
-          valueClassName,
-        )}
-      >
-        {value}
-      </p>
     </div>
   );
 }
