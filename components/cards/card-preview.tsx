@@ -359,8 +359,7 @@ function StudentNetworkCard({
 }: TP & { theme: StudentTheme }) {
   const contacts = networkingContactDefs.filter((contact) => Boolean(card[contact.key]));
   const visibleContacts = compact ? contacts.slice(0, 3) : contacts.slice(0, 4);
-  const featureTags = visibleContacts.map((contact) => contact.label).slice(0, compact ? 2 : 3);
-  const qrSize = compact ? 46 : 76;
+  const qrSize = compact ? 42 : 88;
 
   return (
     <div
@@ -440,32 +439,17 @@ function StudentNetworkCard({
           </div>
         </div>
 
-        <div className={cn("rounded-[22px] px-4 py-3", theme.panelAlt)}>
-          <p
-            className={cn(
-              compact ? "text-[7px]" : "text-[9px]",
-              "font-semibold uppercase tracking-[0.2em]",
-              theme.subtle,
-            )}
-          >
-            Made for real networking
-          </p>
-          <p className={cn(compact ? "mt-1 text-[9px] leading-4" : "mt-1.5 text-[11px] leading-5", theme.body)}>
-            Share one quick scan that opens your profile, best links, and contact details instantly.
-          </p>
-        </div>
-
         {visibleContacts.length > 0 ? (
-          <div className={cn("grid", compact ? "grid-cols-1 gap-2" : "grid-cols-2 gap-2.5")}>
+          <div className={cn("flex flex-col", compact ? "gap-2" : "gap-2.5")}>
             {visibleContacts.map((contact) => {
               const Icon = contact.icon;
 
               return (
                 <div key={contact.key} className={cn("rounded-[18px] p-3", theme.panel)}>
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-center gap-3">
                     <div
                       className={cn(
-                        "mt-0.5 flex items-center justify-center rounded-2xl",
+                        "flex items-center justify-center rounded-2xl",
                         compact ? "h-8 w-8" : "h-9 w-9",
                         theme.iconWrap,
                       )}
@@ -482,7 +466,13 @@ function StudentNetworkCard({
                       >
                         {contact.label}
                       </p>
-                      <p className={cn(compact ? "mt-1 text-[9px]" : "mt-1.5 text-[11px]", "truncate", theme.body)}>
+                      <p
+                        className={cn(
+                          compact ? "mt-0.5 text-[10px]" : "mt-1 text-[12px]",
+                          "truncate font-medium",
+                          theme.body,
+                        )}
+                      >
                         {card[contact.key]}
                       </p>
                     </div>
@@ -493,40 +483,19 @@ function StudentNetworkCard({
           </div>
         ) : null}
 
-        <div className={cn("mt-auto grid gap-3", compact ? "grid-cols-[1fr_auto] items-end" : "grid-cols-[minmax(0,1fr)_auto] items-end")}>
-          <div className={cn("rounded-[24px] p-4", theme.panel)}>
-            <p
-              className={cn(
-                compact ? "text-[7px]" : "text-[9px]",
-                "font-semibold uppercase tracking-[0.2em]",
-                theme.subtle,
-              )}
-            >
-              Scan to connect
-            </p>
-            <p className={cn(compact ? "mt-1 text-[10px]" : "mt-1.5 text-[13px]", "font-semibold", theme.body)}>
-              Open profile, links, and contact details in one tap.
-            </p>
-            {featureTags.length > 0 ? (
-              <div className={cn("mt-3 flex flex-wrap gap-1.5", compact && "mt-2")}>
-                {featureTags.map((tag) => (
-                  <span
-                    key={tag}
-                    className={cn(
-                      "rounded-full px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.14em]",
-                      theme.tag,
-                    )}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
-          <div className={cn("rounded-[24px] p-2.5", theme.qrWrap)}>
+        <div className={cn("mt-auto flex flex-col items-center", compact ? "pt-3" : "pt-5")}>
+          <div className={cn("p-2.5", theme.qrWrap, compact ? "rounded-[20px]" : "rounded-[26px]")}>
             <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor={theme.qrFg} />
           </div>
+          <p
+            className={cn(
+              compact ? "mt-3 text-[8px]" : "mt-5 text-[10px]",
+              "font-semibold uppercase tracking-[0.24em]",
+              theme.subtle,
+            )}
+          >
+            Scan to connect
+          </p>
         </div>
       </div>
     </div>
