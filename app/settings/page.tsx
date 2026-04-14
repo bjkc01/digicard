@@ -594,9 +594,19 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
                 See your signed-in account, sync location, and latest saved update in one place.
               </p>
               <div className="mt-6 space-y-3">
-                <AccessRow icon={Mail} label="Session email" value={workspaceUser.email} />
+                <AccessRow
+                  icon={Mail}
+                  label="Session email"
+                  value={workspaceUser.email}
+                  valueClassName="break-words"
+                />
                 <AccessRow icon={LockKeyhole} label="Workspace profile" value={workspaceUser.name} />
-                <AccessRow icon={Clock3} label="Last updated" value={summary.lastUpdatedLabel} />
+                <AccessRow
+                  icon={Clock3}
+                  label="Last updated"
+                  value={summary.lastUpdatedLabel}
+                  valueClassName="whitespace-nowrap"
+                />
                 <AccessRow icon={Smartphone} label="Save location" value={summary.storageScopeLabel} />
                 <AccessRow icon={Globe} label="Session security" value="Signed and server-validated" />
               </div>
@@ -672,22 +682,27 @@ function AccessRow({
   icon: Icon,
   label,
   value,
+  valueClassName,
 }: {
   icon: ComponentType<{ className?: string }>;
   label: string;
   value: string;
+  valueClassName?: string;
 }) {
   return (
-    <div className="rounded-[1.3rem] border border-white/15 bg-white/10 px-4 py-3.5 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        <span className="inline-flex items-center gap-3 text-white/92">
-          <Icon className="h-4 w-4 flex-shrink-0" />
-          <span className="font-medium">{label}</span>
-        </span>
-        <span className="pl-7 text-left font-medium leading-6 text-white/78 sm:max-w-[12rem] sm:pl-0 sm:text-right">
-          {value}
-        </span>
+    <div className="rounded-[1.3rem] border border-white/15 bg-white/10 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+      <div className="flex items-center gap-3 text-white/62">
+        <Icon className="h-4 w-4 flex-shrink-0" />
+        <span className="text-[11px] font-semibold uppercase tracking-[0.16em]">{label}</span>
       </div>
+      <p
+        className={cn(
+          "mt-3 pl-7 text-base font-semibold leading-7 text-white",
+          valueClassName,
+        )}
+      >
+        {value}
+      </p>
     </div>
   );
 }
