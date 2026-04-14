@@ -2,7 +2,7 @@
 
 import { AtSign, Globe, Mail, Phone } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-import { DigiCard } from "@/lib/data";
+import type { DigiCard } from "@/lib/data";
 import { getCardShareTarget } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
@@ -13,175 +13,395 @@ type CardPreviewProps = {
   phoneHero?: boolean;
 };
 
-const contactItems = [
-  { key: "email", label: "Email", icon: Mail },
-  { key: "phone", label: "Phone", icon: Phone },
-  { key: "linkedin", label: "LinkedIn", icon: AtSign },
-  { key: "website", label: "Website", icon: Globe },
-] as const;
+type TP = { card: DigiCard; imageUrl: string | undefined; qrValue: string; compact: boolean };
 
-export function CardPreview({ card, compact = false, imageUrl, phoneHero = false }: CardPreviewProps) {
-  const shareTarget = getCardShareTarget(card);
-  const qrValue = shareTarget.url;
-  const filledContacts = contactItems.filter((item) => Boolean(card[item.key]));
-  const initials = card.name.split(" ").slice(0, 2).map((p) => p[0]).join("");
-  const statusItems = [
-    { value: card.template, label: "Template" },
-    { value: `${filledContacts.length}`, label: "Links" },
-    { value: card.title ? "Ready" : "Draft", label: "Status" },
-  ];
+const contactDefs = [
+  { key: "email" as const, label: "Email", icon: Mail },
+  { key: "phone" as const, label: "Phone", icon: Phone },
+  { key: "linkedin" as const, label: "LinkedIn", icon: AtSign },
+  { key: "website" as const, label: "Website", icon: Globe },
+];
 
-  if (compact && phoneHero) {
+function inits(name: string) {
+  return name.split(" ").slice(0, 2).map((p) => p[0] ?? "").join("");
+}
+
+// ── Reusable avatar sub-component ────────────────────────────────────────────
+function Av({
+  imageUrl, name, size, rounded, bg, ring, textColor,
+}: {
+  imageUrl: string | undefined; name: string; size: string;
+  rounded: string; bg: string; ring?: string; textColor?: string;
+}) {
+  if (imageUrl) {
     return (
-      <div className="relative flex h-full w-full flex-col overflow-hidden rounded-[1.85rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,19,31,0.99),rgba(8,10,18,1))] shadow-[0_18px_36px_rgba(0,0,0,0.35)]">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.18),transparent_34%),radial-gradient(circle_at_85%_12%,rgba(34,211,238,0.1),transparent_20%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))]" />
-        <div className={cn("absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r", card.color)} />
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={imageUrl} alt={name} className={cn(size, rounded, "object-cover flex-shrink-0", ring)} />
+    );
+  }
+  return (
+    <div className={cn(size, rounded, bg, ring, "flex items-center justify-center font-bold flex-shrink-0", textColor ?? "text-white/50")}>
+      {inits(name)}
+    </div>
+  );
+}
 
-        <div className="relative flex h-full flex-col gap-2 p-2.5">
-          <div className="flex items-start gap-2">
-            {imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={imageUrl}
-                alt={card.name}
-                className="h-8 w-8 shrink-0 rounded-2xl object-cover ring-1 ring-white/10"
-              />
-            ) : (
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.08] text-[11px] font-semibold text-white">
-                {card.name
-                  .split(" ")
-                  .slice(0, 2)
-                  .map((part) => part[0])
-                  .join("")}
-              </div>
-            )}
+// ════════════════════════════════════════════════════════════════════════════════
+// 1. EXECUTIVE SLATE — corporate formal, rigid structure
+// ════════════════════════════════════════════════════════════════════════════════
+function ExecutiveSlate({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
+  const p = compact ? "p-4" : "p-7";
+  const nameSize = compact ? "text-xl" : "text-[30px]";
+  const qrSize = compact ? 36 : 52;
 
+  return (
+    <div className={cn("relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-700 shadow-[0_24px_60px_rgba(0,0,0,0.5)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
+      {/* Left accent bar */}
+      <div className="absolute left-0 inset-y-0 w-1 bg-white/20" />
+
+      <div className={cn(p, "pl-6 flex flex-col gap-0")}>
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="h-4 w-4 rounded-sm bg-white/10 border border-white/12 flex items-center justify-center">
+            <div className="h-2 w-2 rounded-sm bg-white/35" />
+          </div>
+          <span className="text-[8px] tracking-[0.26em] uppercase text-white/28 font-medium">DigiCard</span>
+        </div>
+
+        {/* Rule + identity */}
+        <div className={compact ? "mt-4" : "mt-6"}>
+          <div className="h-px w-full bg-white/10 mb-4" />
+          <div className="flex items-start gap-3">
+            <Av imageUrl={imageUrl} name={card.name}
+              size={compact ? "h-9 w-9 text-xs" : "h-12 w-12 text-sm"}
+              rounded="rounded-sm" bg="bg-white/8 border border-white/12" />
             <div className="min-w-0">
-              <p className="truncate text-[8px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                DigiCard
-              </p>
-              <p className="truncate text-[13px] font-semibold leading-[1.1] tracking-[-0.04em] text-white">
-                {card.name}
-              </p>
-              <p className="mt-0.5 text-[9px] font-medium leading-3 text-cyan-100/85">{card.title}</p>
-              {card.company ? (
-                <p className="mt-1 text-[8px] leading-3 text-slate-400">{card.company}</p>
-              ) : null}
+              <p className={cn(nameSize, "font-black tracking-[-0.03em] text-white leading-none")}>{card.name}</p>
+              {card.title && <p className={cn(compact ? "text-[10px]" : "text-sm", "mt-1 text-slate-400 truncate")}>{card.title}</p>}
+              {card.company && <p className={cn(compact ? "text-[9px]" : "text-xs", "text-slate-600 truncate")}>{card.company}</p>}
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            {contactItems.map((item) => {
-              const value = card[item.key];
-              if (!value) return null;
-              const Icon = item.icon;
+        {/* Contacts — label | value, no icons */}
+        {contacts.length > 0 && !compact && (
+          <div className="mt-6 flex flex-col">
+            {contacts.map((c, i) => (
+              <div key={c.key} className={cn("py-2 flex items-baseline gap-3", i > 0 && "border-t border-white/[0.06]")}>
+                <span className="text-[8px] tracking-[0.18em] uppercase text-slate-600 w-14 flex-shrink-0">{c.label}</span>
+                <span className="text-[11px] text-slate-300 truncate">{card[c.key]}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {contacts.length > 0 && compact && (
+          <div className="mt-3 flex flex-col gap-0.5">
+            {contacts.slice(0, 2).map((c) => (
+              <p key={c.key} className="text-[9px] text-slate-500 truncate font-mono">{card[c.key]}</p>
+            ))}
+          </div>
+        )}
 
+        {/* Footer */}
+        <div className={cn(compact ? "mt-3" : "mt-5", "pt-3 border-t border-white/[0.06] flex items-center justify-between")}>
+          <span className="text-[8px] tracking-[0.18em] uppercase text-slate-700">Scan to connect</span>
+          <div className="rounded-[5px] bg-white p-1">
+            <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor="#0f172a" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// 2. STUDIO IVORY — light editorial, dark text on cream
+// ════════════════════════════════════════════════════════════════════════════════
+function StudioIvory({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
+  const p = compact ? "p-4" : "p-6";
+  const qrSize = compact ? 40 : 60;
+
+  return (
+    <div className={cn("relative overflow-hidden bg-stone-50 border border-stone-200 shadow-[0_16px_40px_rgba(0,0,0,0.07)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
+      {/* Left thick editorial stripe */}
+      <div className="absolute left-0 inset-y-0 w-3 bg-gradient-to-b from-stone-800 to-stone-500" />
+
+      <div className={cn(p, "pl-8 flex flex-col")}>
+        {/* Avatar + brand */}
+        <div className="flex items-center justify-between">
+          <Av imageUrl={imageUrl} name={card.name}
+            size={compact ? "h-10 w-10 text-xs" : "h-14 w-14 text-sm"}
+            rounded="rounded-2xl" bg="bg-stone-200 border border-stone-300"
+            textColor="text-stone-600" ring={compact ? undefined : "ring-1 ring-stone-200"} />
+          <span className="text-[8px] tracking-[0.22em] uppercase text-stone-400">DigiCard</span>
+        </div>
+
+        {/* Name */}
+        <div className={compact ? "mt-3" : "mt-5"}>
+          <p className={cn(compact ? "text-xl" : "text-[34px]", "font-black tracking-[-0.03em] text-stone-900 leading-none")}>{card.name}</p>
+          {(card.title || card.company) && (
+            <p className={cn(compact ? "text-[10px]" : "text-sm", "mt-1.5 text-stone-500 tracking-[0.02em]")}>
+              {[card.title, card.company].filter(Boolean).join(" · ")}
+            </p>
+          )}
+        </div>
+
+        {/* Rule */}
+        <div className={cn(compact ? "mt-3" : "mt-5", "h-px bg-stone-200")} />
+
+        {/* Contacts */}
+        {contacts.length > 0 && (
+          <div className="mt-3 flex flex-col">
+            {(compact ? contacts.slice(0, 3) : contacts).map((c, i) => {
+              const Icon = c.icon;
               return (
-                <div
-                  key={item.key}
-                  className="rounded-[14px] border border-white/10 bg-white/[0.05] px-2 py-1.5 backdrop-blur"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/20 text-cyan-100">
-                      <Icon className="h-3.5 w-3.5" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[7px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-                        {item.label}
-                      </p>
-                      <p className="truncate text-[9px] font-medium leading-3 text-slate-100">
-                        {value}
-                      </p>
-                    </div>
-                  </div>
+                <div key={c.key} className={cn("flex items-center gap-2.5", compact ? "py-1.5" : "py-2", i > 0 && "border-t border-stone-100")}>
+                  <Icon className="h-3 w-3 text-stone-400 flex-shrink-0" />
+                  <span className={cn(compact ? "text-[10px]" : "text-[12px]", "text-stone-600 truncate")}>{card[c.key]}</span>
                 </div>
               );
             })}
           </div>
+        )}
 
-          <div className="grid grid-cols-3 gap-2">
-            {statusItems.map((metric) => (
-              <div
-                key={metric.label}
-                className="rounded-[14px] border border-white/10 bg-black/20 px-1.5 py-1.5 text-center"
-              >
-                <p className="truncate text-[10px] font-semibold text-white">{metric.value}</p>
-                <p className="mt-0.5 text-[7px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                  {metric.label}
-                </p>
-              </div>
-            ))}
+        {/* QR */}
+        <div className={cn(compact ? "mt-3" : "mt-5", "flex items-center justify-between")}>
+          <div className="rounded-xl bg-white border border-stone-200 p-2 shadow-sm">
+            <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor="#1c1917" />
           </div>
+          <span className={cn(compact ? "text-[8px]" : "text-[9px]", "tracking-[0.16em] uppercase text-stone-400 text-right leading-relaxed")}>
+            Scan to<br />connect
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-          <div className="mt-auto rounded-[16px] border border-white/10 bg-[linear-gradient(180deg,rgba(41,48,78,0.95),rgba(24,28,51,0.98))] px-2.5 py-2 shadow-[0_16px_28px_rgba(0,0,0,0.3)]">
-            <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[rgba(82,103,217,0.28)] text-cyan-100">
-                <QRCodeSVG value={qrValue} size={12} bgColor="transparent" fgColor="#c7d2fe" />
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-[10px] font-semibold leading-3 text-white">Scan to connect</p>
-                <p className="truncate text-[8px] leading-3 text-slate-400">Opens your profile instantly</p>
-              </div>
-            </div>
+// ════════════════════════════════════════════════════════════════════════════════
+// 3. BLUEPRINT — structured grid, blue-cyan technical
+// ════════════════════════════════════════════════════════════════════════════════
+function Blueprint({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
+  const p = compact ? "p-4" : "p-7";
+  const qrSize = compact ? 40 : 56;
+
+  return (
+    <div className={cn("relative overflow-hidden bg-gradient-to-br from-blue-700 to-cyan-500 shadow-[0_24px_60px_rgba(0,0,0,0.45)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.09),transparent_55%)] pointer-events-none" />
+
+      <div className={cn(p, "relative flex flex-col")}>
+        {/* Identity row */}
+        <div className="flex items-start gap-3">
+          <Av imageUrl={imageUrl} name={card.name}
+            size={compact ? "h-10 w-10 text-sm" : "h-14 w-14 text-base"}
+            rounded={compact ? "rounded-xl" : "rounded-2xl"}
+            bg="bg-white/20 border border-white/30" ring={compact ? undefined : "ring-2 ring-white/25"} />
+          <div className="flex-1 min-w-0">
+            <p className={cn(compact ? "text-base" : "text-[22px]", "font-bold tracking-[-0.02em] text-white leading-tight")}>{card.name}</p>
+            {card.title && <p className={cn(compact ? "text-[9px]" : "text-sm", "text-white/65 truncate")}>{card.title}</p>}
+            {card.company && <p className={cn(compact ? "text-[8px]" : "text-xs", "text-white/45 truncate")}>{card.company}</p>}
+          </div>
+          <div className="h-6 w-6 rounded-lg bg-white/18 border border-white/28 flex items-center justify-center flex-shrink-0">
+            <div className="h-2.5 w-2.5 rounded-[3px] bg-white/55" />
+          </div>
+        </div>
+
+        {/* Rule */}
+        <div className={cn(compact ? "mt-3" : "mt-4", "h-px bg-white/20")} />
+
+        {/* 2×2 contact grid */}
+        {contacts.length > 0 && (
+          <div className={cn(compact ? "mt-3" : "mt-4", "grid grid-cols-2 gap-1.5")}>
+            {(compact ? contacts.slice(0, 4) : contacts).map((c) => {
+              const Icon = c.icon;
+              return (
+                <div key={c.key} className={cn("rounded-xl bg-white/14 border border-white/18 backdrop-blur", compact ? "p-2" : "p-3")}>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <div className={cn("rounded-lg bg-white/18 flex items-center justify-center flex-shrink-0", compact ? "h-4 w-4" : "h-5 w-5")}>
+                      <Icon className={cn(compact ? "h-2 w-2" : "h-2.5 w-2.5", "text-white")} />
+                    </div>
+                    <span className="text-[7px] tracking-[0.14em] uppercase text-white/45">{c.label}</span>
+                  </div>
+                  <p className={cn(compact ? "text-[9px]" : "text-[11px]", "text-white/85 truncate leading-none")}>{card[c.key]}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* QR footer */}
+        <div className={cn(compact ? "mt-3" : "mt-4", "pt-3 border-t border-white/15 flex items-center justify-between")}>
+          <div>
+            <p className={cn(compact ? "text-[9px]" : "text-xs", "font-semibold text-white/85")}>Scan to connect</p>
+            {!compact && <p className="text-[9px] text-white/45 mt-0.5">Opens your profile instantly</p>}
+          </div>
+          <div className="rounded-xl bg-white p-1.5 shadow-lg">
+            <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor="#1d4ed8" />
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// 4. SIGNAL MONO — ultra-minimal, bare monochrome
+// ════════════════════════════════════════════════════════════════════════════════
+function SignalMono({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
+  const p = compact ? "p-5" : "p-8";
+
+  return (
+    <div className={cn("relative overflow-hidden bg-gradient-to-br from-zinc-950 to-zinc-800 shadow-[0_24px_60px_rgba(0,0,0,0.65)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
+      <div className={cn(p, "flex flex-col")}>
+        {/* Top rule */}
+        <div className="h-px w-full bg-white/8" />
+
+        {/* Big name */}
+        <div className={compact ? "mt-5" : "mt-8"}>
+          {imageUrl && compact && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={imageUrl} alt={card.name} className="h-7 w-7 rounded object-cover mb-2 opacity-60" />
+          )}
+          <p className={cn(compact ? "text-3xl" : "text-[46px]", "font-black tracking-[-0.04em] text-white leading-none")}>{card.name}</p>
+          {card.title && (
+            <p className={cn(compact ? "mt-1.5 text-[9px]" : "mt-3 text-[10px]", "tracking-[0.28em] uppercase text-zinc-500")}>{card.title}</p>
+          )}
+          {card.company && (
+            <p className={cn(compact ? "mt-0.5 text-[8px]" : "mt-1 text-[10px]", "tracking-[0.2em] uppercase text-zinc-600")}>{card.company}</p>
+          )}
+        </div>
+
+        {/* Bare contact values */}
+        {contacts.length > 0 && (
+          <div className={cn(compact ? "mt-4" : "mt-8", "flex flex-col", compact ? "gap-1" : "gap-2")}>
+            {(compact ? contacts.slice(0, 3) : contacts).map((c) => (
+              <p key={c.key} className={cn(compact ? "text-[9px]" : "text-[11px]", "text-zinc-500 font-mono truncate")}>{card[c.key]}</p>
+            ))}
+          </div>
+        )}
+
+        {/* Bottom rules + QR */}
+        <div className={cn(compact ? "mt-4" : "mt-8", "flex items-end justify-between")}>
+          <div className="flex flex-col gap-1">
+            <div className="h-px w-16 bg-white/8" />
+            <div className="h-px w-10 bg-white/5" />
+          </div>
+          <div className="rounded-[6px] bg-zinc-800 border border-white/8 p-1.5">
+            <QRCodeSVG value={qrValue} size={compact ? 32 : 44} bgColor="transparent" fgColor="#52525b" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// 5. CREST — light neutral, centered, symmetric
+// ════════════════════════════════════════════════════════════════════════════════
+function Crest({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
+  const p = compact ? "p-4" : "p-6";
+
+  return (
+    <div className={cn("relative overflow-hidden bg-slate-50 border border-slate-200 shadow-[0_16px_40px_rgba(0,0,0,0.06)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
+      <div className={cn(p, "flex flex-col items-center text-center")}>
+        {/* Top flanking rule */}
+        <div className="flex items-center gap-2 w-full">
+          <div className="h-px flex-1 bg-slate-200" />
+          <div className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+          <div className="h-px flex-1 bg-slate-200" />
+        </div>
+
+        {/* Centered avatar */}
+        <div className={compact ? "mt-3" : "mt-5"}>
+          <Av imageUrl={imageUrl} name={card.name}
+            size={compact ? "h-12 w-12 text-sm" : "h-16 w-16 text-base"}
+            rounded="rounded-full" bg="bg-slate-200 border-2 border-slate-300"
+            textColor="text-slate-500" ring={compact ? undefined : "ring-2 ring-slate-200"} />
+        </div>
+
+        {/* Name */}
+        <div className={compact ? "mt-2.5" : "mt-4"}>
+          <p className={cn(compact ? "text-xl" : "text-2xl", "font-bold tracking-[-0.02em] text-slate-900")}>{card.name}</p>
+          {card.title && <p className={cn(compact ? "text-[10px]" : "text-sm", "mt-1 text-slate-500")}>{card.title}</p>}
+          {card.company && <p className={cn(compact ? "text-[9px]" : "text-xs", "text-slate-400")}>{card.company}</p>}
+        </div>
+
+        {/* Rule */}
+        <div className={cn(compact ? "mt-3" : "mt-4", "h-px w-full bg-slate-200")} />
+
+        {/* 2×2 contacts */}
+        {contacts.length > 0 && (
+          <div className="mt-3 w-full grid grid-cols-2 gap-x-3">
+            {(compact ? contacts.slice(0, 4) : contacts).map((c, i) => {
+              const Icon = c.icon;
+              return (
+                <div key={c.key} className={cn("flex items-center gap-1.5 text-left", compact ? "py-1.5" : "py-2", i >= 2 && "border-t border-slate-100")}>
+                  <Icon className={cn(compact ? "h-2.5 w-2.5" : "h-3 w-3", "text-slate-400 flex-shrink-0")} />
+                  <span className={cn(compact ? "text-[9px]" : "text-[11px]", "text-slate-600 truncate")}>{card[c.key]}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* QR centered */}
+        <div className={cn(compact ? "mt-3" : "mt-5", "flex flex-col items-center gap-1.5")}>
+          <div className="rounded-xl bg-white border border-slate-200 p-2 shadow-sm">
+            <QRCodeSVG value={qrValue} size={compact ? 40 : 60} bgColor="#ffffff" fgColor="#0f172a" />
+          </div>
+          <span className="text-[8px] tracking-[0.16em] uppercase text-slate-400">Scan to connect</span>
+        </div>
+
+        {/* Bottom rule */}
+        <div className={cn(compact ? "mt-2" : "mt-3", "flex items-center gap-2 w-full")}>
+          <div className="h-px flex-1 bg-slate-200" />
+          <span className="text-[7px] tracking-[0.2em] uppercase text-slate-300">DigiCard</span>
+          <div className="h-px flex-1 bg-slate-200" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// 6. HORIZON — split layout, bright indigo-sky
+// ════════════════════════════════════════════════════════════════════════════════
+function Horizon({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
 
   if (compact) {
     return (
-      <div className="relative w-full max-w-[280px] overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(160deg,rgba(18,22,38,0.99),rgba(9,11,20,1))] shadow-[0_24px_60px_rgba(0,0,0,0.5)]">
-        <div className={cn("absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r", card.color)} />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.04),transparent_60%)]" />
-
-        <div className="relative flex flex-col p-4">
-          {/* Avatar */}
+      <div className="relative overflow-hidden rounded-[22px] bg-gradient-to-br from-indigo-700 to-sky-500 shadow-[0_16px_40px_rgba(0,0,0,0.4)]">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.1),transparent_45%)] pointer-events-none" />
+        <div className="relative p-4 flex flex-col gap-3">
+          {/* Identity */}
           <div className="flex items-center gap-2.5">
-            {imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={imageUrl} alt={card.name} className="h-9 w-9 shrink-0 rounded-[12px] object-cover ring-1 ring-white/10" />
-            ) : (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] border border-white/10 bg-white/[0.07] text-sm font-bold text-white">
-                {initials}
-              </div>
-            )}
-          </div>
-
-          {/* Name + title + company */}
-          <div className="mt-4">
-            <p className="text-[22px] font-bold leading-[1.1] tracking-[-0.04em] text-white">{card.name}</p>
-            {card.title ? <p className="mt-1.5 text-[11px] font-medium text-slate-400">{card.title}</p> : null}
-            {card.company ? <p className="mt-0.5 text-[10px] text-slate-600">{card.company}</p> : null}
-          </div>
-
-          {/* Contact rows */}
-          {filledContacts.length > 0 && (
-            <div className="mt-4 flex flex-col">
-              {filledContacts.map((item, i) => {
-                const value = card[item.key];
-                const Icon = item.icon;
-                return (
-                  <div key={item.key} className={cn("flex items-center gap-2.5 py-2", i > 0 && "border-t border-white/[0.06]")}>
-                    <Icon className="h-3 w-3 shrink-0 text-slate-500" />
-                    <p className="truncate text-[11px] text-slate-300">{value}</p>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* QR code */}
-          <div className="mt-5 flex justify-center">
-            <div className="rounded-[16px] bg-white p-2.5 shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
-              <QRCodeSVG value={qrValue} size={72} bgColor="#ffffff" fgColor="#0f172a" />
+            <Av imageUrl={imageUrl} name={card.name} size="h-10 w-10 text-sm"
+              rounded="rounded-2xl" bg="bg-white/20 border border-white/30" />
+            <div className="min-w-0">
+              <p className="text-base font-bold text-white tracking-tight leading-tight truncate">{card.name}</p>
+              {card.title && <p className="text-[9px] text-white/60 truncate">{card.title}</p>}
             </div>
           </div>
-
-          {/* DigiCard branding */}
-          <div className="mt-3 flex items-center justify-center gap-1.5">
-            <span className="text-[8px] font-medium uppercase tracking-[0.18em] text-slate-600">Scan to connect ·</span>
-            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">DigiCard</span>
+          {/* Contact pills */}
+          <div className="flex flex-wrap gap-1">
+            {contacts.slice(0, 4).map((c) => (
+              <span key={c.key} className="rounded-full bg-white/18 border border-white/22 px-2 py-0.5 text-[8px] font-medium text-white/80 truncate max-w-[120px]">
+                {card[c.key]}
+              </span>
+            ))}
+          </div>
+          {/* QR row */}
+          <div className="flex items-center justify-between pt-1.5 border-t border-white/15">
+            <p className="text-[8px] text-white/45 tracking-wide">Scan to connect</p>
+            <div className="rounded-lg bg-white p-1">
+              <QRCodeSVG value={qrValue} size={32} bgColor="#ffffff" fgColor="#3730a3" />
+            </div>
           </div>
         </div>
       </div>
@@ -189,66 +409,334 @@ export function CardPreview({ card, compact = false, imageUrl, phoneHero = false
   }
 
   return (
-    <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(160deg,rgba(18,22,38,0.99),rgba(9,11,20,1))] shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
-      <div className={cn("absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r", card.color)} />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.05),transparent_55%)]" />
+    <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-indigo-700 to-sky-500 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.1),transparent_45%)] pointer-events-none" />
+      <div className="relative flex min-h-[340px]">
+        {/* Left panel — identity */}
+        <div className="w-[44%] border-r border-white/15 p-6 flex flex-col">
+          <Av imageUrl={imageUrl} name={card.name} size="h-16 w-16 text-base"
+            rounded="rounded-3xl" bg="bg-white/20 border border-white/30" ring="ring-2 ring-white/25" />
+          <div className="mt-5 flex-1">
+            <p className="text-xl font-bold tracking-[-0.02em] text-white leading-tight">{card.name}</p>
+            {card.title && <p className="mt-1.5 text-[11px] text-white/60 leading-snug">{card.title}</p>}
+          </div>
+          {card.company && (
+            <span className="mt-auto rounded-full bg-white/14 border border-white/20 px-3 py-1 text-[10px] font-medium text-white/75 self-start">
+              {card.company}
+            </span>
+          )}
+        </div>
 
-      <div className="relative flex flex-col p-7">
-        {/* Avatar */}
-        <div className="flex items-center gap-3">
-          {imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={imageUrl} alt={card.name} className="h-12 w-12 shrink-0 rounded-[16px] object-cover ring-1 ring-white/10 shadow-[0_12px_28px_rgba(0,0,0,0.35)]" />
-          ) : (
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] border border-white/10 bg-white/[0.07] text-base font-bold text-white shadow-[0_12px_28px_rgba(0,0,0,0.3)]">
-              {initials}
+        {/* Right panel — contacts + QR */}
+        <div className="flex-1 p-5 flex flex-col justify-center gap-3">
+          {contacts.map((c) => {
+            const Icon = c.icon;
+            return (
+              <div key={c.key} className="flex items-center gap-2.5">
+                <div className="h-7 w-7 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center flex-shrink-0">
+                  <Icon className="h-3 w-3 text-white/75" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[7px] tracking-[0.14em] uppercase text-white/38">{c.label}</p>
+                  <p className="text-[10px] text-white/80 truncate leading-none mt-0.5">{card[c.key]}</p>
+                </div>
+              </div>
+            );
+          })}
+          <div className="mt-2 pt-3 border-t border-white/15 flex items-center gap-3">
+            <div className="rounded-xl bg-white p-1.5 shadow-lg">
+              <QRCodeSVG value={qrValue} size={44} bgColor="#ffffff" fgColor="#3730a3" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-white/85">Scan to connect</p>
+              <p className="text-[8px] text-white/40 mt-0.5">DigiCard</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// 7. EMBER — bold warm, energetic with decorative circles
+// ════════════════════════════════════════════════════════════════════════════════
+function Ember({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
+  const p = compact ? "p-4" : "p-7";
+
+  return (
+    <div className={cn("relative overflow-hidden bg-gradient-to-br from-amber-600 to-orange-400 shadow-[0_24px_60px_rgba(0,0,0,0.4)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
+      <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-white/10 pointer-events-none" />
+      <div className="absolute -right-3 -bottom-8 h-32 w-32 rounded-full bg-white/[0.07] pointer-events-none" />
+
+      <div className={cn(p, "relative flex flex-col")}>
+        {/* Brand + avatar */}
+        <div className="flex items-center justify-between">
+          <span className="text-[8px] tracking-[0.24em] uppercase text-white/55 font-semibold">DigiCard</span>
+          <Av imageUrl={imageUrl} name={card.name}
+            size={compact ? "h-8 w-8 text-[10px]" : "h-11 w-11 text-sm"}
+            rounded="rounded-xl" bg="bg-white/20 border border-white/30"
+            ring={compact ? undefined : "ring-2 ring-white/25"} />
+        </div>
+
+        {/* Big name */}
+        <div className={compact ? "mt-4" : "mt-5"}>
+          <p className={cn(compact ? "text-2xl" : "text-[38px]", "font-black tracking-[-0.03em] text-white leading-none")}>{card.name}</p>
+          {card.title && <p className={cn(compact ? "text-[10px]" : "text-sm", "mt-1.5 font-medium text-white/65")}>{card.title}</p>}
+          {card.company && (
+            <div className="mt-2">
+              <span className="rounded-full bg-white/18 border border-white/25 px-2.5 py-0.5 text-[9px] font-semibold text-white/80">
+                {card.company}
+              </span>
             </div>
           )}
         </div>
 
-        {/* Name */}
-        <p className="mt-6 text-[38px] font-bold leading-[1.05] tracking-[-0.04em] text-white">
-          {card.name}
-        </p>
+        {/* Rule */}
+        <div className={cn(compact ? "mt-3" : "mt-5", "h-px bg-white/20")} />
 
-        {/* Title + company */}
-        {card.title ? (
-          <p className="mt-3 text-base font-medium text-slate-400">{card.title}</p>
-        ) : null}
-        {card.company ? (
-          <p className="mt-1 text-sm text-slate-600">{card.company}</p>
-        ) : null}
-
-        {/* Contact rows */}
-        {filledContacts.length > 0 && (
-          <div className="mt-8 flex flex-col">
-            {filledContacts.map((item, i) => {
-              const value = card[item.key];
-              const Icon = item.icon;
+        {/* Contacts */}
+        {contacts.length > 0 && (
+          <div className={cn(compact ? "mt-2.5" : "mt-4", "flex flex-col")}>
+            {(compact ? contacts.slice(0, 3) : contacts).map((c, i) => {
+              const Icon = c.icon;
               return (
-                <div key={item.key} className={cn("flex items-center gap-3.5 py-3", i > 0 && "border-t border-white/[0.07]")}>
-                  <Icon className="h-4 w-4 shrink-0 text-slate-500" />
-                  <p className="truncate text-sm text-slate-300">{value}</p>
+                <div key={c.key} className={cn("flex items-center gap-2.5", compact ? "py-1.5" : "py-2", i > 0 && "border-t border-white/10")}>
+                  <div className={cn("rounded-lg bg-white/15 flex items-center justify-center flex-shrink-0", compact ? "h-5 w-5" : "h-6 w-6")}>
+                    <Icon className={cn(compact ? "h-2.5 w-2.5" : "h-3 w-3", "text-white/65")} />
+                  </div>
+                  <span className={cn(compact ? "text-[10px]" : "text-[11px]", "text-white/82 truncate")}>{card[c.key]}</span>
                 </div>
               );
             })}
           </div>
         )}
 
-        {/* QR code — large, centered */}
-        <div className="mt-10 flex justify-center">
-          <div className="rounded-[22px] bg-white p-4 shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
-            <QRCodeSVG value={qrValue} size={120} bgColor="#ffffff" fgColor="#0f172a" />
+        {/* QR */}
+        <div className={cn(compact ? "mt-3" : "mt-5", "flex justify-end")}>
+          <div className="rounded-xl bg-white/88 p-1.5 shadow-lg">
+            <QRCodeSVG value={qrValue} size={compact ? 36 : 52} bgColor="rgba(255,255,255,0.9)" fgColor="#92400e" />
           </div>
-        </div>
-
-        {/* DigiCard branding footer */}
-        <div className="mt-5 flex items-center justify-center gap-2">
-          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-600">Scan to connect</span>
-          <span className="text-slate-700">·</span>
-          <span className="text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-300">DigiCard</span>
         </div>
       </div>
     </div>
   );
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// 8. FOREST — two zones divided, deep green
+// ════════════════════════════════════════════════════════════════════════════════
+function Forest({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
+  const p = compact ? "p-4" : "p-7";
+
+  return (
+    <div className={cn("relative overflow-hidden bg-gradient-to-b from-emerald-950 via-emerald-900 to-teal-700 shadow-[0_24px_60px_rgba(0,0,0,0.55)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(52,211,153,0.07),transparent_50%)] pointer-events-none" />
+
+      <div className={cn(p, "relative flex flex-col")}>
+        {/* Top zone — identity */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            {card.company && (
+              <div className="mb-2">
+                <span className="rounded-sm bg-white/10 border border-white/12 px-2 py-0.5 text-[8px] tracking-[0.16em] uppercase text-emerald-300/65">
+                  {card.company}
+                </span>
+              </div>
+            )}
+            <p className={cn(compact ? "text-2xl" : "text-[32px]", "font-bold tracking-[-0.03em] text-white leading-none")}>{card.name}</p>
+            {card.title && <p className={cn(compact ? "text-[10px]" : "text-sm", "mt-1.5 text-emerald-200/55")}>{card.title}</p>}
+          </div>
+          <Av imageUrl={imageUrl} name={card.name}
+            size={compact ? "h-10 w-10 text-xs" : "h-14 w-14 text-sm"}
+            rounded="rounded-2xl" bg="bg-white/8 border border-white/12"
+            textColor="text-white/38" />
+        </div>
+
+        {/* Decorative divider */}
+        <div className={cn(compact ? "mt-3" : "mt-5", "flex items-center gap-2")}>
+          <div className="h-px flex-1 bg-white/10" />
+          <div className="h-1 w-1 rotate-45 bg-emerald-400/28" />
+          <div className="h-px w-6 bg-white/10" />
+        </div>
+
+        {/* Bottom zone — contacts */}
+        {contacts.length > 0 && (
+          <div className={cn(compact ? "mt-2.5" : "mt-4", "flex flex-col")}>
+            {(compact ? contacts.slice(0, 3) : contacts).map((c, i) => {
+              const Icon = c.icon;
+              return (
+                <div key={c.key} className={cn("flex items-center gap-2.5", compact ? "py-1.5" : "py-2", i > 0 && "border-t border-white/[0.07]")}>
+                  <Icon className={cn(compact ? "h-2.5 w-2.5" : "h-3.5 w-3.5", "text-emerald-400/45 flex-shrink-0")} />
+                  <span className={cn(compact ? "text-[10px]" : "text-[11px]", "text-slate-300 truncate")}>{card[c.key]}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* QR footer */}
+        <div className={cn(compact ? "mt-3" : "mt-5", "pt-3 border-t border-white/[0.07] flex items-center justify-between")}>
+          <div>
+            <p className="text-[8px] tracking-[0.18em] uppercase text-emerald-300/35">Scan to connect</p>
+            {!compact && <p className="text-[7px] text-white/18 mt-0.5">DigiCard</p>}
+          </div>
+          <div className="rounded-xl bg-white/10 border border-white/14 p-1.5 backdrop-blur">
+            <QRCodeSVG value={qrValue} size={compact ? 36 : 48} bgColor="transparent" fgColor="rgba(167,243,208,0.65)" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// 9. OBSIDIAN — luxury dark, frosted glass contacts
+// ════════════════════════════════════════════════════════════════════════════════
+function Obsidian({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
+  const p = compact ? "p-4" : "p-7";
+
+  return (
+    <div className={cn("relative overflow-hidden bg-gradient-to-br from-violet-950 to-purple-800 shadow-[0_24px_60px_rgba(0,0,0,0.65)]", compact ? "rounded-[22px]" : "rounded-[28px]")}>
+      {/* Shimmer top */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-200/40 to-transparent pointer-events-none" />
+      {/* Radial glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_15%,rgba(167,139,250,0.16),transparent_45%)] pointer-events-none" />
+
+      <div className={cn(p, "relative flex flex-col")}>
+        {/* Brand row */}
+        <div className="flex items-center gap-2">
+          <div className="h-1.5 w-1.5 rotate-45 bg-violet-300/45" />
+          <span className="text-[8px] tracking-[0.26em] uppercase text-violet-300/38 font-medium">DigiCard</span>
+        </div>
+
+        {/* Avatar right + name left */}
+        <div className={cn(compact ? "mt-3" : "mt-5", "flex items-start gap-3")}>
+          <div className="flex-1 min-w-0">
+            <p className={cn(compact ? "text-xl" : "text-[30px]", "font-bold tracking-[-0.03em] text-white leading-none")}>{card.name}</p>
+            {card.title && <p className={cn(compact ? "text-[10px]" : "text-sm", "mt-1.5 text-violet-200/55")}>{card.title}</p>}
+            {card.company && <p className={cn(compact ? "text-[9px]" : "text-xs", "text-violet-300/38")}>{card.company}</p>}
+          </div>
+          <Av imageUrl={imageUrl} name={card.name}
+            size={compact ? "h-10 w-10 text-xs" : "h-14 w-14 text-sm"}
+            rounded="rounded-2xl" bg="bg-violet-800/60 border border-violet-300/14"
+            textColor="text-violet-300/38" ring={compact ? undefined : "ring-1 ring-violet-300/18"} />
+        </div>
+
+        {/* Frosted contact tile */}
+        {contacts.length > 0 && (
+          <div className={cn(compact ? "mt-3" : "mt-5", "rounded-2xl bg-white/[0.06] border border-white/10 backdrop-blur-sm overflow-hidden")}>
+            {(compact ? contacts.slice(0, 3) : contacts).map((c, i) => {
+              const Icon = c.icon;
+              return (
+                <div key={c.key} className={cn("flex items-center gap-2.5", compact ? "px-3 py-2" : "px-4 py-2.5", i > 0 && "border-t border-white/[0.06]")}>
+                  <Icon className={cn(compact ? "h-2.5 w-2.5" : "h-3 w-3", "text-violet-300/45 flex-shrink-0")} />
+                  <span className={cn(compact ? "text-[9px]" : "text-[11px]", "text-slate-300 truncate")}>{card[c.key]}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Shimmer + QR */}
+        <div className={cn(compact ? "mt-3" : "mt-5")}>
+          <div className="h-px bg-gradient-to-r from-violet-300/18 via-violet-300/8 to-transparent mb-3" />
+          <div className="flex items-center justify-between">
+            <p className="text-[8px] tracking-[0.2em] uppercase text-violet-300/30">Scan to connect</p>
+            <div className="rounded-xl bg-violet-900/60 border border-violet-300/18 p-1.5 backdrop-blur">
+              <QRCodeSVG value={qrValue} size={compact ? 34 : 46} bgColor="transparent" fgColor="rgba(196,181,253,0.65)" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// 10. DAWN — soft, centered, playful rounded bubbles
+// ════════════════════════════════════════════════════════════════════════════════
+function Dawn({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
+  const p = compact ? "p-4" : "p-7";
+
+  return (
+    <div className={cn("relative overflow-hidden bg-gradient-to-br from-pink-500 to-purple-500 shadow-[0_24px_60px_rgba(0,0,0,0.4)]", compact ? "rounded-[22px]" : "rounded-[32px]")}>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.1),transparent_50%)] pointer-events-none" />
+
+      <div className={cn(p, "relative flex flex-col items-center text-center")}>
+        {/* Dot row */}
+        <div className="flex gap-1.5 items-center">
+          <div className="h-1.5 w-1.5 rounded-full bg-white/70" />
+          <div className="h-1.5 w-1.5 rounded-full bg-white/42" />
+          <div className="h-1.5 w-1.5 rounded-full bg-white/22" />
+        </div>
+
+        {/* Centered avatar */}
+        <div className={compact ? "mt-3" : "mt-4"}>
+          <Av imageUrl={imageUrl} name={card.name}
+            size={compact ? "h-14 w-14 text-base" : "h-20 w-20 text-xl"}
+            rounded={compact ? "rounded-2xl" : "rounded-3xl"}
+            bg="bg-white/22 border-2 border-white/28"
+            ring={compact ? undefined : "ring-4 ring-white/22"} />
+        </div>
+
+        {/* Name */}
+        <div className={compact ? "mt-2.5" : "mt-4"}>
+          <p className={cn(compact ? "text-xl" : "text-2xl", "font-bold tracking-[-0.02em] text-white")}>{card.name}</p>
+          {card.title && <p className={cn(compact ? "text-[10px]" : "text-sm", "mt-0.5 text-white/65")}>{card.title}</p>}
+          {card.company && <p className={cn(compact ? "text-[9px]" : "text-xs", "text-white/45")}>{card.company}</p>}
+        </div>
+
+        {/* Bubble contacts */}
+        {contacts.length > 0 && (
+          <div className={cn(compact ? "mt-3" : "mt-5", "w-full flex flex-col gap-1.5")}>
+            {(compact ? contacts.slice(0, 3) : contacts).map((c) => {
+              const Icon = c.icon;
+              return (
+                <div key={c.key} className={cn("rounded-2xl bg-white/18 border border-white/24 flex items-center gap-2.5", compact ? "px-3 py-2" : "px-4 py-2.5")}>
+                  <Icon className={cn(compact ? "h-3 w-3" : "h-3.5 w-3.5", "text-white/65 flex-shrink-0")} />
+                  <span className={cn(compact ? "text-[10px]" : "text-[11px]", "text-white/82 truncate text-left")}>{card[c.key]}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* QR */}
+        <div className={cn(compact ? "mt-3" : "mt-5", "flex flex-col items-center gap-1.5")}>
+          <div className="rounded-2xl bg-white p-2 shadow-[0_8px_20px_rgba(0,0,0,0.2)]">
+            <QRCodeSVG value={qrValue} size={compact ? 38 : 58} bgColor="#ffffff" fgColor="#7c3aed" />
+          </div>
+          <span className="text-[8px] tracking-[0.16em] uppercase text-white/38">Scan to connect · DigiCard</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ════════════════════════════════════════════════════════════════════════════════
+export function CardPreview({ card, compact = false, imageUrl, phoneHero: _phoneHero = false }: CardPreviewProps) {
+  const shareTarget = getCardShareTarget(card);
+  const qrValue = shareTarget.url;
+  const tp: TP = { card, imageUrl, qrValue, compact };
+
+  switch (card.template) {
+    case "Executive Slate": return <ExecutiveSlate {...tp} />;
+    case "Studio Ivory":    return <StudioIvory    {...tp} />;
+    case "Blueprint":       return <Blueprint      {...tp} />;
+    case "Signal Mono":     return <SignalMono      {...tp} />;
+    case "Crest":           return <Crest           {...tp} />;
+    case "Horizon":         return <Horizon         {...tp} />;
+    case "Ember":           return <Ember           {...tp} />;
+    case "Forest":          return <Forest          {...tp} />;
+    case "Obsidian":        return <Obsidian        {...tp} />;
+    case "Dawn":            return <Dawn            {...tp} />;
+    default:                return <Blueprint       {...tp} />;
+  }
 }
