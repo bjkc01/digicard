@@ -137,4 +137,12 @@ export const templates: DigiCardTemplate[] = [
     tone: "bg-pink-50",
     category: "creative",
   },
+  {
+    id: "classic",
+    name: "Classic Night",
+    description: "Your original dark DigiCard look with crisp dividers and a centered QR finish.",
+    accent: "from-[#111827] via-[#0f172a] to-[#050814]",
+    tone: "bg-slate-100",
+    category: "corporate",
+  },
 ];

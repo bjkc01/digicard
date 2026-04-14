@@ -143,7 +143,7 @@ function StudioIvory({ card, imageUrl, qrValue, compact }: TP) {
           <p className={cn(compact ? "text-xl" : "text-[34px]", "font-black tracking-[-0.03em] text-stone-900 leading-none")}>{card.name}</p>
           {(card.title || card.company) && (
             <p className={cn(compact ? "text-[10px]" : "text-sm", "mt-1.5 text-stone-500 tracking-[0.02em]")}>
-              {[card.title, card.company].filter(Boolean).join(" · ")}
+              {[card.title, card.company].filter(Boolean).join(" / ")}
             </p>
           )}
         </div>
@@ -293,6 +293,81 @@ function SignalMono({ card, imageUrl, qrValue, compact }: TP) {
           <div className="rounded-[6px] bg-zinc-800 border border-white/8 p-1.5">
             <QRCodeSVG value={qrValue} size={compact ? 32 : 44} bgColor="transparent" fgColor="#52525b" />
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ClassicNight({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
+  const p = compact ? "p-4" : "p-8";
+  const qrSize = compact ? 52 : 128;
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden border border-white/10 bg-[linear-gradient(180deg,#121827_0%,#0b1020_100%)] shadow-[0_32px_80px_rgba(0,0,0,0.58)]",
+        compact ? "rounded-[22px]" : "rounded-[34px]",
+      )}
+    >
+      <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.08),transparent_28%),radial-gradient(circle_at_bottom,rgba(59,130,246,0.05),transparent_24%)] pointer-events-none" />
+
+      <div className={cn(p, "relative flex h-full flex-col")}>
+        <Av
+          imageUrl={imageUrl}
+          name={card.name}
+          size={compact ? "h-12 w-12 text-sm" : "h-14 w-14 text-base"}
+          rounded="rounded-2xl"
+          bg="bg-white/10 border border-white/14"
+          ring={compact ? undefined : "ring-1 ring-white/12"}
+        />
+
+        <div className={compact ? "mt-5" : "mt-8"}>
+          <p className={cn(compact ? "text-[28px]" : "text-[42px]", "font-bold tracking-[-0.04em] leading-none text-white")}>
+            {card.name}
+          </p>
+          {card.title ? (
+            <p className={cn(compact ? "mt-2 text-[10px]" : "mt-3 text-[16px]", "font-medium text-slate-300")}>
+              {card.title}
+            </p>
+          ) : null}
+          {card.company ? (
+            <p className={cn(compact ? "mt-1 text-[9px]" : "mt-1.5 text-[12px]", "text-slate-500")}>
+              {card.company}
+            </p>
+          ) : null}
+        </div>
+
+        {contacts.length > 0 ? (
+          <div className={cn(compact ? "mt-5" : "mt-8", "flex flex-col")}>
+            {contacts.map((c, index) => {
+              const Icon = c.icon;
+              return (
+                <div
+                  key={c.key}
+                  className={cn(
+                    "flex items-center gap-3 border-slate-800/95",
+                    compact ? "py-2.5" : "py-3.5",
+                    index > 0 && "border-t",
+                  )}
+                >
+                  <Icon className={cn(compact ? "h-4 w-4" : "h-[18px] w-[18px]", "shrink-0 text-slate-500")} />
+                  <p className={cn(compact ? "text-[10px]" : "text-[12px]", "truncate text-slate-300")}>{card[c.key]}</p>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+
+        <div className={cn(compact ? "mt-6" : "mt-auto pt-8", "flex flex-col items-center")}>
+          <div className={cn("bg-white shadow-[0_12px_34px_rgba(0,0,0,0.35)]", compact ? "rounded-[20px] p-2.5" : "rounded-[28px] p-4")}>
+            <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor="#111827" />
+          </div>
+          <p className={cn(compact ? "mt-4 text-[8px]" : "mt-7 text-[10px]", "tracking-[0.28em] uppercase text-slate-600")}>
+            SCAN TO CONNECT | DIGICARD
+          </p>
         </div>
       </div>
     </div>
@@ -711,7 +786,7 @@ function Dawn({ card, imageUrl, qrValue, compact }: TP) {
           <div className="rounded-2xl bg-white p-2 shadow-[0_8px_20px_rgba(0,0,0,0.2)]">
             <QRCodeSVG value={qrValue} size={compact ? 38 : 58} bgColor="#ffffff" fgColor="#7c3aed" />
           </div>
-          <span className="text-[8px] tracking-[0.16em] uppercase text-white/38">Scan to connect · DigiCard</span>
+          <span className="text-[8px] tracking-[0.16em] uppercase text-white/38">Scan to connect | DigiCard</span>
         </div>
       </div>
     </div>
@@ -725,18 +800,28 @@ export function CardPreview({ card, compact = false, imageUrl, phoneHero: _phone
   const shareTarget = getCardShareTarget(card);
   const qrValue = shareTarget.url;
   const tp: TP = { card, imageUrl, qrValue, compact };
+  let preview = <Blueprint {...tp} />;
 
   switch (card.template) {
-    case "Executive Slate": return <ExecutiveSlate {...tp} />;
-    case "Studio Ivory":    return <StudioIvory    {...tp} />;
-    case "Blueprint":       return <Blueprint      {...tp} />;
-    case "Signal Mono":     return <SignalMono      {...tp} />;
-    case "Crest":           return <Crest           {...tp} />;
-    case "Horizon":         return <Horizon         {...tp} />;
-    case "Ember":           return <Ember           {...tp} />;
-    case "Forest":          return <Forest          {...tp} />;
-    case "Obsidian":        return <Obsidian        {...tp} />;
-    case "Dawn":            return <Dawn            {...tp} />;
-    default:                return <Blueprint       {...tp} />;
+    case "Executive Slate": preview = <ExecutiveSlate {...tp} />; break;
+    case "Studio Ivory": preview = <StudioIvory {...tp} />; break;
+    case "Blueprint": preview = <Blueprint {...tp} />; break;
+    case "Signal Mono": preview = <SignalMono {...tp} />; break;
+    case "Classic Night": preview = <ClassicNight {...tp} />; break;
+    case "Crest": preview = <Crest {...tp} />; break;
+    case "Horizon": preview = <Horizon {...tp} />; break;
+    case "Ember": preview = <Ember {...tp} />; break;
+    case "Forest": preview = <Forest {...tp} />; break;
+    case "Obsidian": preview = <Obsidian {...tp} />; break;
+    case "Dawn": preview = <Dawn {...tp} />; break;
+    default: break;
   }
+
+  return (
+    <div className={cn("relative w-full aspect-[432/764]", compact ? undefined : "mx-auto max-w-[432px]")}>
+      <div className="absolute inset-0 [&>*]:h-full [&>*]:w-full">
+        {preview}
+      </div>
+    </div>
+  );
 }

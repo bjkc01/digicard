@@ -68,7 +68,7 @@ const profileFields: FieldConfig[] = [
   {
     key: "title",
     label: "Professional title",
-    placeholder: "Student, founder, designer…",
+    placeholder: "Student, founder, designer...",
     icon: BriefcaseBusiness,
     required: true,
     maxLength: 80,
@@ -172,6 +172,19 @@ export function CreateCardForm({
   const [isDownloading, setIsDownloading] = useState(false);
   const selectedQrPreference =
     qrPreferenceOptions.find((o) => o.key === formData.qrPreference) ?? qrPreferenceOptions[0]!;
+  const buildTemplatePreviewCard = (template: DigiCardTemplate) => ({
+    color: template.accent,
+    company: formData.company || "The University of Akron",
+    email: formData.email || "you@example.com",
+    id: `template-preview-${template.id}`,
+    linkedin: formData.linkedin || "linkedin.com/in/yourname",
+    name: formData.name || "Samosa Alert!!",
+    phone: formData.phone || "(232) 332-3330",
+    qrPreference: formData.qrPreference,
+    template: template.name,
+    title: formData.title || "Student Assistant",
+    website: formData.website || "www.digicard.app",
+  });
 
   useEffect(() => {
     if (actionState.status !== "idle") {
@@ -289,7 +302,7 @@ export function CreateCardForm({
                       maxLength={60}
                       name="cardLabel"
                       onChange={(e) => setLabelValue(e.target.value)}
-                      placeholder="e.g. Work, Freelance, Conference…"
+                      placeholder="e.g. Work, Freelance, Conference..."
                       type="text"
                       value={labelValue}
                     />
@@ -428,7 +441,7 @@ export function CreateCardForm({
                     <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#EDF0F2]">
                       <Camera className="h-5 w-5 text-[#293039]" />
                     </div>
-                    <p className="text-xs text-[#293039]">PNG, JPG, WEBP · 5 MB max</p>
+                    <p className="text-xs text-[#293039]">PNG, JPG, WEBP | 5 MB max</p>
                   </div>
                 )}
               </button>
@@ -488,11 +501,8 @@ export function CreateCardForm({
                           : "border-gray-200 bg-white hover:border-[#00C4CC]/40 hover:shadow-sm",
                       )}
                     >
-                      <div className={cn("h-20 rounded-lg bg-gradient-to-br p-[1px]", template.accent)}>
-                        <div className="flex h-full flex-col justify-between rounded-[7px] bg-slate-950/90 p-3">
-                          <span className="text-[9px] uppercase tracking-widest text-white/40">DigiCard</span>
-                          <p className="text-sm font-bold text-white">{template.name}</p>
-                        </div>
+                      <div className="mx-auto w-[108px] sm:w-[118px]">
+                        <CardPreview card={buildTemplatePreviewCard(template)} compact />
                       </div>
                       <div className="mt-2 flex items-center justify-between gap-2">
                         <p className="text-xs font-semibold text-[#0E1318]">{template.name}</p>
@@ -503,7 +513,7 @@ export function CreateCardForm({
                           </span>
                         ) : (
                           <span className="text-[11px] text-gray-400 transition-colors duration-300 group-hover:text-[#00C4CC]">
-                            Select →
+                            Select {"->"}
                           </span>
                         )}
                       </div>
@@ -521,7 +531,7 @@ export function CreateCardForm({
                 href="/cards"
                 className="text-sm text-[#6b7280] hover:text-[#0E1318] transition-colors"
               >
-                ← Back to cards
+                {"<-"} Back to cards
               </a>
             ) : <div />}
             <CreateCardSubmitButton isExtraCard={isExtraCard} isNewCard={isNewCard} />
@@ -567,7 +577,7 @@ export function CreateCardForm({
             {isDownloading ? (
               <>
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Generating image…
+                Generating image...
               </>
             ) : (
               <>
@@ -651,7 +661,7 @@ function CreateCardSubmitButton({ isExtraCard, isNewCard }: { isExtraCard: boole
       {pending ? (
         <>
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-          Saving…
+          Saving...
         </>
       ) : (
         <>
