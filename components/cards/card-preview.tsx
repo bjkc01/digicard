@@ -358,8 +358,9 @@ function StudentNetworkCard({
   theme,
 }: TP & { theme: StudentTheme }) {
   const contacts = networkingContactDefs.filter((contact) => Boolean(card[contact.key]));
-  const visibleContacts = compact ? contacts.slice(0, 3) : contacts.slice(0, 4);
-  const qrSize = compact ? 42 : 88;
+  const visibleContacts = compact ? contacts.slice(0, 2) : contacts.slice(0, 4);
+  const qrSize = compact ? 36 : 108;
+  const dividerClassName = theme.name.includes("text-white") ? "border-white/10" : "border-black/8";
 
   return (
     <div
@@ -370,112 +371,80 @@ function StudentNetworkCard({
       )}
     >
       {theme.overlay ? <div className={cn("pointer-events-none absolute inset-0", theme.overlay)} /> : null}
-      <div className={cn("absolute inset-y-0 left-0", compact ? "w-2" : "w-3", theme.rail)} />
+      <div className={cn("absolute inset-x-0 top-0 h-[3px]", theme.rail)} />
 
-      <div className={cn("relative flex h-full flex-col", compact ? "gap-3 p-4 pl-6" : "gap-5 p-6 pl-8")}>
-        <div className="flex items-center justify-between gap-3">
+      <div className={cn("relative flex h-full flex-col", compact ? "p-4" : "p-7")}>
+        <div className="flex items-start justify-between gap-4">
+          <Av
+            imageUrl={imageUrl}
+            name={card.name}
+            size={compact ? "h-12 w-12 text-sm" : "h-14 w-14 text-base"}
+            rounded={compact ? "rounded-[18px]" : "rounded-[22px]"}
+            bg={theme.avatarBg}
+            ring={compact ? undefined : "ring-1 ring-white/10"}
+            textColor={theme.avatarText}
+          />
           <span
             className={cn(
-              "rounded-full px-3 py-1 text-[8px] font-semibold uppercase tracking-[0.22em]",
-              theme.chip,
+              "rounded-full border px-3 py-1 text-[8px] font-semibold uppercase tracking-[0.22em]",
+              theme.chipMuted,
             )}
           >
             DigiCard
           </span>
-          <span
-            className={cn(
-              "rounded-full px-3 py-1 text-[8px] font-semibold uppercase tracking-[0.18em]",
-              theme.chipMuted,
-            )}
-          >
-            Scan-first
-          </span>
         </div>
 
-        <div className={cn("grid items-start gap-3", compact ? "grid-cols-[52px_1fr]" : "grid-cols-[72px_1fr]")}>
-          <div className="relative">
-            <div className={cn("absolute top-2 -left-2 rounded-full", compact ? "h-2.5 w-2.5" : "h-3 w-3", theme.rail)} />
-            <div className={cn("rounded-[24px] p-1.5", theme.avatarWrap)}>
-              <Av
-                imageUrl={imageUrl}
-                name={card.name}
-                size={compact ? "h-12 w-12 text-sm" : "h-16 w-16 text-base"}
-                rounded={compact ? "rounded-[18px]" : "rounded-[22px]"}
-                bg={theme.avatarBg}
-                textColor={theme.avatarText}
-              />
-            </div>
-          </div>
-
-          <div className="min-w-0">
-            <p
-              className={cn(
-                compact ? "text-[8px]" : "text-[10px]",
-                "font-semibold uppercase tracking-[0.22em]",
-                theme.subtle,
-              )}
-            >
-              Student networking card
+        <div className={compact ? "mt-4" : "mt-6"}>
+          <p
+            className={cn(
+              compact ? "text-[24px]" : "text-[40px]",
+              "font-bold leading-none tracking-[-0.05em]",
+              theme.name,
+            )}
+          >
+            {card.name}
+          </p>
+          {card.title ? (
+            <p className={cn(compact ? "mt-2 text-[11px]" : "mt-3 text-[16px]", "font-medium", theme.role)}>
+              {card.title}
             </p>
-            <p
-              className={cn(
-                compact ? "mt-1 text-[22px]" : "mt-1.5 text-[34px]",
-                "break-words font-bold leading-none tracking-[-0.05em]",
-                theme.name,
-              )}
-            >
-              {card.name}
+          ) : null}
+          {card.company ? (
+            <p className={cn(compact ? "mt-1 text-[9px]" : "mt-1.5 text-[12px]", theme.school)}>
+              {card.company}
             </p>
-            {card.title ? (
-              <p className={cn(compact ? "mt-1.5 text-[10px]" : "mt-2 text-[15px]", "font-semibold", theme.role)}>
-                {card.title}
-              </p>
-            ) : null}
-            {card.company ? (
-              <p className={cn(compact ? "mt-0.5 text-[9px]" : "mt-1 text-[12px]", theme.school)}>
-                {card.company}
-              </p>
-            ) : null}
-          </div>
+          ) : null}
         </div>
 
         {visibleContacts.length > 0 ? (
-          <div className={cn("flex flex-col", compact ? "gap-2" : "gap-2.5")}>
+          <div className={cn("flex flex-col", compact ? "mt-4" : "mt-7")}>
             {visibleContacts.map((contact) => {
               const Icon = contact.icon;
+              const valueClassName = compact
+                ? "mt-0.5 truncate text-[10px] font-medium"
+                : "mt-1 break-all text-[12px] leading-[1.35]";
 
               return (
-                <div key={contact.key} className={cn("rounded-[18px] p-3", theme.panel)}>
-                  <div className="flex items-center gap-3">
-                    <div
+                <div
+                  key={contact.key}
+                  className={cn(
+                    "flex items-start gap-3 border-b",
+                    compact ? "py-2.5" : "py-3.5",
+                    dividerClassName,
+                  )}
+                >
+                  <Icon className={cn(compact ? "mt-0.5 h-3.5 w-3.5" : "mt-0.5 h-[18px] w-[18px]", "shrink-0", theme.icon)} />
+                  <div className="min-w-0">
+                    <p
                       className={cn(
-                        "flex items-center justify-center rounded-2xl",
-                        compact ? "h-8 w-8" : "h-9 w-9",
-                        theme.iconWrap,
+                        compact ? "text-[7px]" : "text-[8px]",
+                        "font-semibold uppercase tracking-[0.18em]",
+                        theme.subtle,
                       )}
                     >
-                      <Icon className={cn(compact ? "h-3 w-3" : "h-3.5 w-3.5", theme.icon)} />
-                    </div>
-                    <div className="min-w-0">
-                      <p
-                        className={cn(
-                          compact ? "text-[7px]" : "text-[8px]",
-                          "font-semibold uppercase tracking-[0.18em]",
-                          theme.subtle,
-                        )}
-                      >
-                        {contact.label}
-                      </p>
-                      <p
-                        className={cn(
-                          compact ? "mt-0.5 text-[10px]" : "mt-1 text-[12px]",
-                          "truncate font-medium",
-                          theme.body,
-                        )}
-                      >
-                        {card[contact.key]}
-                      </p>
-                    </div>
+                      {contact.label}
+                    </p>
+                    <p className={cn(valueClassName, theme.body)}>{card[contact.key]}</p>
                   </div>
                 </div>
               );
@@ -483,18 +452,18 @@ function StudentNetworkCard({
           </div>
         ) : null}
 
-        <div className={cn("mt-auto flex flex-col items-center", compact ? "pt-3" : "pt-5")}>
-          <div className={cn("p-2.5", theme.qrWrap, compact ? "rounded-[20px]" : "rounded-[26px]")}>
+        <div className={cn("mt-auto flex flex-col items-center", compact ? "pt-5" : "pt-8")}>
+          <div className={cn(compact ? "rounded-[20px] p-2.5" : "rounded-[28px] p-4", theme.qrWrap)}>
             <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor={theme.qrFg} />
           </div>
           <p
             className={cn(
-              compact ? "mt-3 text-[8px]" : "mt-5 text-[10px]",
-              "font-semibold uppercase tracking-[0.24em]",
+              compact ? "mt-4 text-[8px]" : "mt-7 text-[10px]",
+              "font-semibold uppercase tracking-[0.28em]",
               theme.subtle,
             )}
           >
-            Scan to connect
+            Scan to connect | DigiCard
           </p>
         </div>
       </div>
