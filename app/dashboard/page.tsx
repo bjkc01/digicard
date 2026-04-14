@@ -4,6 +4,7 @@ import { CardsSection } from "@/components/cards/cards-section";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { Sidebar } from "@/components/dashboard/sidebar";
+import { WalletComingSoon } from "@/components/dashboard/wallet-coming-soon";
 import { Button } from "@/components/ui/button";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import { getWorkspaceView } from "@/lib/workspace-view";
@@ -146,6 +147,8 @@ export default async function DashboardPage() {
                 {hasActiveCard ? "Edit card" : "Create card"}
               </Button>
             </div>
+
+            <WalletComingSoon />
 
             <QuickActions />
           </div>
