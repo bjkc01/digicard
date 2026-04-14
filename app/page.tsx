@@ -277,14 +277,18 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
                 <div className="hero-device-glow pointer-events-none absolute -left-12 top-[18%] -z-20 h-40 w-40 rounded-full bg-[rgba(255,255,255,0.9)] blur-[72px]" />
                 <div className="hero-device-glow hero-device-glow--delay pointer-events-none absolute -right-10 top-[12%] -z-20 h-48 w-48 rounded-full bg-[rgba(150,218,255,0.26)] blur-[86px]" />
                 <div className="hero-device-glow pointer-events-none absolute -bottom-8 right-[12%] -z-20 h-36 w-36 rounded-full bg-[rgba(82,103,217,0.22)] blur-[74px]" />
-
                 <div className="hero-device relative">
-                  <div className="absolute -left-[2.9%] top-[22.9%] z-0 h-[6.6%] w-[1.55%] rounded-full bg-[linear-gradient(180deg,#8c95a3,#525b69)] shadow-[0_2px_6px_rgba(15,23,42,0.14)]" />
-                  <div className="absolute -left-[2.9%] top-[36.1%] z-0 h-[4.8%] w-[1.55%] rounded-full bg-[linear-gradient(180deg,#8c95a3,#525b69)] shadow-[0_2px_6px_rgba(15,23,42,0.14)]" />
-                  <div className="absolute -left-[2.9%] top-[46.6%] z-0 h-[7.6%] w-[1.55%] rounded-full bg-[linear-gradient(180deg,#8c95a3,#525b69)] shadow-[0_2px_6px_rgba(15,23,42,0.14)]" />
-                  <div className="pointer-events-none absolute -bottom-5 left-[14%] right-[10%] -z-10 h-8 rounded-full bg-[rgba(15,23,42,0.2)] blur-[14px]" />
+                  <div className="absolute -left-[0.96%] top-[24.6%] z-10 h-[4.1%] w-[0.72%] rounded-full bg-[linear-gradient(180deg,#d8dde5_0%,#919bac_24%,#56606f_64%,#161d28_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.42),inset_0_-1px_0_rgba(0,0,0,0.28),0_2px_4px_rgba(15,23,42,0.12)]">
+                    <div className="absolute inset-x-[22%] top-[12%] h-[18%] rounded-full bg-[rgba(255,255,255,0.32)]" />
+                  </div>
+                  <div className="absolute -left-[0.96%] top-[37.3%] z-10 h-[2.9%] w-[0.72%] rounded-full bg-[linear-gradient(180deg,#d8dde5_0%,#919bac_24%,#56606f_64%,#161d28_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.42),inset_0_-1px_0_rgba(0,0,0,0.28),0_2px_4px_rgba(15,23,42,0.12)]">
+                    <div className="absolute inset-x-[22%] top-[12%] h-[18%] rounded-full bg-[rgba(255,255,255,0.32)]" />
+                  </div>
+                  <div className="absolute -left-[0.96%] top-[47.4%] z-10 h-[4.1%] w-[0.72%] rounded-full bg-[linear-gradient(180deg,#d8dde5_0%,#919bac_24%,#56606f_64%,#161d28_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.42),inset_0_-1px_0_rgba(0,0,0,0.28),0_2px_4px_rgba(15,23,42,0.12)]">
+                    <div className="absolute inset-x-[22%] top-[12%] h-[18%] rounded-full bg-[rgba(255,255,255,0.32)]" />
+                  </div>
 
-                  <div className="relative rounded-[3.35rem] border border-white/32 bg-[linear-gradient(160deg,#eef2f8_0%,#b2bccb_9%,#707a8b_18%,#303847_31%,#121824_67%,#090d16_100%)] p-[0.42rem] shadow-[0_32px_80px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.36),inset_0_-10px_20px_rgba(0,0,0,0.2)]">
+                  <div className="hero-device-shell relative rounded-[3.35rem] border border-white/32 bg-[linear-gradient(160deg,#eef2f8_0%,#b2bccb_9%,#707a8b_18%,#303847_31%,#121824_67%,#090d16_100%)] p-[0.42rem]">
                     <div className="pointer-events-none absolute bottom-[5%] left-[0.18rem] top-[5%] w-[0.34rem] rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.72),rgba(255,255,255,0.18)_22%,rgba(255,255,255,0.02)_62%,rgba(0,0,0,0.3))]" />
                     <div className="pointer-events-none absolute bottom-[6%] right-[0.22rem] top-[6%] w-[0.22rem] rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.2),rgba(255,255,255,0.02)_28%,rgba(0,0,0,0.36))]" />
                     <div className="pointer-events-none absolute inset-[0.38rem] rounded-[3rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.07)_11%,rgba(255,255,255,0)_24%)]" />
