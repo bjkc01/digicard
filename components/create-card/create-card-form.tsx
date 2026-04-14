@@ -26,6 +26,7 @@ import {
 import {
   saveWorkspaceCardAction,
 } from "@/app/create-card/actions";
+import { saveExtraCardAction } from "@/app/create-card/extra-card-actions";
 import { CardPreview } from "@/components/cards/card-preview";
 import type { DigiCardTemplate } from "@/lib/data";
 import { templates } from "@/lib/data";
@@ -56,6 +57,8 @@ type FieldConfig = {
 };
 
 type CreateCardFormProps = {
+  cardId?: string;
+  cardLabel?: string;
   initialFormData: CardFormValues;
   initialTemplateId: string;
 };
@@ -130,22 +133,38 @@ function getStatusTone(state: SaveCardActionState) {
 }
 
 export function CreateCardForm({
+  cardId,
+  cardLabel = "",
   initialFormData,
   initialTemplateId,
 }: CreateCardFormProps) {
+  const isExtraCard = cardId !== undefined;
+  const isNewCard = cardId === "new";
+
+  // For new extra cards, generate a stable ID client-side so the portrait key is consistent
+  const [effectiveCardId] = useState<string>(() =>
+    isNewCard ? `ec_${Date.now()}_${Math.random().toString(36).slice(2, 7)}` : (cardId ?? ""),
+  );
+  const [labelValue, setLabelValue] = useState(cardLabel);
+
   const initialTemplate =
     templates.find((t) => t.id === initialTemplateId) ?? templates[2]!;
   const [formData, setFormData] = useState<CardFormValues>(initialFormData);
   const [selectedTemplate, setSelectedTemplate] = useState<DigiCardTemplate>(initialTemplate);
-  const imageStorageKey = `digicard-portrait-${initialFormData.email}`;
+
+  // Portrait key: primary card uses email, extra cards use their stable ID
+  const imageStorageKey = isExtraCard
+    ? `digicard-portrait-${effectiveCardId}`
+    : `digicard-portrait-${initialFormData.email}`;
+
   const [imagePreview, setImagePreview] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
-    return localStorage.getItem(`digicard-portrait-${initialFormData.email}`) ?? null;
+    return localStorage.getItem(imageStorageKey) ?? null;
   });
   const [imageError, setImageError] = useState<string | null>(null);
   const [statusVisible, setStatusVisible] = useState(false);
   const [actionState, formAction] = useActionState(
-    saveWorkspaceCardAction,
+    isExtraCard ? saveExtraCardAction : saveWorkspaceCardAction,
     initialSaveCardActionState,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -218,8 +237,14 @@ export function CreateCardForm({
       {/* ── Form column ── */}
       <div className="order-2 xl:order-1 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight text-[#0E1318]">Your workspace card</h1>
-          <p className="mt-1 text-sm text-[#6b7280]">Fill in your details and pick a template. Everything updates live.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-[#0E1318]">
+            {isNewCard ? "Create new card" : isExtraCard ? "Edit card" : "Your workspace card"}
+          </h1>
+          <p className="mt-1 text-sm text-[#6b7280]">
+            {isExtraCard
+              ? "This card is independent from your workspace profile. Fill in the details and pick a template."
+              : "Fill in your details and pick a template. Everything updates live."}
+          </p>
         </div>
 
         {statusVisible && actionState.status !== "idle" ? (
@@ -235,8 +260,44 @@ export function CreateCardForm({
 
         <form action={formAction} className="space-y-5">
           <input name="defaultTemplateId" type="hidden" value={selectedTemplate.id} />
+          {isExtraCard ? (
+            <input name="extraCardId" type="hidden" value={effectiveCardId} />
+          ) : null}
 
           <PendingWrapper className="space-y-5">
+            {/* Card label — only for extra cards */}
+            {isExtraCard ? (
+              <div
+                role="group"
+                aria-labelledby="card-label-section"
+                className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
+              >
+                <p id="card-label-section" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
+                  Card nickname
+                </p>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="field-cardLabel" className="text-xs font-semibold text-[#293039]">
+                    Label
+                  </label>
+                  <div className="group relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-150 group-focus-within:text-[#00C4CC]">
+                      <Wallet className="h-4 w-4" />
+                    </div>
+                    <input
+                      id="field-cardLabel"
+                      className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition-colors duration-150 focus:border-[#00C4CC] focus:ring-2 focus:ring-[#00C4CC]/20"
+                      maxLength={60}
+                      name="cardLabel"
+                      onChange={(e) => setLabelValue(e.target.value)}
+                      placeholder="e.g. Work, Freelance, Conference…"
+                      type="text"
+                      value={labelValue}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
             {/* Identity */}
             <div
               role="group"
@@ -454,8 +515,16 @@ export function CreateCardForm({
           </PendingWrapper>
 
           {/* Save */}
-          <div className="flex justify-end">
-            <CreateCardSubmitButton />
+          <div className="flex items-center justify-between gap-4">
+            {isExtraCard ? (
+              <a
+                href="/cards"
+                className="text-sm text-[#6b7280] hover:text-[#0E1318] transition-colors"
+              >
+                ← Back to cards
+              </a>
+            ) : <div />}
+            <CreateCardSubmitButton isExtraCard={isExtraCard} isNewCard={isNewCard} />
           </div>
         </form>
       </div>
@@ -471,7 +540,7 @@ export function CreateCardForm({
             <div ref={cardRef}>
               <CardPreview
                 card={{
-                  id: 99,
+                  id: "live-preview",
                   color: selectedTemplate.accent,
                   company: formData.company,
                   email: formData.email,
@@ -570,8 +639,9 @@ function PendingWrapper({ className, children }: { className?: string; children:
   );
 }
 
-function CreateCardSubmitButton() {
+function CreateCardSubmitButton({ isExtraCard, isNewCard }: { isExtraCard: boolean; isNewCard: boolean }) {
   const { pending } = useFormStatus();
+  const label = isNewCard ? "Create card" : isExtraCard ? "Save card" : "Save workspace card";
   return (
     <button
       type="submit"
@@ -585,7 +655,7 @@ function CreateCardSubmitButton() {
         </>
       ) : (
         <>
-          Save workspace card
+          {label}
           <Check className="h-4 w-4" />
         </>
       )}

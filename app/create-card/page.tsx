@@ -6,6 +6,7 @@ import { getWorkspaceView } from "@/lib/workspace-view";
 
 type CreateCardPageProps = {
   searchParams?: Promise<{
+    cardId?: string;
     template?: string;
   }>;
 };
@@ -49,24 +50,53 @@ export default async function CreateCardPage({ searchParams }: CreateCardPagePro
   const workspaceUser = await requireWorkspaceUser("/create-card");
   const workspaceView = await getWorkspaceView(workspaceUser);
   const resolvedSearchParams = (await searchParams) ?? {};
-  const initialTemplateId = resolvedSearchParams.template ?? workspaceView.settings.defaultTemplateId;
-  const initialFormData = {
-    company: workspaceView.settings.card.company,
-    email: workspaceView.settings.profile.email,
-    linkedin: workspaceView.settings.card.linkedin,
-    name: workspaceView.settings.profile.name,
-    phone: workspaceView.settings.card.phone,
-    qrPreference: workspaceView.settings.card.qrPreference,
-    title: workspaceView.settings.profile.title,
-    website: workspaceView.settings.profile.website,
-  };
+  const { cardId } = resolvedSearchParams;
+
+  // Editing an existing extra card?
+  const extraCard =
+    cardId && cardId !== "new"
+      ? workspaceView.settings.extraCards.find((c) => c.id === cardId) ?? null
+      : null;
+
+  // Determine initial form data: extra card fields vs primary card fields
+  const isExtraCardMode = cardId === "new" || extraCard !== null;
+  const initialTemplateId = resolvedSearchParams.template ?? (
+    extraCard ? extraCard.templateId : workspaceView.settings.defaultTemplateId
+  );
+  const initialFormData = isExtraCardMode && extraCard
+    ? {
+        company: extraCard.card.company,
+        email: extraCard.profile.email,
+        linkedin: extraCard.card.linkedin,
+        name: extraCard.profile.name,
+        phone: extraCard.card.phone,
+        qrPreference: extraCard.card.qrPreference,
+        title: extraCard.profile.title,
+        website: extraCard.profile.website,
+      }
+    : {
+        company: workspaceView.settings.card.company,
+        email: workspaceView.settings.profile.email,
+        linkedin: workspaceView.settings.card.linkedin,
+        name: workspaceView.settings.profile.name,
+        phone: workspaceView.settings.card.phone,
+        qrPreference: workspaceView.settings.card.qrPreference,
+        title: workspaceView.settings.profile.title,
+        website: workspaceView.settings.profile.website,
+      };
+
+  const formKey = isExtraCardMode
+    ? (extraCard ? `extra-${extraCard.id}-${extraCard.createdAt}` : "extra-new")
+    : (workspaceView.settings.updatedAt ?? "workspace-card-unsaved");
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
       <Sidebar activePath="/create-card" email={workspaceUser.email} userName={workspaceUser.name} />
       <Suspense fallback={<FormSkeleton />}>
         <CreateCardForm
-          key={workspaceView.settings.updatedAt ?? "workspace-card-unsaved"}
+          key={formKey}
+          cardId={cardId}
+          cardLabel={extraCard?.label ?? ""}
           initialFormData={initialFormData}
           initialTemplateId={initialTemplateId}
         />

@@ -40,9 +40,19 @@ export type WorkspaceCardDetails = {
   qrPreference: WorkspaceQrPreference;
 };
 
+export type WorkspaceExtraCard = {
+  id: string;
+  label: string;
+  profile: WorkspaceProfile;
+  card: WorkspaceCardDetails;
+  templateId: string;
+  createdAt: string;
+};
+
 export type WorkspaceSettings = {
   card: WorkspaceCardDetails;
   defaultTemplateId: string;
+  extraCards: WorkspaceExtraCard[];
   notifications: WorkspaceNotificationSettings;
   owner: string;
   profile: WorkspaceProfile;
@@ -155,6 +165,7 @@ function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings 
     defaultTemplateId: validTemplateIds.has(defaultTemplateId)
       ? defaultTemplateId
       : templates[0]?.id ?? "blueprint",
+    extraCards: [],
     notifications: { ...defaultNotificationSettings },
     owner: getWorkspaceOwner(user),
     profile: {
@@ -275,6 +286,37 @@ async function getCookieWorkspaceSettings(user: WorkspaceUser) {
   return mergeWorkspaceSettings(user, payload.value);
 }
 
+function mergeExtraCard(raw: unknown): WorkspaceExtraCard | null {
+  if (!isRecord(raw)) return null;
+  const id = typeof raw.id === "string" && raw.id ? raw.id : null;
+  const createdAt = typeof raw.createdAt === "string" && raw.createdAt ? raw.createdAt : null;
+  if (!id || !createdAt) return null;
+  const rawCard = isRecord(raw.card) ? raw.card : {};
+  const rawProfile = isRecord(raw.profile) ? raw.profile : {};
+  const templateId =
+    typeof raw.templateId === "string" && validTemplateIds.has(raw.templateId)
+      ? raw.templateId
+      : "blueprint";
+  return {
+    id,
+    label: typeof raw.label === "string" ? raw.label : "",
+    profile: {
+      email: getOptionalString(rawProfile.email),
+      name: getOptionalString(rawProfile.name),
+      title: getOptionalString(rawProfile.title),
+      website: getOptionalString(rawProfile.website),
+    },
+    card: {
+      company: getOptionalString(rawCard.company),
+      linkedin: getOptionalString(rawCard.linkedin),
+      phone: getOptionalString(rawCard.phone),
+      qrPreference: isValidQrPreference(rawCard.qrPreference) ? rawCard.qrPreference : "auto",
+    },
+    templateId,
+    createdAt,
+  };
+}
+
 function mergeWorkspaceSettings(
   user: WorkspaceUser,
   candidate: Partial<WorkspaceSettings> | null | undefined,
@@ -289,6 +331,9 @@ function mergeWorkspaceSettings(
     typeof candidate?.defaultTemplateId === "string" && validTemplateIds.has(candidate.defaultTemplateId)
       ? candidate.defaultTemplateId
       : defaults.defaultTemplateId;
+  const extraCards = Array.isArray(candidate?.extraCards)
+    ? (candidate.extraCards as unknown[]).map(mergeExtraCard).filter((c): c is WorkspaceExtraCard => c !== null)
+    : [];
 
   return {
     card: {
@@ -300,6 +345,7 @@ function mergeWorkspaceSettings(
         : defaults.card.qrPreference,
     },
     defaultTemplateId: templateId,
+    extraCards,
     notifications: notificationSettingOptions.reduce<WorkspaceNotificationSettings>(
       (accumulator, option) => {
         accumulator[option.key] = getOptionalBoolean(
@@ -581,6 +627,105 @@ export async function saveWorkspaceCardSnapshot(
       title,
       website,
     },
+  });
+}
+
+export async function saveWorkspaceExtraCard(
+  user: WorkspaceUser,
+  input: {
+    id: string;
+    label: string;
+    company: string;
+    defaultTemplateId: string;
+    email: string;
+    linkedin: string;
+    name: string;
+    phone: string;
+    qrPreference: string;
+    title: string;
+    website: string;
+  },
+) {
+  if (!validTemplateIds.has(input.defaultTemplateId)) {
+    throw new WorkspaceSettingsValidationError(
+      "template-invalid",
+      "Choose a valid template before saving.",
+    );
+  }
+
+  const name = cleanText(input.name, 60);
+  const email = normalizeEmail(input.email);
+  const qrPreference = isValidQrPreference(input.qrPreference) ? input.qrPreference : null;
+  const title = cleanText(input.title, 80);
+  const website = normalizeWebsite(input.website);
+
+  if (name.length < 2) {
+    throw new WorkspaceSettingsValidationError(
+      "profile-invalid",
+      "Display name must be at least 2 characters.",
+    );
+  }
+
+  if (!email) {
+    throw new WorkspaceSettingsValidationError(
+      "profile-invalid",
+      "A valid email address is required.",
+    );
+  }
+
+  if (!title) {
+    throw new WorkspaceSettingsValidationError(
+      "profile-invalid",
+      "Professional title is required.",
+    );
+  }
+
+  if (!qrPreference) {
+    throw new WorkspaceSettingsValidationError(
+      "qr-invalid",
+      "Choose how the QR code should behave before saving.",
+    );
+  }
+
+  if (!input.id || input.id === "new") {
+    throw new WorkspaceSettingsValidationError(
+      "card-invalid",
+      "Invalid card ID.",
+    );
+  }
+
+  const current = await getWorkspaceSettings(user);
+  const existingIndex = current.extraCards.findIndex((c) => c.id === input.id);
+  const createdAt =
+    existingIndex >= 0 ? current.extraCards[existingIndex]!.createdAt : new Date().toISOString();
+
+  const updatedCard: WorkspaceExtraCard = {
+    id: input.id,
+    label: cleanText(input.label, 60),
+    profile: { email, name, title, website },
+    card: {
+      company: cleanText(input.company, 80),
+      linkedin: normalizeLinkedIn(input.linkedin),
+      phone: cleanText(input.phone, 40),
+      qrPreference,
+    },
+    templateId: input.defaultTemplateId,
+    createdAt,
+  };
+
+  const nextExtraCards =
+    existingIndex >= 0
+      ? current.extraCards.map((c, i) => (i === existingIndex ? updatedCard : c))
+      : [...current.extraCards, updatedCard];
+
+  return persistWorkspaceSettings(user, { ...current, extraCards: nextExtraCards });
+}
+
+export async function deleteWorkspaceExtraCard(user: WorkspaceUser, cardId: string) {
+  const current = await getWorkspaceSettings(user);
+  return persistWorkspaceSettings(user, {
+    ...current,
+    extraCards: current.extraCards.filter((c) => c.id !== cardId),
   });
 }
 

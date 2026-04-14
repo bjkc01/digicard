@@ -17,35 +17,47 @@ export default async function CardsPage() {
       <section className="space-y-6">
         <header className="panel flex flex-col gap-5 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="eyebrow text-[var(--brand)]">My Card</p>
+            <p className="eyebrow text-[var(--brand)]">My Cards</p>
             <h1 className="mt-2 text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
-              Your workspace card
+              Your cards
             </h1>
             <p className="mt-2 max-w-2xl text-[0.98rem] leading-7 text-[var(--muted)]">
-              This view shows the single card generated from your saved workspace profile,
-              template choice, and contact details.
+              Manage all your digital cards. Your workspace card stays in sync with your profile.
+              Extra cards are fully independent — each with their own details and template.
             </p>
           </div>
 
-          <Button
-            href="/create-card"
-            className="whitespace-nowrap rounded-full bg-[var(--brand)] px-5 py-3 text-white shadow-[0_16px_34px_rgba(82,103,217,0.22)] hover:bg-[#4459cb]"
-          >
-            Edit card
-          </Button>
+          <div className="flex shrink-0 gap-3">
+            <Button
+              href="/create-card"
+              className="whitespace-nowrap rounded-full border border-[rgba(82,103,217,0.22)] bg-white px-5 py-3 text-[var(--brand)] hover:bg-[var(--soft)]"
+            >
+              Edit workspace card
+            </Button>
+            <Button
+              href="/create-card?cardId=new"
+              className="whitespace-nowrap rounded-full bg-[var(--brand)] px-5 py-3 text-white shadow-[0_16px_34px_rgba(82,103,217,0.22)] hover:bg-[#4459cb]"
+            >
+              + Add card
+            </Button>
+          </div>
         </header>
 
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
           <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="eyebrow text-[var(--brand)]">Workspace card</p>
+                <p className="eyebrow text-[var(--brand)]">All cards</p>
                 <h2 className="mt-2 max-w-[34rem] text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
-                  Keep one polished card ready to share
+                  {workspaceView.cards.length === 0
+                    ? "No cards yet"
+                    : workspaceView.cards.length === 1
+                      ? "1 card ready to share"
+                      : `${workspaceView.cards.length} cards ready to share`}
                 </h2>
                 <p className="mt-2 max-w-xl text-[0.98rem] leading-7 text-[var(--muted)]">
-                  When you update the builder or Settings, this saved card view refreshes from the
-                  same validated workspace record.
+                  Each card can have its own template, contact details, and portrait.
+                  Use extra cards for different roles, events, or contexts.
                 </p>
               </div>
             </div>
@@ -59,7 +71,7 @@ export default async function CardsPage() {
 
           <aside className="space-y-6">
             <SummaryCard
-              description="The single workspace card generated from the active profile."
+              description="Total cards generated from your workspace profile and extra cards."
               icon={CreditCard}
               title="Card status"
               value={workspaceView.summary.cardStatusLabel}

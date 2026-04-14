@@ -4,7 +4,7 @@ const previewCard = {
   color: "from-blue-700 to-cyan-500",
   company: "Your organization",
   email: "you@example.com",
-  id: 99,
+  id: "preview",
   linkedin: "linkedin.com/in/yourname",
   name: "Your Name",
   phone: "+1 (555) 000-0000",

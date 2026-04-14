@@ -29,13 +29,24 @@ export function CardsSection({
   }
 
   return (
-    <div className="mt-8 grid gap-5 md:grid-cols-2">
-      {cards.map((card) => (
-        <DashboardCardSurface
-          key={card.id}
-          card={card}
-        />
-      ))}
+    <div className="mt-8 space-y-5">
+      <div className="grid gap-5 md:grid-cols-2">
+        {cards.map((card) => (
+          <DashboardCardSurface
+            key={card.id}
+            card={card}
+          />
+        ))}
+      </div>
+
+      <div className="flex items-center justify-end">
+        <Button
+          href="/create-card?cardId=new"
+          className="rounded-full border border-dashed border-[rgba(82,103,217,0.3)] bg-[var(--soft)] px-5 py-2.5 text-sm text-[var(--brand)] hover:border-[var(--brand)] hover:bg-white"
+        >
+          + Add another card
+        </Button>
+      </div>
     </div>
   );
 }

@@ -17,7 +17,8 @@ export type DigiCardTemplate = {
 export type CardQrPreference = "auto" | "linkedin" | "website";
 
 export type DigiCard = {
-  id: number;
+  id: string;
+  label?: string;
   name: string;
   title: string;
   company: string;

@@ -49,28 +49,22 @@ function formatUpdatedAt(value: string | null) {
   return `${dateLabel} at ${timeLabel}`;
 }
 
-function buildWorkspaceCard(settings: Awaited<ReturnType<typeof getWorkspaceSettings>>) {
+function buildWorkspaceCards(settings: Awaited<ReturnType<typeof getWorkspaceSettings>>) {
+  const cards: DigiCard[] = [];
+
+  // Primary card
   const selectedTemplate =
     templates.find((template) => template.id === settings.defaultTemplateId) ?? templates[0]!;
   const hasMinimumProfile = Boolean(
     settings.profile.name && settings.profile.email && settings.profile.title,
   );
 
-  if (!hasMinimumProfile) {
-    return [];
-  }
-
-  const stableId =
-    settings.owner
-      .split("")
-      .reduce((sum, character) => sum + character.charCodeAt(0), 0) || 1;
-
-  return [
-    {
+  if (hasMinimumProfile) {
+    cards.push({
       color: selectedTemplate.accent,
       company: settings.card.company,
       email: settings.profile.email,
-      id: stableId,
+      id: "primary",
       linkedin: settings.card.linkedin,
       name: settings.profile.name,
       phone: settings.card.phone,
@@ -78,13 +72,39 @@ function buildWorkspaceCard(settings: Awaited<ReturnType<typeof getWorkspaceSett
       template: selectedTemplate.name,
       title: settings.profile.title,
       website: settings.profile.website,
-    },
-  ] satisfies DigiCard[];
+    });
+  }
+
+  // Extra cards
+  for (const extra of settings.extraCards) {
+    const extraTemplate =
+      templates.find((t) => t.id === extra.templateId) ?? templates[0]!;
+    const hasExtraMinimum = Boolean(
+      extra.profile.name && extra.profile.email && extra.profile.title,
+    );
+    if (!hasExtraMinimum) continue;
+    cards.push({
+      color: extraTemplate.accent,
+      company: extra.card.company,
+      email: extra.profile.email,
+      id: extra.id,
+      label: extra.label || undefined,
+      linkedin: extra.card.linkedin,
+      name: extra.profile.name,
+      phone: extra.card.phone,
+      qrPreference: extra.card.qrPreference,
+      template: extraTemplate.name,
+      title: extra.profile.title,
+      website: extra.profile.website,
+    });
+  }
+
+  return cards;
 }
 
 export async function getWorkspaceView(user: WorkspaceUser): Promise<WorkspaceView> {
   const settings = await getWorkspaceSettings(user);
-  const cards = buildWorkspaceCard(settings);
+  const cards = buildWorkspaceCards(settings);
   const selectedTemplate =
     templates.find((template) => template.id === settings.defaultTemplateId) ?? templates[0]!;
   const profileCompletion = Math.round(
@@ -108,7 +128,7 @@ export async function getWorkspaceView(user: WorkspaceUser): Promise<WorkspaceVi
     settings,
     summary: {
       activeCardCount: cards.length,
-      cardStatusLabel: hasActiveCard ? "Ready" : "Needs setup",
+      cardStatusLabel: hasActiveCard ? (cards.length === 1 ? "1 card ready" : `${cards.length} cards ready`) : "Needs setup",
       enabledNotificationCount,
       lastUpdatedLabel: formatUpdatedAt(settings.updatedAt),
       profileCompletion,
