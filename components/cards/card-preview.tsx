@@ -798,6 +798,121 @@ function Dawn({ card, imageUrl, qrValue, compact }: TP) {
 // ════════════════════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════════════════════════
+function ArchitectColumn({ card, imageUrl, qrValue, compact }: TP) {
+  const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
+  const visibleContacts = compact ? contacts.slice(0, 3) : contacts;
+  const qrSize = compact ? 40 : 112;
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden bg-[#f6f3ee] text-[#1c2329] shadow-[0_24px_60px_rgba(15,23,42,0.16)]",
+        compact ? "rounded-[22px]" : "rounded-[30px]",
+      )}
+    >
+      <div className="absolute inset-y-0 left-0 w-[30%] bg-[#182126]" />
+      <div className="absolute inset-y-0 left-[30%] w-px bg-[#182126]/10" />
+      <div className="absolute inset-x-0 top-0 h-px bg-white/70" />
+
+      <div className={cn("relative flex h-full", compact ? "px-3 py-4" : "px-6 py-7")}>
+        <div className={cn("relative flex-shrink-0", compact ? "w-[29%]" : "w-[110px]")}>
+          <div className={cn("flex justify-center", compact ? "pt-3" : "pt-5")}>
+            <div
+              className="max-h-full text-center text-white"
+              style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+            >
+              <span className={cn(compact ? "text-[9px]" : "text-[11px]", "font-bold tracking-[-0.02em]")}>
+                {card.name}
+              </span>
+              <span className={cn(compact ? "mt-1 text-[8px]" : "mt-2 text-[10px]", "text-white/72")}>
+                {card.company || card.title || "DigiCard"}
+              </span>
+            </div>
+          </div>
+
+          <div className={cn("absolute left-1/2 -translate-x-1/2", compact ? "bottom-20" : "bottom-36")}>
+            <div
+              className={cn(
+                "flex items-center justify-center rounded-full bg-[#182126] shadow-[0_18px_35px_rgba(15,23,42,0.24)]",
+                compact ? "h-12 w-12" : "h-20 w-20",
+              )}
+            >
+              {imageUrl ? (
+                <Av
+                  imageUrl={imageUrl}
+                  name={card.name}
+                  size={compact ? "h-9 w-9 text-[10px]" : "h-14 w-14 text-sm"}
+                  rounded="rounded-full"
+                  bg="bg-white/10"
+                />
+              ) : (
+                <div className={cn("rounded-full bg-[#f6f3ee]", compact ? "h-3.5 w-7" : "h-5 w-10")} />
+              )}
+            </div>
+          </div>
+
+          <div className={cn("absolute left-1/2 -translate-x-1/2", compact ? "bottom-6" : "bottom-8")}>
+            <div className="flex flex-col items-center gap-2">
+              <div className={cn("rounded-full bg-white/92", compact ? "h-2.5 w-9" : "h-3 w-14")} />
+              <div className={cn("rounded-full bg-white/34", compact ? "h-2.5 w-12" : "h-3 w-16")} />
+              <div className={cn("rounded-full bg-white/55", compact ? "h-2.5 w-7" : "h-3 w-9")} />
+            </div>
+          </div>
+        </div>
+
+        <div className={cn("flex min-w-0 flex-1 flex-col", compact ? "pl-3.5" : "pl-6")}>
+          <div className="flex justify-end">
+            <div className={cn("rounded-[18px] bg-white p-2 shadow-[0_16px_28px_rgba(15,23,42,0.12)]", compact && "rounded-[14px] p-1.5")}>
+              <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor="#11181d" />
+            </div>
+          </div>
+
+          <div className={compact ? "mt-4" : "mt-6"}>
+            <p className={cn(compact ? "text-base" : "text-[24px]", "font-bold tracking-[-0.03em] text-[#1b2328]")}>
+              {card.name}
+            </p>
+            {card.title && (
+              <p className={cn(compact ? "mt-1 text-[10px]" : "mt-1.5 text-sm", "font-medium uppercase tracking-[0.08em] text-slate-500")}>
+                {card.title}
+              </p>
+            )}
+            {card.company && (
+              <p className={cn(compact ? "mt-1 text-[9px]" : "mt-2 text-[11px]", "text-slate-500")}>
+                {card.company}
+              </p>
+            )}
+          </div>
+
+          {visibleContacts.length > 0 && (
+            <div className={cn(compact ? "mt-4 space-y-2.5" : "mt-7 space-y-3.5")}>
+              {visibleContacts.map((contact) => (
+                <div key={contact.key}>
+                  <div className={cn("mb-2 h-px bg-[#182126]/22", compact && "mb-1.5")} />
+                  <p className={cn(compact ? "text-[7px]" : "text-[9px]", "uppercase tracking-[0.22em] text-slate-400")}>
+                    {contact.label}
+                  </p>
+                  <p className={cn(compact ? "mt-1 text-[9px]" : "mt-1.5 text-[12px]", "text-slate-700")}>
+                    {card[contact.key]}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className={cn(compact ? "mt-auto pt-4" : "mt-auto pt-6")}>
+            <div className="flex items-center gap-2.5">
+              <div className={cn("h-px bg-[#182126]/35", compact ? "w-8" : "w-12")} />
+              <span className={cn(compact ? "text-[7px]" : "text-[9px]", "uppercase tracking-[0.2em] text-slate-400")}>
+                Scan to connect
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function CardPreview({ card, compact = false, imageUrl, phoneHero: _phoneHero = false }: CardPreviewProps) {
   const shareTarget = getCardShareTarget(card);
   const qrValue = shareTarget.url;
@@ -816,6 +931,7 @@ export function CardPreview({ card, compact = false, imageUrl, phoneHero: _phone
     case "Forest": preview = <Forest {...tp} />; break;
     case "Obsidian": preview = <Obsidian {...tp} />; break;
     case "Dawn": preview = <Dawn {...tp} />; break;
+    case "Architect Column": preview = <ArchitectColumn {...tp} />; break;
     default: break;
   }
 

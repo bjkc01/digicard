@@ -74,6 +74,14 @@ export const templates: DigiCardTemplate[] = [
     category: "creative",
   },
   {
+    id: "architect",
+    name: "Architect Column",
+    description: "A vertical editorial layout inspired by printed studio business cards and QR-first sharing.",
+    accent: "from-[#182126] to-[#0f1519]",
+    tone: "bg-stone-100",
+    category: "minimal",
+  },
+  {
     id: "blueprint",
     name: "Blueprint",
     description: "Balanced modern styling with a calm accent and clear information layout.",
