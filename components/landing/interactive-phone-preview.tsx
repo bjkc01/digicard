@@ -40,12 +40,13 @@ function RealisticPhoneFrame() {
           alt="Realistic phone template framing the DigiCard preview"
           fill
           sizes="(max-width: 768px) 52vw, 296px"
-          className="pointer-events-none select-none object-cover"
+          className="pointer-events-none select-none object-contain mix-blend-multiply"
           priority
         />
 
-        <div className="absolute left-[8.2%] top-[8.05%] h-[88.25%] w-[83.8%] overflow-hidden rounded-[2.7rem] bg-[linear-gradient(180deg,#191e30_0%,#0a0d17_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[11.5%] bg-[linear-gradient(180deg,rgba(5,8,14,0.58),rgba(5,8,14,0.14)_60%,transparent)]" />
+        <div className="absolute left-[8.2%] top-[8.05%] h-[88.25%] w-[83.8%] overflow-hidden rounded-[2.7rem] bg-[linear-gradient(180deg,_#f8f9fd_0%,_#fbfbfd_58%,_#ffffff_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_24%_20%,rgba(82,103,217,0.18),transparent_28%),radial-gradient(circle_at_78%_70%,rgba(56,189,248,0.14),transparent_26%),radial-gradient(circle_at_48%_92%,rgba(255,255,255,0.85),transparent_22%)]" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[11.5%] bg-[linear-gradient(180deg,rgba(5,8,14,0.42),rgba(5,8,14,0.08)_62%,transparent)]" />
 
           <div className="absolute inset-x-[7%] top-[2.9%] z-30 flex items-center justify-between text-[0.8rem] font-semibold tracking-[-0.03em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
             <span>9:41</span>
@@ -71,6 +72,7 @@ function RealisticPhoneFrame() {
           </div>
 
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08)_0%,transparent_18%,transparent_74%,rgba(255,255,255,0.06)_100%)]" />
+          <div className="pointer-events-none absolute inset-[0.14rem] rounded-[2.56rem] ring-1 ring-[rgba(17,24,39,0.06)]" />
         </div>
       </div>
     </div>

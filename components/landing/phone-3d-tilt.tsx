@@ -35,7 +35,7 @@ export function Phone3DTilt({ children, className, maxRotation = 12 }: Phone3DTi
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
-        transition: "transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)",
+        transition: "transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
         transformStyle: "preserve-3d",
         willChange: "transform",
       }}

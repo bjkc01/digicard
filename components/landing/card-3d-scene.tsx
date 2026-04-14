@@ -155,7 +155,7 @@ export function Card3DScene() {
         onMouseLeave={handleMouseLeave}
         style={{
           transform: RESTING,
-          transition: "transform 0.55s cubic-bezier(0.23, 1, 0.32, 1)",
+          transition: "transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
           willChange: "transform",
           paddingBottom: "78px",
         }}

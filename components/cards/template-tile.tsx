@@ -63,7 +63,7 @@ export function TemplateTile({
               Current default
             </span>
           ) : (
-            <span className="text-sm font-medium text-slate-900 transition group-hover:translate-x-1">
+            <span className="text-sm font-medium text-slate-900 transition-transform duration-300 group-hover:translate-x-1">
               Use template
             </span>
           )}

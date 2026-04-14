@@ -114,7 +114,7 @@ export default async function DashboardPage() {
                     {progress !== undefined ? (
                       <div className="mt-3 overflow-hidden rounded-full bg-white shadow-[inset_0_1px_3px_rgba(21,32,58,0.06)]" style={{ height: 6 }}>
                         <div
-                          className="h-full rounded-full bg-[linear-gradient(90deg,_#5267d9,_#8da0ff)] transition-all duration-500"
+                          className="h-full rounded-full bg-[linear-gradient(90deg,_#5267d9,_#8da0ff)] transition-all duration-300"
                           style={{ width: `${progress}%` }}
                         />
                       </div>

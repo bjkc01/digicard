@@ -23,6 +23,13 @@ const config: Config = {
         panel: "0 24px 60px rgba(15, 23, 42, 0.08)",
         soft: "0 10px 35px rgba(15, 23, 42, 0.08)",
       },
+      transitionDuration: {
+        DEFAULT: "300ms",
+      },
+      transitionTimingFunction: {
+        DEFAULT: "cubic-bezier(0.25, 1, 0.5, 1)",
+        snap: "cubic-bezier(0.25, 1, 0.5, 1)",
+      },
       backgroundImage: {
         "hero-grid":
           "linear-gradient(to right, rgba(148,163,184,0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.12) 1px, transparent 1px)",

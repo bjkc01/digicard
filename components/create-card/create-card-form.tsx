@@ -282,7 +282,7 @@ export function CreateCardForm({
                           <label
                             key={option.key}
                             className={cn(
-                              "flex cursor-pointer items-center justify-between rounded-xl border px-4 py-3 transition-all duration-150",
+                              "flex cursor-pointer items-center justify-between rounded-xl border px-4 py-3 transition-all duration-300",
                               isSelected
                                 ? "border-[#00C4CC] bg-[#00C4CC]/5 ring-2 ring-[#00C4CC]/20"
                                 : "border-gray-200 bg-[#F8F9F9] hover:border-[#00C4CC]/40 hover:bg-white",
@@ -350,7 +350,7 @@ export function CreateCardForm({
                 type="button"
                 aria-label="Upload profile image"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex h-32 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 text-center transition-all duration-150 hover:border-[#00C4CC] hover:bg-[#00C4CC]/5"
+                className="flex h-32 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 text-center transition-all duration-300 hover:border-[#00C4CC] hover:bg-[#00C4CC]/5"
               >
                 {imagePreview ? (
                   <div className="animate-fade-in flex items-center gap-4">
@@ -379,7 +379,7 @@ export function CreateCardForm({
                     localStorage.removeItem(imageStorageKey);
                     if (fileInputRef.current) fileInputRef.current.value = "";
                   }}
-                  className="mt-2 text-[11px] text-[#9ca3af] underline underline-offset-2 hover:text-red-500 transition-colors"
+                  className="mt-2 text-[11px] text-[#9ca3af] underline underline-offset-2 transition-colors duration-300 hover:text-red-500"
                 >
                   Remove photo
                 </button>
@@ -421,7 +421,7 @@ export function CreateCardForm({
                       aria-pressed={isActive}
                       onClick={() => setSelectedTemplate(template)}
                       className={cn(
-                        "group relative overflow-hidden rounded-xl border p-3 text-left transition-all duration-150",
+                        "group relative overflow-hidden rounded-xl border p-3 text-left transition-all duration-300",
                         isActive
                           ? "border-[#00C4CC] bg-white shadow-sm ring-2 ring-[#00C4CC]/20"
                           : "border-gray-200 bg-white hover:border-[#00C4CC]/40 hover:shadow-sm",
@@ -441,7 +441,7 @@ export function CreateCardForm({
                             Active
                           </span>
                         ) : (
-                          <span className="text-[11px] text-gray-400 transition-colors duration-150 group-hover:text-[#00C4CC]">
+                          <span className="text-[11px] text-gray-400 transition-colors duration-300 group-hover:text-[#00C4CC]">
                             Select →
                           </span>
                         )}
@@ -493,7 +493,7 @@ export function CreateCardForm({
             type="button"
             onClick={handleDownload}
             disabled={isDownloading}
-            className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-[#0F172A] px-5 py-4 text-sm font-semibold text-white transition-all duration-150 hover:bg-[#1e293b] disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-[#0F172A] px-5 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#1e293b] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isDownloading ? (
               <>
@@ -528,7 +528,7 @@ export function CreateCardForm({
               <button
                 type="button"
                 disabled
-                className="flex items-center justify-center gap-2 rounded-2xl border border-[#d6f5e1] bg-white/90 px-4 py-3.5 text-[#334155] shadow-[0_10px_26px_rgba(15,23,42,0.04)] transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-100"
+                className="flex items-center justify-center gap-2 rounded-2xl border border-[#d6f5e1] bg-white/90 px-4 py-3.5 text-[#334155] shadow-[0_10px_26px_rgba(15,23,42,0.04)] transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-100"
               >
                 {/* Apple logo */}
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -539,7 +539,7 @@ export function CreateCardForm({
               <button
                 type="button"
                 disabled
-                className="flex items-center justify-center gap-2 rounded-2xl border border-[#d6f5e1] bg-white/90 px-4 py-3.5 text-[#334155] shadow-[0_10px_26px_rgba(15,23,42,0.04)] transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-100"
+                className="flex items-center justify-center gap-2 rounded-2xl border border-[#d6f5e1] bg-white/90 px-4 py-3.5 text-[#334155] shadow-[0_10px_26px_rgba(15,23,42,0.04)] transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-100"
               >
                 {/* Google Pay "G" */}
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none">
@@ -563,7 +563,7 @@ function PendingWrapper({ className, children }: { className?: string; children:
   return (
     <div
       aria-disabled={pending}
-      className={cn("transition-opacity duration-200", pending && "pointer-events-none opacity-60", className)}
+      className={cn("transition-opacity duration-300", pending && "pointer-events-none opacity-60", className)}
     >
       {children}
     </div>
@@ -576,7 +576,7 @@ function CreateCardSubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex min-w-[200px] items-center justify-center gap-2 rounded-full bg-[#0F172A] px-6 py-3.5 text-sm font-semibold text-white transition-all duration-150 hover:bg-[#111f3a] disabled:cursor-not-allowed disabled:scale-[0.98] disabled:opacity-50"
+      className="inline-flex min-w-[200px] items-center justify-center gap-2 rounded-full bg-[#0F172A] px-6 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#111f3a] disabled:cursor-not-allowed disabled:scale-[0.98] disabled:opacity-50"
     >
       {pending ? (
         <>
@@ -628,13 +628,13 @@ function Field({
         {required ? <span className="ml-0.5 text-[#00C4CC]" aria-hidden="true">*</span> : null}
       </label>
       <div className="group relative">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-150 group-focus-within:text-[#00C4CC]">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-300 group-focus-within:text-[#00C4CC]">
           <Icon className="h-4 w-4" />
         </div>
         <input
           id={id}
           aria-required={required}
-          className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition-colors duration-150 focus:border-[#00C4CC] focus:ring-2 focus:ring-[#00C4CC]/20"
+          className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition-colors duration-300 focus:border-[#00C4CC] focus:ring-2 focus:ring-[#00C4CC]/20"
           maxLength={maxLength}
           name={name}
           onChange={onChange}

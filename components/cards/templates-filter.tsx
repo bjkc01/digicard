@@ -34,7 +34,7 @@ export function TemplatesFilter() {
         <button
           key={f.value}
           onClick={() => select(f.value)}
-          className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-150 ${
+          className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-300 ${
             active === f.value
               ? "bg-slate-900 text-white"
               : "bg-slate-100 text-slate-600 hover:bg-slate-200"
