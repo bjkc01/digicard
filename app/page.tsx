@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { InteractivePhonePreview } from "@/components/landing/interactive-phone-preview";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import { HomeAuthModalContent } from "@/components/login/home-auth-modal-content";
 import { HomeAuthModal } from "@/components/login/home-auth-modal";
@@ -261,7 +261,52 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
           </div>
 
           <div className="anim-card relative" id="live-preview">
-            <InteractivePhonePreview />
+            <div className="relative mx-auto flex w-full max-w-[42rem] justify-center py-10 lg:justify-end lg:pr-3">
+              <div className="pointer-events-none absolute inset-0 -z-10">
+                <div className="absolute left-[8%] top-[8%] h-72 w-72 rounded-full bg-[rgba(82,103,217,0.16)] blur-[95px]" />
+                <div className="absolute right-[8%] top-[28%] h-64 w-64 rounded-full bg-[rgba(56,189,248,0.1)] blur-[88px]" />
+                <div className="absolute bottom-[8%] left-[26%] h-56 w-56 rounded-full bg-[rgba(255,255,255,0.72)] blur-[64px]" />
+              </div>
+
+              <div className="absolute right-0 top-0 z-20 hidden items-center gap-2 rounded-full border border-[rgba(82,103,217,0.15)] bg-white/90 px-4 py-2 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_28px_rgba(21,32,58,0.1)] backdrop-blur lg:inline-flex">
+                <Sparkles className="h-4 w-4 text-[var(--brand)]" />
+                Live preview
+              </div>
+
+              <div className="relative w-full max-w-[17.9rem] sm:max-w-[19.6rem] [perspective:1400px]">
+                <div className="hero-device-glow pointer-events-none absolute -left-12 top-[18%] -z-20 h-40 w-40 rounded-full bg-[rgba(255,255,255,0.9)] blur-[72px]" />
+                <div className="hero-device-glow hero-device-glow--delay pointer-events-none absolute -right-10 top-[12%] -z-20 h-48 w-48 rounded-full bg-[rgba(150,218,255,0.26)] blur-[86px]" />
+                <div className="hero-device-glow pointer-events-none absolute -bottom-8 right-[12%] -z-20 h-36 w-36 rounded-full bg-[rgba(82,103,217,0.22)] blur-[74px]" />
+
+                <div className="hero-device relative">
+                  <div className="absolute -left-[2.9%] top-[22.9%] z-0 h-[6.6%] w-[1.55%] rounded-full bg-[linear-gradient(180deg,#8c95a3,#525b69)] shadow-[0_2px_6px_rgba(15,23,42,0.14)]" />
+                  <div className="absolute -left-[2.9%] top-[36.1%] z-0 h-[4.8%] w-[1.55%] rounded-full bg-[linear-gradient(180deg,#8c95a3,#525b69)] shadow-[0_2px_6px_rgba(15,23,42,0.14)]" />
+                  <div className="absolute -left-[2.9%] top-[46.6%] z-0 h-[7.6%] w-[1.55%] rounded-full bg-[linear-gradient(180deg,#8c95a3,#525b69)] shadow-[0_2px_6px_rgba(15,23,42,0.14)]" />
+                  <div className="pointer-events-none absolute -bottom-5 left-[14%] right-[10%] -z-10 h-8 rounded-full bg-[rgba(15,23,42,0.2)] blur-[14px]" />
+
+                  <div className="relative rounded-[3.35rem] border border-white/32 bg-[linear-gradient(160deg,#eef2f8_0%,#b2bccb_9%,#707a8b_18%,#303847_31%,#121824_67%,#090d16_100%)] p-[0.42rem] shadow-[0_32px_80px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.36),inset_0_-10px_20px_rgba(0,0,0,0.2)]">
+                    <div className="pointer-events-none absolute bottom-[5%] left-[0.18rem] top-[5%] w-[0.34rem] rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.72),rgba(255,255,255,0.18)_22%,rgba(255,255,255,0.02)_62%,rgba(0,0,0,0.3))]" />
+                    <div className="pointer-events-none absolute bottom-[6%] right-[0.22rem] top-[6%] w-[0.22rem] rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.2),rgba(255,255,255,0.02)_28%,rgba(0,0,0,0.36))]" />
+                    <div className="pointer-events-none absolute inset-[0.38rem] rounded-[3rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.07)_11%,rgba(255,255,255,0)_24%)]" />
+                    <div className="pointer-events-none absolute left-1/2 top-[0.78rem] z-20 h-[0.95rem] w-[5.7rem] -translate-x-1/2 rounded-full bg-[#05070d] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]" />
+
+                    <div className="relative overflow-hidden rounded-[3rem] border border-white/8 bg-[#070b14]">
+                      <div className="pointer-events-none absolute inset-x-[13%] top-0 z-10 h-[2px] bg-[linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.92)_22%,rgba(114,224,255,0.9)_76%,rgba(255,255,255,0))]" />
+                      <Image
+                        src="/digicard-jordan-lin.png"
+                        alt="Student demo card preview"
+                        width={1146}
+                        height={2028}
+                        priority
+                        sizes="(min-width: 1024px) 19.6rem, (min-width: 640px) 17.9rem, 15rem"
+                        className="relative z-0 h-auto w-full"
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(128deg,rgba(255,255,255,0.13),rgba(255,255,255,0)_24%,rgba(255,255,255,0)_64%,rgba(255,255,255,0.05)_100%)] mix-blend-screen" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
