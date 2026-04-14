@@ -24,13 +24,12 @@ export function CardPreview({ card, compact = false, imageUrl, phoneHero = false
   const shareTarget = getCardShareTarget(card);
   const qrValue = shareTarget.url;
   const filledContacts = contactItems.filter((item) => Boolean(card[item.key]));
-  const shareLabel = shareTarget.label === "DigiCard home" ? "Home" : shareTarget.label;
+  const initials = card.name.split(" ").slice(0, 2).map((p) => p[0]).join("");
   const statusItems = [
-    { value: shareLabel, label: "QR" },
+    { value: card.template, label: "Template" },
     { value: `${filledContacts.length}`, label: "Links" },
     { value: card.title ? "Ready" : "Draft", label: "Status" },
   ];
-  const initials = card.name.split(" ").slice(0, 2).map((p) => p[0]).join("");
 
   if (compact && phoneHero) {
     return (

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Card3DScene } from "@/components/landing/card-3d-scene";
+import { InteractivePhonePreview } from "@/components/landing/interactive-phone-preview";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import { HomeAuthModalContent } from "@/components/login/home-auth-modal-content";
 import { HomeAuthModal } from "@/components/login/home-auth-modal";
@@ -261,7 +261,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
           </div>
 
           <div className="anim-card relative" id="live-preview">
-            <Card3DScene />
+            <InteractivePhonePreview />
           </div>
         </div>
       </section>
