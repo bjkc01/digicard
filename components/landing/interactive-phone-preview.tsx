@@ -21,15 +21,15 @@ export function InteractivePhonePreview() {
         <div className="relative aspect-[1920/1440] w-full">
           <div className="pointer-events-none absolute inset-0 rounded-[3rem] bg-[radial-gradient(circle_at_50%_24%,rgba(82,103,217,0.2),transparent_22%),radial-gradient(circle_at_48%_58%,rgba(56,189,248,0.12),transparent_26%),radial-gradient(circle_at_38%_75%,rgba(255,255,255,0.62),transparent_28%)] blur-[2px]" />
 
-          <div className="absolute left-[36.3%] top-[8.55%] h-[69.3%] w-[26.6%] overflow-hidden rounded-[3rem] bg-[#060912] shadow-[0_24px_40px_rgba(15,23,42,0.2)]">
-            <div className="absolute inset-[0.08rem] overflow-hidden rounded-[2.9rem] bg-[#060912]">
+          <div className="absolute left-[36.48%] top-[8.74%] h-[68.92%] w-[26.16%] overflow-hidden rounded-[2.88rem] bg-[#060912] shadow-[0_24px_40px_rgba(15,23,42,0.2)]">
+            <div className="absolute inset-[0.12rem] overflow-hidden rounded-[2.76rem] bg-[#060912]">
               <div className="absolute inset-0">
                 <Image
                   src="/jordan-lin-card.png"
                   alt="Jordan Lin DigiCard demo preview"
                   fill
                   sizes="(max-width: 768px) 30vw, 180px"
-                  className="pointer-events-none select-none object-cover object-center"
+                  className="pointer-events-none select-none object-cover object-center scale-[1.085]"
                   priority
                 />
               </div>
