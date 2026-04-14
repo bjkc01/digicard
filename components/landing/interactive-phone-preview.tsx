@@ -1,9 +1,39 @@
 import Image from "next/image";
 import { Sparkles } from "lucide-react";
 
+function CellularIcon() {
+  return (
+    <div className="flex h-[0.8rem] items-end gap-[2px]">
+      <span className="h-[0.22rem] w-[0.12rem] rounded-full bg-white/95" />
+      <span className="h-[0.38rem] w-[0.12rem] rounded-full bg-white/95" />
+      <span className="h-[0.56rem] w-[0.12rem] rounded-full bg-white/95" />
+      <span className="h-[0.74rem] w-[0.12rem] rounded-full bg-white/95" />
+    </div>
+  );
+}
+
+function WifiIcon() {
+  return (
+    <div className="relative h-[0.82rem] w-[0.95rem]">
+      <span className="absolute left-1/2 top-[0.04rem] h-[0.72rem] w-[0.72rem] -translate-x-1/2 rounded-full border-[1.4px] border-transparent border-t-white/95" />
+      <span className="absolute left-1/2 top-[0.2rem] h-[0.46rem] w-[0.46rem] -translate-x-1/2 rounded-full border-[1.4px] border-transparent border-t-white/95" />
+      <span className="absolute left-1/2 bottom-[0.05rem] h-[0.14rem] w-[0.14rem] -translate-x-1/2 rounded-full bg-white/95" />
+    </div>
+  );
+}
+
+function BatteryIcon() {
+  return (
+    <div className="relative h-[0.78rem] w-[1.45rem] rounded-[0.24rem] border-[1.4px] border-white/95">
+      <span className="absolute right-[-0.15rem] top-[0.18rem] h-[0.28rem] w-[0.1rem] rounded-r-full bg-white/95" />
+      <span className="absolute inset-y-[0.12rem] left-[0.12rem] w-[0.88rem] rounded-[0.12rem] bg-white/95" />
+    </div>
+  );
+}
+
 function RealisticPhoneFrame() {
   return (
-    <div className="relative mx-auto w-[18.5rem] sm:w-[20rem] lg:w-[21rem]">
+    <div className="relative mx-auto w-[17rem] sm:w-[18.25rem] lg:w-[19rem]">
       <div className="absolute left-0 top-[18%] z-0 h-[12%] w-[1.35%] rounded-full bg-[linear-gradient(180deg,#42464f,#0e1118)] shadow-[0_1px_4px_rgba(0,0,0,0.22)]" />
       <div className="absolute -left-[0.45%] top-[31%] z-0 h-[9.5%] w-[1.75%] rounded-full bg-[linear-gradient(180deg,#4a4f58,#141821)] shadow-[0_1px_4px_rgba(0,0,0,0.22)]" />
       <div className="absolute right-0 top-[27%] z-0 h-[14%] w-[1.4%] rounded-full bg-[linear-gradient(180deg,#4e535c,#141821)] shadow-[0_1px_4px_rgba(0,0,0,0.22)]" />
@@ -13,14 +43,26 @@ function RealisticPhoneFrame() {
 
         <div className="relative h-full w-full rounded-[3.45rem] bg-[linear-gradient(180deg,#22252d,#0a0d13)] p-[0.28rem]">
           <div className="relative h-full w-full overflow-hidden rounded-[3.15rem] bg-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
-            <Image
-              src="/jordan-lin-card.png"
-              alt="Jordan Lin DigiCard demo preview"
-              fill
-              sizes="(max-width: 768px) 55vw, 336px"
-              className="pointer-events-none select-none object-cover object-center"
-              priority
-            />
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[13%] bg-[linear-gradient(180deg,rgba(0,0,0,0.48),rgba(0,0,0,0.08)_58%,transparent)]" />
+            <div className="absolute inset-x-[7%] top-[3.25%] z-30 flex items-center justify-between text-[0.82rem] font-semibold tracking-[-0.03em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
+              <span>9:41</span>
+              <div className="flex items-center gap-1.5">
+                <CellularIcon />
+                <WifiIcon />
+                <BatteryIcon />
+              </div>
+            </div>
+
+            <div className="absolute inset-x-0 bottom-0 top-[5.4%]">
+              <Image
+                src="/jordan-lin-card.png"
+                alt="Jordan Lin DigiCard demo preview"
+                fill
+                sizes="(max-width: 768px) 55vw, 336px"
+                className="pointer-events-none select-none object-cover object-top"
+                priority
+              />
+            </div>
 
             <div className="pointer-events-none absolute inset-x-[34%] top-[2.4%] z-20 h-[4.6%] rounded-full bg-[linear-gradient(180deg,#020304,#0b0d12)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.35)]" />
             <div className="pointer-events-none absolute right-[39.2%] top-[3.55%] z-30 h-[1.18%] w-[1.75%] rounded-full bg-[radial-gradient(circle_at_35%_35%,#2d6bff,#08152d_72%)] opacity-90" />
@@ -53,7 +95,7 @@ export function InteractivePhonePreview() {
       <div className="relative w-full max-w-[620px]">
         <div className="relative flex aspect-[1920/1440] w-full items-center justify-center">
           <div className="pointer-events-none absolute inset-0 rounded-[3rem] bg-[radial-gradient(circle_at_50%_24%,rgba(82,103,217,0.2),transparent_22%),radial-gradient(circle_at_48%_58%,rgba(56,189,248,0.12),transparent_26%),radial-gradient(circle_at_38%_75%,rgba(255,255,255,0.62),transparent_28%)] blur-[2px]" />
-          <div className="relative z-10 translate-y-2 sm:translate-y-3">
+          <div className="relative z-10">
             <RealisticPhoneFrame />
           </div>
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_36%_72%,rgba(255,255,255,0.26),transparent_18%),radial-gradient(circle_at_53%_13%,rgba(255,255,255,0.12),transparent_14%)]" />
