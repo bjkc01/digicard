@@ -33,43 +33,44 @@ function BatteryIcon() {
 
 function RealisticPhoneFrame() {
   return (
-    <div className="relative mx-auto w-[17rem] sm:w-[18.25rem] lg:w-[19rem]">
-      <div className="absolute left-0 top-[18%] z-0 h-[12%] w-[1.35%] rounded-full bg-[linear-gradient(180deg,#42464f,#0e1118)] shadow-[0_1px_4px_rgba(0,0,0,0.22)]" />
-      <div className="absolute -left-[0.45%] top-[31%] z-0 h-[9.5%] w-[1.75%] rounded-full bg-[linear-gradient(180deg,#4a4f58,#141821)] shadow-[0_1px_4px_rgba(0,0,0,0.22)]" />
-      <div className="absolute right-0 top-[27%] z-0 h-[14%] w-[1.4%] rounded-full bg-[linear-gradient(180deg,#4e535c,#141821)] shadow-[0_1px_4px_rgba(0,0,0,0.22)]" />
+    <div className="relative mx-auto w-[16.25rem] sm:w-[17.5rem] lg:w-[18.5rem]">
+      <div className="relative aspect-[308/589]">
+        <Image
+          src="/realistic-phone-template.jpg"
+          alt="Realistic phone template framing the DigiCard preview"
+          fill
+          sizes="(max-width: 768px) 52vw, 296px"
+          className="pointer-events-none select-none object-cover"
+          priority
+        />
 
-      <div className="relative aspect-[467/700] rounded-[3.7rem] bg-[linear-gradient(135deg,#d8dbe3_0%,#767d88_12%,#11141a_24%,#737984_38%,#0d1016_62%,#c9ccd4_100%)] p-[0.22rem] shadow-[0_26px_60px_rgba(15,23,42,0.18),0_5px_12px_rgba(15,23,42,0.12)]">
-        <div className="absolute inset-[0.22rem] rounded-[3.55rem] border border-white/18 bg-[linear-gradient(180deg,rgba(255,255,255,0.24),rgba(255,255,255,0.04)_14%,rgba(0,0,0,0.08)_55%,rgba(255,255,255,0.18)_100%)] opacity-85" />
+        <div className="absolute left-[8.2%] top-[8.05%] h-[88.25%] w-[83.8%] overflow-hidden rounded-[2.7rem] bg-[linear-gradient(180deg,#191e30_0%,#0a0d17_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[11.5%] bg-[linear-gradient(180deg,rgba(5,8,14,0.58),rgba(5,8,14,0.14)_60%,transparent)]" />
 
-        <div className="relative h-full w-full rounded-[3.45rem] bg-[linear-gradient(180deg,#22252d,#0a0d13)] p-[0.28rem]">
-          <div className="relative h-full w-full overflow-hidden rounded-[3.15rem] bg-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[13%] bg-[linear-gradient(180deg,rgba(0,0,0,0.48),rgba(0,0,0,0.08)_58%,transparent)]" />
-            <div className="absolute inset-x-[7%] top-[3.25%] z-30 flex items-center justify-between text-[0.82rem] font-semibold tracking-[-0.03em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
-              <span>9:41</span>
-              <div className="flex items-center gap-1.5">
-                <CellularIcon />
-                <WifiIcon />
-                <BatteryIcon />
-              </div>
+          <div className="absolute inset-x-[7%] top-[2.9%] z-30 flex items-center justify-between text-[0.8rem] font-semibold tracking-[-0.03em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
+            <span>9:41</span>
+            <div className="flex items-center gap-1.5">
+              <CellularIcon />
+              <WifiIcon />
+              <BatteryIcon />
             </div>
-
-            <div className="absolute inset-x-0 bottom-0 top-[5.4%]">
-              <Image
-                src="/jordan-lin-card.png"
-                alt="Jordan Lin DigiCard demo preview"
-                fill
-                sizes="(max-width: 768px) 55vw, 336px"
-                className="pointer-events-none select-none object-cover object-top"
-                priority
-              />
-            </div>
-
-            <div className="pointer-events-none absolute inset-x-[34%] top-[2.4%] z-20 h-[4.6%] rounded-full bg-[linear-gradient(180deg,#020304,#0b0d12)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.35)]" />
-            <div className="pointer-events-none absolute right-[39.2%] top-[3.55%] z-30 h-[1.18%] w-[1.75%] rounded-full bg-[radial-gradient(circle_at_35%_35%,#2d6bff,#08152d_72%)] opacity-90" />
-
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.12)_0%,transparent_18%,transparent_72%,rgba(255,255,255,0.08)_100%)]" />
-            <div className="pointer-events-none absolute inset-[0.16rem] rounded-[3rem] ring-1 ring-white/6" />
           </div>
+
+          <div className="pointer-events-none absolute inset-x-[33.5%] top-[2.2%] z-20 h-[4.9%] rounded-full bg-[linear-gradient(180deg,#020304,#0b0d12)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.35)]" />
+          <div className="pointer-events-none absolute right-[38.9%] top-[3.33%] z-30 h-[1.14%] w-[1.7%] rounded-full bg-[radial-gradient(circle_at_35%_35%,#2d6bff,#08152d_72%)] opacity-90" />
+
+          <div className="absolute inset-x-[3.2%] bottom-[2.2%] top-[7.8%]">
+            <Image
+              src="/jordan-lin-card.png"
+              alt="Jordan Lin DigiCard demo preview"
+              fill
+              sizes="(max-width: 768px) 46vw, 248px"
+              className="pointer-events-none select-none object-contain object-top"
+              priority
+            />
+          </div>
+
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08)_0%,transparent_18%,transparent_74%,rgba(255,255,255,0.06)_100%)]" />
         </div>
       </div>
     </div>
