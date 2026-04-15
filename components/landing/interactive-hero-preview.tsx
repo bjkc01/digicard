@@ -98,12 +98,12 @@ export function InteractiveHeroPreview() {
           value={name}
         />
 
-        <div className="relative w-full max-w-[17.9rem] sm:max-w-[19.6rem] [perspective:1400px]">
+        <div className="phone-mockup-container relative mx-auto w-full max-w-[320px] [perspective:1400px]">
           <div className="hero-device-glow pointer-events-none absolute -left-12 top-[18%] -z-20 h-40 w-40 rounded-full bg-[rgba(255,255,255,0.9)] blur-[72px]" />
           <div className="hero-device-glow hero-device-glow--delay pointer-events-none absolute -right-10 top-[12%] -z-20 h-48 w-48 rounded-full bg-[rgba(150,218,255,0.26)] blur-[86px]" />
           <div className="hero-device-glow pointer-events-none absolute -bottom-8 right-[12%] -z-20 h-36 w-36 rounded-full bg-[rgba(82,103,217,0.22)] blur-[74px]" />
 
-          <div className="hero-device relative" onWheelCapture={handlePhoneWheel}>
+          <div className="hero-device relative aspect-[9/19.5] w-full" onWheelCapture={handlePhoneWheel}>
             <div className="absolute -left-[0.96%] top-[24.6%] z-10 h-[4.1%] w-[0.72%] rounded-full bg-[linear-gradient(180deg,#d8dde5_0%,#919bac_24%,#56606f_64%,#161d28_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.42),inset_0_-1px_0_rgba(0,0,0,0.28),0_2px_4px_rgba(15,23,42,0.12)]">
               <div className="absolute inset-x-[22%] top-[12%] h-[18%] rounded-full bg-[rgba(255,255,255,0.32)]" />
             </div>
@@ -114,16 +114,16 @@ export function InteractiveHeroPreview() {
               <div className="absolute inset-x-[22%] top-[12%] h-[18%] rounded-full bg-[rgba(255,255,255,0.32)]" />
             </div>
 
-            <div className="hero-device-shell relative rounded-[3.35rem] border border-white/32 bg-[linear-gradient(160deg,#eef2f8_0%,#b2bccb_9%,#707a8b_18%,#303847_31%,#121824_67%,#090d16_100%)] p-[0.42rem]">
+            <div className="hero-device-shell relative h-full rounded-[3.35rem] border border-white/32 bg-[linear-gradient(160deg,#eef2f8_0%,#b2bccb_9%,#707a8b_18%,#303847_31%,#121824_67%,#090d16_100%)] p-[0.42rem]">
               <div className="pointer-events-none absolute bottom-[5%] left-[0.18rem] top-[5%] w-[0.34rem] rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.72),rgba(255,255,255,0.18)_22%,rgba(255,255,255,0.02)_62%,rgba(0,0,0,0.3))]" />
               <div className="pointer-events-none absolute bottom-[6%] right-[0.22rem] top-[6%] w-[0.22rem] rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.2),rgba(255,255,255,0.02)_28%,rgba(0,0,0,0.36))]" />
               <div className="pointer-events-none absolute inset-[0.38rem] rounded-[3rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.07)_11%,rgba(255,255,255,0)_24%)]" />
               <div className="pointer-events-none absolute left-1/2 top-[0.78rem] z-20 h-[0.95rem] w-[5.7rem] -translate-x-1/2 rounded-full bg-[#05070d] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]" />
 
-              <div className="relative overflow-hidden rounded-[3rem] border border-white/8 bg-[#070b14]">
+              <div className="relative h-full overflow-hidden rounded-[3rem] border border-white/8 bg-[#070b14]">
                 <div className="pointer-events-none absolute inset-x-[13%] top-0 z-10 h-[2px] bg-[linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.92)_22%,rgba(114,224,255,0.9)_76%,rgba(255,255,255,0))]" />
 
-                <div className="relative aspect-[1146/2028] bg-[radial-gradient(circle_at_18%_0%,rgba(82,103,217,0.24),rgba(82,103,217,0)_32%),linear-gradient(165deg,#151b2d_0%,#0d1220_46%,#070b14_100%)] text-white">
+                <div className="relative h-full bg-[radial-gradient(circle_at_18%_0%,rgba(82,103,217,0.24),rgba(82,103,217,0)_32%),linear-gradient(165deg,#151b2d_0%,#0d1220_46%,#070b14_100%)] text-white">
                   <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_24%,rgba(114,224,255,0.04)_58%,rgba(0,0,0,0.18)_100%)]" />
                   <div
                     ref={screenScrollRef}
@@ -131,18 +131,18 @@ export function InteractiveHeroPreview() {
                   >
                     <div className="flex min-h-full flex-col justify-between px-[3.5%] pb-2 pt-[3.9rem]">
                       <div className="shrink-0">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-[1.15rem] border border-white/10 bg-white/8 text-lg font-semibold tracking-tight text-white/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-sm">
+                        <div className="flex h-[clamp(2.85rem,16vw,3.5rem)] w-[clamp(2.85rem,16vw,3.5rem)] items-center justify-center rounded-[1.15rem] border border-white/10 bg-white/8 text-[clamp(1rem,5vw,1.125rem)] font-semibold tracking-tight text-white/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-sm">
                           {initials}
                         </div>
 
-                        <div className="mt-8">
-                          <p className="max-w-[92%] break-words text-[2.35rem] font-semibold leading-[0.92] tracking-[-0.065em] text-white">
+                        <div className="mt-7">
+                          <p className="max-w-[92%] break-words text-[clamp(2rem,10vw,2.35rem)] font-semibold leading-[0.92] tracking-[-0.065em] text-white">
                             {displayName}
                           </p>
-                          <p className="mt-3 line-clamp-3 text-[1rem] text-white/66">
+                          <p className="mt-3 line-clamp-3 text-[clamp(0.9rem,4vw,1rem)] text-white/66">
                             Undergrad Student, Computer Science
                           </p>
-                          <p className="mt-1 text-[0.95rem] text-white/28">State University</p>
+                          <p className="mt-1 text-[clamp(0.82rem,3.4vw,0.95rem)] text-white/28">State University</p>
                         </div>
                       </div>
 
@@ -150,7 +150,7 @@ export function InteractiveHeroPreview() {
                         {detailRows.map((row) => (
                           <div
                             key={row.value}
-                            className="flex items-center gap-3 border-b border-white/8 pb-3.5 text-[0.84rem] text-white/72"
+                            className="flex items-center gap-3 border-b border-white/8 pb-3.5 text-[clamp(0.75rem,3.2vw,0.84rem)] text-white/72"
                           >
                             <row.icon className="h-4 w-4 flex-none text-white/35" />
                             <span className="min-w-0 truncate">{row.value}</span>
@@ -160,7 +160,7 @@ export function InteractiveHeroPreview() {
 
                       <div className="shrink-0 pt-8">
                         <div className="flex shrink-0 justify-center pb-2">
-                          <div className="flex h-24 w-24 items-center justify-center rounded-xl bg-white p-2 shadow-[0_18px_40px_rgba(4,9,18,0.45)]">
+                          <div className="flex h-[clamp(5rem,27vw,6rem)] w-[clamp(5rem,27vw,6rem)] items-center justify-center rounded-xl bg-white p-2 shadow-[0_18px_40px_rgba(4,9,18,0.45)]">
                             <QRCodeSVG
                               bgColor="transparent"
                               fgColor="#151a29"
