@@ -41,12 +41,6 @@ const quickPoints = [
   "Give recruiters and professionals an easy way to remember you",
 ];
 
-const networkingQuote = {
-  line: "If you're not networking, you're not working.",
-  source: "A reminder students hear for a reason",
-  body: "DigiCard helps you turn that idea into something practical by making it easier to share your profile in the moment, not after the opportunity has passed.",
-};
-
 const comparisonColumns = [
   {
     label: "Without DigiCard",
@@ -216,22 +210,11 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
 
       <section id="why-it-matters" className="border-y border-[rgba(25,35,61,0.06)] bg-white/88">
         <div className="mx-auto max-w-7xl px-6 py-24">
-          <ScrollReveal className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end stagger-children">
+          <ScrollReveal className="max-w-3xl">
             <div className="max-w-3xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Why this matters</p>
-              <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
+              <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
                 Great networking opportunities are often lost in small, awkward moments.
               </h2>
-            </div>
-
-            <div className="rounded-[1.9rem] border border-[rgba(82,103,217,0.12)] bg-[linear-gradient(135deg,_rgba(82,103,217,0.1),_rgba(255,255,255,0.96))] p-7 shadow-[0_18px_40px_rgba(21,32,58,0.05)] sm:p-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">
-                {networkingQuote.source}
-              </p>
-              <blockquote className="mt-3 max-w-3xl text-2xl font-semibold leading-tight tracking-[-0.04em] text-[var(--ink)] sm:text-[2rem]">
-                &ldquo;{networkingQuote.line}&rdquo;
-              </blockquote>
-              <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--muted)]">{networkingQuote.body}</p>
             </div>
           </ScrollReveal>
 
@@ -281,8 +264,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
 
       <section id="how-it-works" className="mx-auto max-w-7xl px-6 py-24">
         <ScrollReveal className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">How it works</p>
-          <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
+          <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
             A simple flow built for the way networking actually happens.
           </h2>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
@@ -316,10 +298,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
       <section className="border-y border-[rgba(25,35,61,0.06)] bg-[linear-gradient(180deg,_#ffffff_0%,_#f6f8ff_100%)]">
         <div className="mx-auto grid max-w-7xl gap-14 px-6 py-24 lg:grid-cols-[0.92fr_1.08fr]">
           <ScrollReveal>
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">
-              What your card includes
-            </p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
+            <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
               Everything needed to make a strong first impression.
             </h2>
             <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--muted)]">
@@ -351,8 +330,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
 
       <section id="use-cases" className="mx-auto max-w-7xl px-6 py-24">
         <ScrollReveal className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Use cases</p>
-          <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
+          <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
             Built for the places where students meet real opportunities.
           </h2>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
