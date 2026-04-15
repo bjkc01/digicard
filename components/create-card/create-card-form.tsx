@@ -593,26 +593,27 @@ export function CreateCardForm({
           </button>
 
           {/* Wallet — coming soon */}
-          <div className="overflow-hidden rounded-2xl border border-[#b7f0d1] bg-[linear-gradient(180deg,#fbfffc_0%,#f1fff7_100%)] shadow-[0_18px_44px_rgba(34,197,94,0.08)]">
-            <div className="border-b border-[#d6f5e1] bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.12),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,255,250,0.96))] px-4 py-3">
-              <div className="flex items-center justify-between">
+          <div className="overflow-hidden rounded-2xl border border-[rgba(82,103,217,0.12)] bg-white shadow-[0_18px_44px_rgba(15,23,42,0.06)]">
+            <div className="border-b border-[rgba(82,103,217,0.1)] px-4 py-3">
+              <div className="flex items-start gap-2">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#dcfce7,#bbf7d0)] text-[#15803d] shadow-[0_8px_20px_rgba(34,197,94,0.16)]">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[rgba(82,103,217,0.08)] text-[var(--brand)]">
                     <Wallet className="h-4 w-4" />
                   </div>
-                  <p className="text-xs font-semibold text-[#0E1318]">Add to Wallet</p>
+                  <div>
+                    <p className="text-xs font-semibold text-[#0E1318]">
+                      Add to Wallet <span className="font-medium text-[#64748b]">Coming soon</span>
+                    </p>
+                    <p className="mt-1 text-[11px] text-[#4b5563]">Save your DigiCard directly to your phone wallet.</p>
+                  </div>
                 </div>
-                <span className="rounded-full border border-[#bbf7d0] bg-[linear-gradient(135deg,#dcfce7,#bbf7d0)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#15803d] shadow-[0_8px_20px_rgba(34,197,94,0.12)]">
-                  Coming soon
-                </span>
               </div>
-              <p className="mt-1 text-[11px] text-[#4b5563]">Save your DigiCard directly to your phone wallet.</p>
             </div>
-            <div className="grid grid-cols-2 gap-3 bg-[rgba(255,255,255,0.5)] p-3">
+            <div className="grid grid-cols-2 gap-3 p-3">
               <button
                 type="button"
                 disabled
-                className="flex items-center justify-center gap-2 rounded-2xl border border-[#d6f5e1] bg-white/90 px-4 py-3.5 text-[#334155] shadow-[0_10px_26px_rgba(15,23,42,0.04)] transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-100"
+                className="flex items-center justify-center gap-2 rounded-2xl border border-[rgba(82,103,217,0.12)] bg-white px-4 py-3.5 text-[#334155] opacity-60 shadow-[0_10px_26px_rgba(15,23,42,0.04)] transition-all duration-300 disabled:cursor-not-allowed"
               >
                 {/* Apple logo */}
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -623,7 +624,7 @@ export function CreateCardForm({
               <button
                 type="button"
                 disabled
-                className="flex items-center justify-center gap-2 rounded-2xl border border-[#d6f5e1] bg-white/90 px-4 py-3.5 text-[#334155] shadow-[0_10px_26px_rgba(15,23,42,0.04)] transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-100"
+                className="flex items-center justify-center gap-2 rounded-2xl border border-[rgba(82,103,217,0.12)] bg-white px-4 py-3.5 text-[#334155] opacity-60 shadow-[0_10px_26px_rgba(15,23,42,0.04)] transition-all duration-300 disabled:cursor-not-allowed"
               >
                 {/* Google Pay "G" */}
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none">

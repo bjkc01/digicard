@@ -1,4 +1,4 @@
-import { Clock3, CreditCard, LayoutTemplate, UserRound } from "lucide-react";
+import { UserRound } from "lucide-react";
 import { devAuthBypassEnabled } from "@/auth";
 import { CardsSection } from "@/components/cards/cards-section";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
@@ -15,31 +15,6 @@ export default async function DashboardPage() {
   const activeCardCount = workspaceView.summary.activeCardCount;
   const profileCompletion = workspaceView.summary.profileCompletion;
   const metrics = [
-    {
-      icon: CreditCard,
-      label: "Cards ready",
-      value: workspaceView.summary.cardStatusLabel,
-      helper: hasActiveCard
-        ? "Each saved card can be edited or deleted individually."
-        : "Create your first card to start sharing.",
-      progress: undefined as number | undefined,
-    },
-    {
-      icon: Clock3,
-      label: "Last saved",
-      value: workspaceView.summary.lastUpdatedLabel,
-      helper: hasActiveCard
-        ? "Shows the most recent saved update across this workspace."
-        : "No saved changes yet.",
-      progress: undefined as number | undefined,
-    },
-    {
-      icon: LayoutTemplate,
-      label: "Default style",
-      value: workspaceView.summary.selectedTemplateName,
-      helper: "Your main card uses this template by default.",
-      progress: undefined as number | undefined,
-    },
     {
       icon: UserRound,
       label: "Profile complete",
@@ -115,9 +90,9 @@ export default async function DashboardPage() {
 
             <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
               <div>
-                <p className="text-sm font-semibold text-[var(--ink)]">Cards overview</p>
+                <p className="text-sm font-semibold text-[var(--ink)]">Profile overview</p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
-                  A quick summary of what is ready to share right now.
+                  A quick look at how complete your card details are right now.
                 </p>
               </div>
 
