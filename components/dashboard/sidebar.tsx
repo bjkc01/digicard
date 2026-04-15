@@ -34,7 +34,6 @@ export function Sidebar({ activePath, email, userName }: SidebarProps) {
         </div>
         <div>
           <p className="text-lg font-semibold text-[var(--ink)]">DigiCard</p>
-          <p className="text-sm text-[var(--muted)]">Student networking workspace</p>
         </div>
       </div>
 

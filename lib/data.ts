@@ -19,6 +19,7 @@ export type CardQrPreference = "auto" | "linkedin" | "website";
 export type DigiCard = {
   id: string;
   label?: string;
+  lastSavedLabel?: string;
   name: string;
   title: string;
   company: string;

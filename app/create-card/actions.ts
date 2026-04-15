@@ -5,6 +5,7 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import type { SaveCardActionState } from "@/app/create-card/action-state";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import {
+  deleteWorkspacePrimaryCard,
   saveWorkspaceCardSnapshot,
   WorkspaceSettingsValidationError,
 } from "@/lib/workspace-settings";
@@ -68,4 +69,15 @@ export async function saveWorkspaceCardAction(
       status: "error",
     };
   }
+}
+
+export async function deleteWorkspaceCardAction(): Promise<void> {
+  const user = await requireWorkspaceUser("/cards");
+  await deleteWorkspacePrimaryCard(user);
+
+  revalidatePath("/dashboard");
+  revalidatePath("/cards");
+  revalidatePath("/create-card");
+  revalidatePath("/settings");
+  revalidatePath("/templates");
 }

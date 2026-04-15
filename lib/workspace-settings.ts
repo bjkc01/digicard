@@ -47,6 +47,7 @@ export type WorkspaceExtraCard = {
   card: WorkspaceCardDetails;
   templateId: string;
   createdAt: string;
+  updatedAt: string;
 };
 
 export type WorkspaceSettings = {
@@ -314,6 +315,10 @@ function mergeExtraCard(raw: unknown): WorkspaceExtraCard | null {
     },
     templateId,
     createdAt,
+    updatedAt:
+      typeof raw.updatedAt === "string" && raw.updatedAt
+        ? raw.updatedAt
+        : createdAt,
   };
 }
 
@@ -698,6 +703,7 @@ export async function saveWorkspaceExtraCard(
   const existingIndex = current.extraCards.findIndex((c) => c.id === input.id);
   const createdAt =
     existingIndex >= 0 ? current.extraCards[existingIndex]!.createdAt : new Date().toISOString();
+  const updatedAt = new Date().toISOString();
 
   const updatedCard: WorkspaceExtraCard = {
     id: input.id,
@@ -711,6 +717,7 @@ export async function saveWorkspaceExtraCard(
     },
     templateId: input.defaultTemplateId,
     createdAt,
+    updatedAt,
   };
 
   const nextExtraCards =
@@ -726,6 +733,25 @@ export async function deleteWorkspaceExtraCard(user: WorkspaceUser, cardId: stri
   return persistWorkspaceSettings(user, {
     ...current,
     extraCards: current.extraCards.filter((c) => c.id !== cardId),
+  });
+}
+
+export async function deleteWorkspacePrimaryCard(user: WorkspaceUser) {
+  const current = await getWorkspaceSettings(user);
+
+  return persistWorkspaceSettings(user, {
+    ...current,
+    card: {
+      company: "",
+      linkedin: "",
+      phone: "",
+      qrPreference: "auto",
+    },
+    profile: {
+      ...current.profile,
+      title: "",
+      website: "",
+    },
   });
 }
 

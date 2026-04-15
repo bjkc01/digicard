@@ -2,7 +2,6 @@ import { CreditCard, LayoutTemplate, UserRound } from "lucide-react";
 import { devAuthBypassEnabled } from "@/auth";
 import { CardsSection } from "@/components/cards/cards-section";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { QuickActions } from "@/components/dashboard/quick-actions";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { WalletComingSoon } from "@/components/dashboard/wallet-coming-soon";
 import { Button } from "@/components/ui/button";
@@ -62,10 +61,10 @@ export default async function DashboardPage() {
               <div>
                 <p className="eyebrow text-[var(--brand)]">Dashboard</p>
                 <h2 className="mt-2 max-w-[34rem] text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
-                  Your workspace card
+                  Your saved cards
                 </h2>
                 <p className="mt-2 max-w-xl text-[0.98rem] leading-7 text-[var(--muted)]">
-                  Keep one polished card ready for recruiters, classmates, mentors, and new contacts on this browser.
+                  Keep your main card and event-specific versions polished, current, and ready to share.
                 </p>
               </div>
               <Button
@@ -84,6 +83,8 @@ export default async function DashboardPage() {
           </div>
 
           <div className="space-y-6">
+            <WalletComingSoon />
+
             <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -147,10 +148,6 @@ export default async function DashboardPage() {
                 {hasActiveCard ? "Edit card" : "Create card"}
               </Button>
             </div>
-
-            <WalletComingSoon />
-
-            <QuickActions />
           </div>
         </div>
       </section>

@@ -49,6 +49,11 @@ function formatUpdatedAt(value: string | null) {
   return `${dateLabel} at ${timeLabel}`;
 }
 
+function formatSavedLabel(value: string | null) {
+  const formatted = formatUpdatedAt(value);
+  return formatted === "Not saved yet" ? formatted : `Saved ${formatted}`;
+}
+
 function buildWorkspaceCards(settings: Awaited<ReturnType<typeof getWorkspaceSettings>>) {
   const cards: DigiCard[] = [];
 
@@ -65,6 +70,7 @@ function buildWorkspaceCards(settings: Awaited<ReturnType<typeof getWorkspaceSet
       company: settings.card.company,
       email: settings.profile.email,
       id: "primary",
+      lastSavedLabel: formatSavedLabel(settings.updatedAt),
       linkedin: settings.card.linkedin,
       name: settings.profile.name,
       phone: settings.card.phone,
@@ -89,6 +95,7 @@ function buildWorkspaceCards(settings: Awaited<ReturnType<typeof getWorkspaceSet
       email: extra.profile.email,
       id: extra.id,
       label: extra.label || undefined,
+      lastSavedLabel: formatSavedLabel(extra.updatedAt ?? extra.createdAt),
       linkedin: extra.card.linkedin,
       name: extra.profile.name,
       phone: extra.card.phone,
