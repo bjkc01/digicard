@@ -1,17 +1,16 @@
 import Link from "next/link";
 import { InteractiveHeroPreview } from "@/components/landing/interactive-hero-preview";
+import { PremiumHeader } from "@/components/landing/premium-header";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
+import { UseCasesTicketGrid } from "@/components/landing/use-cases-ticket-grid";
 import { HomeAuthModalContent } from "@/components/login/home-auth-modal-content";
-import { HomeAuthModal } from "@/components/login/home-auth-modal";
 import type { LoginSearchParams } from "@/lib/login-flow";
 import {
   ArrowRight,
   BriefcaseBusiness,
   Check,
   CheckCircle2,
-  CreditCard,
   GraduationCap,
-  Menu,
   QrCode,
   Sparkles,
   SquareArrowOutUpRight,
@@ -153,57 +152,9 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
         </div>
       </div>
 
-      <header className="sticky top-0 z-50 border-b border-[rgba(25,35,61,0.06)] bg-white/88 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-5">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,_#172340,_#5267d9)] shadow-[0_16px_30px_rgba(82,103,217,0.18)]">
-              <CreditCard className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <p className="text-lg font-semibold tracking-tight text-[var(--ink)]">DigiCard</p>
-              <p className="text-xs font-medium text-[var(--muted)]">Student-first networking cards</p>
-            </div>
-          </Link>
-
-          <nav className="hidden items-center gap-8 text-sm font-medium text-[var(--muted)] lg:flex">
-            <a href="#live-preview" className="transition hover:text-[var(--ink)]">
-              Preview
-            </a>
-            <a href="#why-it-matters" className="transition hover:text-[var(--ink)]">
-              Why it matters
-            </a>
-            <a href="#how-it-works" className="transition hover:text-[var(--ink)]">
-              How it works
-            </a>
-            <a href="#use-cases" className="transition hover:text-[var(--ink)]">
-              Use cases
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <HomeAuthModal
-              initiallyOpen={showAuthModal}
-              buttonClassName="hidden rounded-full px-4 py-2 text-sm font-semibold text-[var(--muted)] transition hover:bg-[var(--soft)] hover:text-[var(--ink)] sm:inline-flex"
-              callbackUrl="/dashboard"
-            >
-              <HomeAuthModalContent originPath="/" searchParams={resolvedSearchParams} />
-            </HomeAuthModal>
-            <Link
-              href="/dashboard"
-              className="hidden rounded-full bg-[var(--brand)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(82,103,217,0.2)] transition hover:bg-[#4459cb] sm:inline-flex"
-            >
-              Create my card
-            </Link>
-            <button
-              type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(25,35,61,0.08)] text-[var(--ink)] lg:hidden"
-              aria-label="Open navigation"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-      </header>
+      <PremiumHeader showAuthModal={showAuthModal}>
+        <HomeAuthModalContent originPath="/" searchParams={resolvedSearchParams} />
+      </PremiumHeader>
 
       <section className="mx-auto max-w-7xl px-6 pb-10 pt-10 lg:pt-12">
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.96fr]">
@@ -407,26 +358,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
           </p>
         </ScrollReveal>
 
-        <ScrollReveal className="mt-14 grid gap-5 lg:grid-cols-2 stagger-children">
-          {useCaseDetails.map((item, index) => (
-            <article
-              key={item.title}
-              className="hover-lift rounded-[1.9rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)] hover:shadow-[0_28px_56px_rgba(21,32,58,0.1)]"
-            >
-              <div className="flex items-center justify-between gap-4">
-                <p className="text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{item.title}</p>
-                <span className="rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
-                  0{index + 1}
-                </span>
-              </div>
-              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{item.copy}</p>
-              <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--brand)]">
-                Designed for quick follow-up
-                <ArrowRight className="h-4 w-4" />
-              </div>
-            </article>
-          ))}
-        </ScrollReveal>
+        <UseCasesTicketGrid items={useCaseDetails} />
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-24">
@@ -473,3 +405,4 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
     </main>
   );
 }
+

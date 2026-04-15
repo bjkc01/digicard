@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type WheelEvent } from "react";
 import { AtSign, Globe, Mail, Phone } from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
+import QRCode from "react-qr-code";
 
 function sanitizeFragment(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
@@ -20,12 +20,19 @@ export function InteractiveHeroPreview() {
   const [name, setName] = useState("");
   const [placeholder, setPlaceholder] = useState("✨ Live preview");
   const screenScrollRef = useRef<HTMLDivElement>(null);
+  const [showPlaceholderText, setShowPlaceholderText] = useState(true);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
-      setPlaceholder((current) =>
+      setShowPlaceholderText(false);
+      const timeoutId = window.setTimeout(() => {
+        setPlaceholder((current) =>
         current === "✨ Live preview" ? "✏️ Type your name..." : "✨ Live preview",
-      );
+        );
+        setShowPlaceholderText(true);
+      }, 250);
+
+      return () => window.clearTimeout(timeoutId);
     }, 3000);
 
     return () => window.clearInterval(intervalId);
@@ -87,16 +94,25 @@ export function InteractiveHeroPreview() {
           <div className="absolute bottom-[8%] left-[26%] h-56 w-56 rounded-full bg-[rgba(255,255,255,0.72)] blur-[64px]" />
         </div>
 
-        <input
-          aria-label="Type your name to preview the card"
-          autoComplete="off"
-          className="absolute right-0 top-0 z-20 h-12 w-[13rem] rounded-full border border-[rgba(82,103,217,0.15)] bg-white/90 px-5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_28px_rgba(21,32,58,0.1)] backdrop-blur-xl transition-[border-color,box-shadow,background-color,transform] duration-300 ease-out placeholder:font-semibold placeholder:text-[var(--muted)] focus:-translate-y-0.5 focus:border-[rgba(82,103,217,0.3)] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] sm:w-[14.5rem]"
-          onChange={(event) => setName(event.target.value)}
-          placeholder={placeholder}
-          spellCheck={false}
-          type="text"
-          value={name}
-        />
+        <div className="absolute right-0 top-0 z-20">
+          <input
+            aria-label="Type your name to preview the card"
+            autoComplete="off"
+            className="h-12 w-[13rem] rounded-full border border-[rgba(82,103,217,0.15)] bg-white/90 px-5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_28px_rgba(21,32,58,0.1)] backdrop-blur-xl transition-[border-color,box-shadow,background-color,transform] duration-300 ease-in-out focus:-translate-y-0.5 focus:border-[rgba(82,103,217,0.3)] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] sm:w-[14.5rem]"
+            onChange={(event) => setName(event.target.value)}
+            spellCheck={false}
+            type="text"
+            value={name}
+          />
+          <span
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-y-0 left-5 flex items-center whitespace-nowrap text-sm font-semibold text-[var(--muted)] transition-opacity duration-500 ease-in-out ${
+              name.length > 0 || !showPlaceholderText ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            {placeholder}
+          </span>
+        </div>
 
         <div className="phone-mockup-container relative mx-auto w-full max-w-[320px] [perspective:1400px]">
           <div className="hero-device-glow pointer-events-none absolute -left-12 top-[18%] -z-20 h-40 w-40 rounded-full bg-[rgba(255,255,255,0.9)] blur-[72px]" />
@@ -123,59 +139,57 @@ export function InteractiveHeroPreview() {
               <div className="relative h-full overflow-hidden rounded-[3rem] border border-white/8 bg-[#070b14]">
                 <div className="pointer-events-none absolute inset-x-[13%] top-0 z-10 h-[2px] bg-[linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.92)_22%,rgba(114,224,255,0.9)_76%,rgba(255,255,255,0))]" />
 
-                <div className="relative h-full bg-[radial-gradient(circle_at_18%_0%,rgba(82,103,217,0.24),rgba(82,103,217,0)_32%),linear-gradient(165deg,#151b2d_0%,#0d1220_46%,#070b14_100%)] text-white">
+                <div className="relative h-full bg-[radial-gradient(circle_at_18%_0%,rgba(82,103,217,0.24),rgba(82,103,217,0)_32%),linear-gradient(165deg,#151b2d_0%,#0d1220_46%,#070b14_100%)] px-[9.5%] pb-[8.6%] pt-[17.5%] text-white">
                   <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_24%,rgba(114,224,255,0.04)_58%,rgba(0,0,0,0.18)_100%)]" />
                   <div
                     ref={screenScrollRef}
-                    className="absolute inset-0 z-10 h-full w-full overflow-y-auto overscroll-contain scroll-smooth p-6 pointer-events-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+                    className="relative z-10 flex h-full w-full flex-col justify-between overflow-y-auto overscroll-contain pointer-events-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
                   >
-                    <div className="flex min-h-full flex-col justify-between px-[3.5%] pb-2 pt-[3.9rem]">
-                      <div className="shrink-0">
-                        <div className="flex h-[clamp(2.85rem,16vw,3.5rem)] w-[clamp(2.85rem,16vw,3.5rem)] items-center justify-center rounded-[1.15rem] border border-white/10 bg-white/8 text-[clamp(1rem,5vw,1.125rem)] font-semibold tracking-tight text-white/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-sm">
-                          {initials}
-                        </div>
-
-                        <div className="mt-7">
-                          <p className="max-w-[92%] break-words text-[clamp(2rem,10vw,2.35rem)] font-semibold leading-[0.92] tracking-[-0.065em] text-white">
-                            {displayName}
-                          </p>
-                          <p className="mt-3 line-clamp-3 text-[clamp(0.9rem,4vw,1rem)] text-white/66">
-                            Undergrad Student, Computer Science
-                          </p>
-                          <p className="mt-1 text-[clamp(0.82rem,3.4vw,0.95rem)] text-white/28">State University</p>
-                        </div>
+                    <div className="shrink-0">
+                      <div className="flex h-[clamp(2.85rem,16vw,3.5rem)] w-[clamp(2.85rem,16vw,3.5rem)] items-center justify-center rounded-[1.15rem] border border-white/10 bg-white/8 text-[clamp(1rem,5vw,1.125rem)] font-semibold tracking-tight text-white/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-sm">
+                        {initials}
                       </div>
 
-                      <div className="mt-4 flex-1 space-y-2">
-                        {detailRows.map((row) => (
-                          <div
-                            key={row.value}
-                            className="flex items-center gap-3 border-b border-white/8 pb-3.5 text-[clamp(0.75rem,3.2vw,0.84rem)] text-white/72"
-                          >
-                            <row.icon className="h-4 w-4 flex-none text-white/35" />
-                            <span className="min-w-0 truncate">{row.value}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="shrink-0 pt-8">
-                        <div className="flex shrink-0 justify-center pb-2">
-                          <div className="flex h-[clamp(5rem,27vw,6rem)] w-[clamp(5rem,27vw,6rem)] items-center justify-center rounded-xl bg-white p-2 shadow-[0_18px_40px_rgba(4,9,18,0.45)]">
-                            <QRCodeSVG
-                              bgColor="transparent"
-                              fgColor="#151a29"
-                              size={80}
-                              style={{ height: "100%", width: "100%" }}
-                              value={qrValue}
-                            />
-                          </div>
-                        </div>
-
-                        <p className="mt-6 text-center text-[0.63rem] font-medium uppercase tracking-[0.34em] text-white/28">
-                          Scan to connect <span className="mx-1 text-white/18">.</span>
-                          <span className="font-semibold tracking-[0.28em] text-white/78"> Digicard</span>
+                      <div className="mt-7">
+                        <p className="max-w-[92%] break-words text-[clamp(2rem,10vw,2.35rem)] font-semibold leading-[0.92] tracking-[-0.065em] text-white">
+                          {displayName}
                         </p>
+                        <p className="mt-3 line-clamp-3 text-[clamp(0.9rem,4vw,1rem)] text-white/66">
+                          Undergrad Student, Computer Science
+                        </p>
+                        <p className="mt-1 text-[clamp(0.82rem,3.4vw,0.95rem)] text-white/28">State University</p>
                       </div>
+                    </div>
+
+                    <div className="flex-1 mt-4 space-y-2">
+                      {detailRows.map((row) => (
+                        <div
+                          key={row.value}
+                          className="flex items-center gap-3 border-b border-white/8 pb-3.5 text-[clamp(0.75rem,3.2vw,0.84rem)] text-white/72"
+                        >
+                          <row.icon className="h-4 w-4 flex-none text-white/35" />
+                          <span className="min-w-0 truncate">{row.value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="shrink-0 pt-8">
+                      <div className="shrink-0 pb-2 flex justify-center">
+                        <div className="flex h-[clamp(5rem,27vw,6rem)] w-[clamp(5rem,27vw,6rem)] items-center justify-center rounded-xl bg-white p-2 shadow-[0_18px_40px_rgba(4,9,18,0.45)]">
+                          <QRCode
+                            bgColor="transparent"
+                            fgColor="#151a29"
+                            size={80}
+                            style={{ height: "100%", width: "100%" }}
+                            value={qrValue}
+                          />
+                        </div>
+                      </div>
+
+                      <p className="mt-6 text-center text-[0.63rem] font-medium uppercase tracking-[0.34em] text-white/28">
+                        Scan to connect <span className="mx-1 text-white/18">.</span>
+                        <span className="font-semibold tracking-[0.28em] text-white/78"> Digicard</span>
+                      </p>
                     </div>
                   </div>
                 </div>
