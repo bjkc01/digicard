@@ -13,6 +13,9 @@ type PremiumHeaderProps = {
 
 const navLinks = [
   { href: "#live-preview", label: "Preview" },
+  { href: "#why-it-matters", label: "Why it matters" },
+  { href: "#how-it-works", label: "How it works" },
+  { href: "#use-cases", label: "Use cases" },
 ] as const;
 
 export function PremiumHeader({ children, showAuthModal }: PremiumHeaderProps) {
