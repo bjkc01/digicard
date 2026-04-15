@@ -1,8 +1,15 @@
 import type { DigiCard } from "@/lib/data";
 import { templates } from "@/lib/data";
+import {
+  formatSavedWorkspaceTimestamp,
+  formatWorkspaceTimestamp,
+} from "@/lib/workspace-format";
 import { supabaseEnabled } from "@/lib/supabase-env";
 import type { WorkspaceUser } from "@/lib/workspace-auth";
-import { getWorkspaceSettings } from "@/lib/workspace-settings";
+import {
+  getWorkspaceLatestUpdatedAt,
+  getWorkspaceSettings,
+} from "@/lib/workspace-settings";
 
 export type WorkspaceSummary = {
   activeCardCount: number;
@@ -21,37 +28,16 @@ export type WorkspaceView = {
   user: WorkspaceUser;
 };
 
-const WORKSPACE_DISPLAY_TIME_ZONE = "America/New_York";
-
-function formatUpdatedAt(value: string | null) {
-  if (!value) {
-    return "Not saved yet";
+function canResolveQrTarget(settings: Awaited<ReturnType<typeof getWorkspaceSettings>>) {
+  if (settings.card.qrPreference === "website") {
+    return Boolean(settings.profile.website);
   }
 
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Not saved yet";
+  if (settings.card.qrPreference === "linkedin") {
+    return Boolean(settings.card.linkedin);
   }
 
-  const dateLabel = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    timeZone: WORKSPACE_DISPLAY_TIME_ZONE,
-    year: "numeric",
-  }).format(date);
-  const timeLabel = new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: WORKSPACE_DISPLAY_TIME_ZONE,
-  }).format(date);
-
-  return `${dateLabel} at ${timeLabel}`;
-}
-
-function formatSavedLabel(value: string | null) {
-  const formatted = formatUpdatedAt(value);
-  return formatted === "Not saved yet" ? formatted : `Saved ${formatted}`;
+  return Boolean(settings.profile.website || settings.card.linkedin || settings.profile.email);
 }
 
 function buildWorkspaceCards(settings: Awaited<ReturnType<typeof getWorkspaceSettings>>) {
@@ -70,7 +56,9 @@ function buildWorkspaceCards(settings: Awaited<ReturnType<typeof getWorkspaceSet
       company: settings.card.company,
       email: settings.profile.email,
       id: "primary",
-      lastSavedLabel: formatSavedLabel(settings.updatedAt),
+      lastSavedLabel: formatSavedWorkspaceTimestamp(
+        settings.sectionUpdatedAt.cards ?? settings.updatedAt,
+      ),
       linkedin: settings.card.linkedin,
       name: settings.profile.name,
       phone: settings.card.phone,
@@ -95,7 +83,7 @@ function buildWorkspaceCards(settings: Awaited<ReturnType<typeof getWorkspaceSet
       email: extra.profile.email,
       id: extra.id,
       label: extra.label || undefined,
-      lastSavedLabel: formatSavedLabel(extra.updatedAt ?? extra.createdAt),
+      lastSavedLabel: formatSavedWorkspaceTimestamp(extra.updatedAt ?? extra.createdAt),
       linkedin: extra.card.linkedin,
       name: extra.profile.name,
       phone: extra.card.phone,
@@ -114,21 +102,23 @@ export async function getWorkspaceView(user: WorkspaceUser): Promise<WorkspaceVi
   const cards = buildWorkspaceCards(settings);
   const selectedTemplate =
     templates.find((template) => template.id === settings.defaultTemplateId) ?? templates[0]!;
+  const readinessChecks = [
+    Boolean(settings.profile.name),
+    Boolean(settings.profile.email),
+    Boolean(settings.profile.title),
+    Boolean(settings.card.company),
+    Boolean(settings.profile.website || settings.card.linkedin),
+    Boolean(settings.card.phone),
+    canResolveQrTarget(settings),
+    Boolean(selectedTemplate),
+    cards.length > 0,
+  ];
   const profileCompletion = Math.round(
-    (
-      [
-        settings.profile.name,
-        settings.profile.email,
-        settings.profile.title,
-        settings.profile.website,
-        settings.card.company,
-        settings.card.phone,
-        settings.card.linkedin,
-      ].filter(Boolean).length / 7
-    ) * 100,
+    (readinessChecks.filter(Boolean).length / readinessChecks.length) * 100,
   );
   const enabledNotificationCount = Object.values(settings.notifications).filter(Boolean).length;
   const hasActiveCard = cards.length > 0;
+  const latestUpdatedAt = getWorkspaceLatestUpdatedAt(settings);
 
   return {
     cards,
@@ -137,10 +127,10 @@ export async function getWorkspaceView(user: WorkspaceUser): Promise<WorkspaceVi
       activeCardCount: cards.length,
       cardStatusLabel: hasActiveCard ? (cards.length === 1 ? "1 card ready" : `${cards.length} cards ready`) : "Needs setup",
       enabledNotificationCount,
-      lastUpdatedLabel: formatUpdatedAt(settings.updatedAt),
+      lastUpdatedLabel: formatWorkspaceTimestamp(latestUpdatedAt),
       profileCompletion,
       selectedTemplateName: selectedTemplate.name,
-      storageScopeLabel: supabaseEnabled ? "Supabase cloud sync" : "Current browser",
+      storageScopeLabel: supabaseEnabled ? "Cloud sync with browser fallback" : "Saved on this browser",
     },
     user,
   };

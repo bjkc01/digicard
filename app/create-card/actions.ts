@@ -19,6 +19,12 @@ function getActionErrorMessage(error: unknown) {
         return "Choose whether the QR should open your website, LinkedIn, or use auto mode.";
       case "template-invalid":
         return "Choose one of the available templates before saving.";
+      case "website-invalid":
+        return "Add a valid website or leave the field blank.";
+      case "phone-invalid":
+        return "Add a valid phone number or leave the field blank.";
+      case "linkedin-invalid":
+        return "Add a valid LinkedIn username or profile URL.";
       default:
         return error.message;
     }
@@ -34,7 +40,7 @@ export async function saveWorkspaceCardAction(
   try {
     const user = await requireWorkspaceUser("/create-card");
 
-    await saveWorkspaceCardSnapshot(user, {
+    const result = await saveWorkspaceCardSnapshot(user, {
       company: String(formData.get("company") ?? ""),
       defaultTemplateId: String(formData.get("defaultTemplateId") ?? ""),
       email: String(formData.get("email") ?? ""),
@@ -52,10 +58,15 @@ export async function saveWorkspaceCardAction(
     revalidatePath("/settings");
     revalidatePath("/templates");
 
-    return {
-      message: "Your card details were saved to this workspace.",
-      status: "success",
-    };
+    return result.storageStatus === "degraded"
+      ? {
+          message: "Your card was saved on this browser, but cloud sync could not be confirmed.",
+          status: "warning",
+        }
+      : {
+          message: "Your card details were saved successfully.",
+          status: "success",
+        };
   } catch (error) {
     if (isRedirectError(error)) {
       throw error;

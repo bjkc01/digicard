@@ -126,6 +126,9 @@ function getStatusTone(state: SaveCardActionState) {
   if (state.status === "success") {
     return "border-[rgba(16,185,129,0.16)] bg-[rgba(236,253,245,0.92)] text-[#065f46]";
   }
+  if (state.status === "warning") {
+    return "border-[rgba(245,158,11,0.18)] bg-[rgba(255,251,235,0.95)] text-[#92400e]";
+  }
   if (state.status === "error") {
     return "border-[rgba(239,68,68,0.16)] bg-[rgba(254,242,242,0.95)] text-[#991b1b]";
   }
@@ -155,11 +158,12 @@ export function CreateCardForm({
   // Portrait key: primary card uses email, extra cards use their stable ID
   const imageStorageKey = isExtraCard
     ? `digicard-portrait-${effectiveCardId}`
-    : `digicard-portrait-${initialFormData.email}`;
+    : "digicard-portrait-primary";
+  const legacyPrimaryImageStorageKey = `digicard-portrait-${initialFormData.email}`;
 
   const [imagePreview, setImagePreview] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
-    return localStorage.getItem(imageStorageKey) ?? null;
+    return localStorage.getItem(imageStorageKey) ?? localStorage.getItem(legacyPrimaryImageStorageKey) ?? null;
   });
   const [imageError, setImageError] = useState<string | null>(null);
   const [statusVisible, setStatusVisible] = useState(false);
@@ -451,6 +455,7 @@ export function CreateCardForm({
                   onClick={() => {
                     setImagePreview(null);
                     localStorage.removeItem(imageStorageKey);
+                    localStorage.removeItem(legacyPrimaryImageStorageKey);
                     if (fileInputRef.current) fileInputRef.current.value = "";
                   }}
                   className="mt-2 text-[11px] text-[#9ca3af] underline underline-offset-2 transition-colors duration-300 hover:text-red-500"

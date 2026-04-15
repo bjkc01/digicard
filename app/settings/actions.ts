@@ -1,38 +1,83 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { signOutFromWorkspace } from "@/lib/workspace-actions";
+import type { SettingsActionState } from "@/app/settings/action-state";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import {
-  notificationSettingOptions,
-  type WorkspaceNotificationKey,
-} from "@/lib/workspace-settings-options";
-import {
+  clearWorkspaceCards,
   saveWorkspaceNotifications,
   saveWorkspaceProfileDetails,
   saveWorkspaceTemplate,
   WorkspaceSettingsValidationError,
 } from "@/lib/workspace-settings";
+import {
+  notificationSettingOptions,
+  type WorkspaceNotificationKey,
+} from "@/lib/workspace-settings-options";
+import { signOutFromWorkspace } from "@/lib/workspace-actions";
 
-function redirectToSettings(notice: string) {
-  redirect(`/settings?notice=${notice}`);
+function getValidationMessage(error: WorkspaceSettingsValidationError) {
+  switch (error.code) {
+    case "profile-invalid":
+    case "qr-invalid":
+    case "website-invalid":
+    case "phone-invalid":
+    case "linkedin-invalid":
+    case "template-invalid":
+      return error.message;
+    default:
+      return "Please review the highlighted fields and try again.";
+  }
 }
 
-function getNoticeFromError(error: unknown, fallbackNotice: string) {
+function buildErrorState(error: unknown): SettingsActionState {
   if (error instanceof WorkspaceSettingsValidationError) {
-    return error.code;
+    return {
+      fieldErrors: error.fieldErrors,
+      message: getValidationMessage(error),
+      status: "error",
+    };
   }
 
-  return fallbackNotice;
+  return {
+    fieldErrors: { global: "Something went wrong while saving. Please try again." },
+    message: "Something went wrong while saving. Please try again.",
+    status: "error",
+  };
 }
 
-export async function saveProfileSettings(formData: FormData) {
-  const user = await requireWorkspaceUser("/settings");
-  let notice = "profile-saved";
+function buildSaveState(
+  storageStatus: "browser" | "cloud" | "degraded",
+  successMessage: string,
+): SettingsActionState {
+  return storageStatus === "degraded"
+    ? {
+        fieldErrors: {},
+        message: "Saved on this browser, but cloud sync could not be confirmed.",
+        status: "warning",
+      }
+    : {
+        fieldErrors: {},
+        message: successMessage,
+        status: "success",
+      };
+}
 
+function revalidateWorkspaceSettingsViews() {
+  revalidatePath("/settings");
+  revalidatePath("/dashboard");
+  revalidatePath("/cards");
+  revalidatePath("/create-card");
+  revalidatePath("/templates");
+}
+
+export async function saveProfileSettings(
+  _previousState: SettingsActionState,
+  formData: FormData,
+): Promise<SettingsActionState> {
   try {
-    await saveWorkspaceProfileDetails(user, {
+    const user = await requireWorkspaceUser("/settings");
+    const result = await saveWorkspaceProfileDetails(user, {
       company: String(formData.get("company") ?? ""),
       email: String(formData.get("email") ?? ""),
       linkedin: String(formData.get("linkedin") ?? ""),
@@ -42,41 +87,35 @@ export async function saveProfileSettings(formData: FormData) {
       title: String(formData.get("title") ?? ""),
       website: String(formData.get("website") ?? ""),
     });
-    revalidatePath("/settings");
-    revalidatePath("/dashboard");
-    revalidatePath("/cards");
-    revalidatePath("/create-card");
-    revalidatePath("/templates");
-  } catch (error) {
-    notice = getNoticeFromError(error, "profile-error");
-  }
 
-  redirectToSettings(notice);
+    revalidateWorkspaceSettingsViews();
+    return buildSaveState(result.storageStatus, "Profile details saved.");
+  } catch (error) {
+    return buildErrorState(error);
+  }
 }
 
-export async function saveTemplateSettings(formData: FormData) {
-  const user = await requireWorkspaceUser("/settings");
-  let notice = "template-saved";
-
+export async function saveTemplateSettings(
+  _previousState: SettingsActionState,
+  formData: FormData,
+): Promise<SettingsActionState> {
   try {
-    await saveWorkspaceTemplate(user, String(formData.get("defaultTemplateId") ?? ""));
-    revalidatePath("/settings");
-    revalidatePath("/dashboard");
-    revalidatePath("/cards");
-    revalidatePath("/create-card");
-    revalidatePath("/templates");
-  } catch (error) {
-    notice = getNoticeFromError(error, "template-error");
-  }
+    const user = await requireWorkspaceUser("/settings");
+    const result = await saveWorkspaceTemplate(user, String(formData.get("defaultTemplateId") ?? ""));
 
-  redirectToSettings(notice);
+    revalidateWorkspaceSettingsViews();
+    return buildSaveState(result.storageStatus, "Default template updated.");
+  } catch (error) {
+    return buildErrorState(error);
+  }
 }
 
-export async function saveNotificationSettings(formData: FormData) {
-  const user = await requireWorkspaceUser("/settings");
-  let notice = "notifications-saved";
-
+export async function saveNotificationSettings(
+  _previousState: SettingsActionState,
+  formData: FormData,
+): Promise<SettingsActionState> {
   try {
+    const user = await requireWorkspaceUser("/settings");
     const validNotificationKeys = new Set(notificationSettingOptions.map((option) => option.key));
     const enabledKeys = formData
       .getAll("notifications")
@@ -85,17 +124,28 @@ export async function saveNotificationSettings(formData: FormData) {
           typeof value === "string" && validNotificationKeys.has(value as WorkspaceNotificationKey),
       )
       .filter((value, index, array) => array.indexOf(value) === index);
+    const result = await saveWorkspaceNotifications(user, enabledKeys);
 
-    await saveWorkspaceNotifications(user, enabledKeys);
-    revalidatePath("/settings");
-    revalidatePath("/dashboard");
-    revalidatePath("/cards");
-    revalidatePath("/templates");
+    revalidateWorkspaceSettingsViews();
+    return buildSaveState(result.storageStatus, "Notification settings saved.");
   } catch (error) {
-    notice = getNoticeFromError(error, "notifications-error");
+    return buildErrorState(error);
   }
+}
 
-  redirectToSettings(notice);
+export async function clearSavedCardsSettingsAction(
+  _previousState: SettingsActionState,
+  _formData: FormData,
+): Promise<SettingsActionState> {
+  try {
+    const user = await requireWorkspaceUser("/settings");
+    const result = await clearWorkspaceCards(user);
+
+    revalidateWorkspaceSettingsViews();
+    return buildSaveState(result.storageStatus, "All saved cards were cleared.");
+  } catch (error) {
+    return buildErrorState(error);
+  }
 }
 
 export async function signOutFromSettings() {

@@ -16,17 +16,18 @@ export function DashboardCardSurface({ card }: DashboardCardSurfaceProps) {
 
   // Primary card: legacy email-based key. Extra cards: ID-based key.
   const portraitKey = isPrimary
-    ? `digicard-portrait-${card.email}`
+    ? "digicard-portrait-primary"
     : `digicard-portrait-${card.id}`;
+  const legacyPrimaryPortraitKey = `digicard-portrait-${card.email}`;
 
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const [isPending, startTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(portraitKey);
+    const stored = localStorage.getItem(portraitKey) ?? (isPrimary ? localStorage.getItem(legacyPrimaryPortraitKey) : null);
     if (stored) setImageUrl(stored);
-  }, [portraitKey]);
+  }, [isPrimary, legacyPrimaryPortraitKey, portraitKey]);
 
   function handleDelete() {
     if (!confirmDelete) {

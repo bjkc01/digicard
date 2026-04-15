@@ -2,29 +2,42 @@ import { cookies } from "next/headers";
 import { authSecret } from "@/lib/auth-env";
 import {
   notificationSettingOptions,
-  qrPreferenceOptions,
   validQrPreferences,
   type WorkspaceNotificationKey,
   type WorkspaceQrPreference,
 } from "@/lib/workspace-settings-options";
 import { normalizeEmail } from "@/lib/email-auth";
 import { templates } from "@/lib/data";
+import {
+  getLatestWorkspaceTimestamp,
+  isNewerWorkspaceTimestamp,
+} from "@/lib/workspace-format";
 import { supabaseEnabled } from "@/lib/supabase-env";
 import {
   getSupabaseProfileByOwnerEmail,
   getSupabaseProfileByUserId,
   upsertSupabaseProfile,
 } from "@/lib/supabase/profiles";
+import {
+  deleteSupabaseWorkspaceCard,
+  deleteSupabaseWorkspaceCardsByProfileId,
+  getSupabaseWorkspaceCardsByProfileId,
+  upsertSupabaseWorkspaceCard,
+} from "@/lib/supabase/workspace-cards";
+import type { SupabaseProfile, SupabaseWorkspaceCard } from "@/lib/supabase/types";
 import type { WorkspaceUser } from "@/lib/workspace-auth";
 
 const SETTINGS_COOKIE_NAME = "digicard-workspace-settings";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
-const SETTINGS_VERSION = 1;
+const SETTINGS_VERSION = 2;
 const defaultTemplateId = "blueprint";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
+export type WorkspaceSectionKey = "cards" | "notifications" | "profile" | "template";
+export type WorkspacePersistenceStatus = "browser" | "cloud" | "degraded";
 export type WorkspaceNotificationSettings = Record<WorkspaceNotificationKey, boolean>;
+export type WorkspaceSectionUpdatedAt = Record<WorkspaceSectionKey, string | null>;
 
 export type WorkspaceProfile = {
   email: string;
@@ -57,8 +70,14 @@ export type WorkspaceSettings = {
   notifications: WorkspaceNotificationSettings;
   owner: string;
   profile: WorkspaceProfile;
+  sectionUpdatedAt: WorkspaceSectionUpdatedAt;
   updatedAt: string | null;
   version: number;
+};
+
+export type WorkspaceSaveResult = {
+  settings: WorkspaceSettings;
+  storageStatus: WorkspacePersistenceStatus;
 };
 
 type WorkspaceSettingsCookiePayload = {
@@ -67,11 +86,26 @@ type WorkspaceSettingsCookiePayload = {
   version: number;
 };
 
+type PersistWorkspaceOptions = {
+  touchedSections?: WorkspaceSectionKey[];
+};
+
+type PersistWorkspaceResult = WorkspaceSaveResult & {
+  profileId: string | null;
+};
+
 const defaultNotificationSettings: WorkspaceNotificationSettings = {
   cardOpens: true,
   newSaves: false,
   qrScans: true,
   weeklyDigest: true,
+};
+
+const defaultSectionUpdatedAt: WorkspaceSectionUpdatedAt = {
+  cards: null,
+  notifications: null,
+  profile: null,
+  template: null,
 };
 
 const validTemplateIds = new Set(templates.map((template) => template.id));
@@ -98,10 +132,12 @@ function isValidDateString(value: unknown): value is string {
 
 export class WorkspaceSettingsValidationError extends Error {
   code: string;
+  fieldErrors: Record<string, string>;
 
-  constructor(code: string, message: string) {
+  constructor(code: string, message: string, fieldErrors: Record<string, string> = {}) {
     super(message);
     this.code = code;
+    this.fieldErrors = fieldErrors;
   }
 }
 
@@ -129,6 +165,28 @@ function normalizeWebsite(value: string) {
   return cleanText(value, 120).replace(/^https?:\/\//i, "");
 }
 
+function isValidWebsite(value: string) {
+  if (!value) {
+    return true;
+  }
+
+  try {
+    const url = new URL(`https://${value}`);
+    return url.hostname === "localhost" || url.hostname.includes(".");
+  } catch {
+    return false;
+  }
+}
+
+function isValidPhone(value: string) {
+  if (!value) {
+    return true;
+  }
+
+  const digits = value.replace(/\D/g, "");
+  return digits.length >= 10 && digits.length <= 15;
+}
+
 function isValidQrPreference(value: unknown): value is WorkspaceQrPreference {
   return typeof value === "string" && validQrPreferences.has(value as WorkspaceQrPreference);
 }
@@ -148,11 +206,50 @@ function normalizeLinkedIn(value: string) {
   const withoutDomain = cleaned.replace(/^linkedin\.com\//i, "").replace(/^linkedin\//i, "");
   const normalizedPath = withoutDomain.replace(/^\/+/, "");
 
+  if (!normalizedPath) {
+    return "";
+  }
+
   if (/^(in|company|school)\//i.test(normalizedPath)) {
     return `linkedin.com/${normalizedPath}`;
   }
 
   return `linkedin.com/in/${normalizedPath}`;
+}
+
+function isValidLinkedIn(value: string) {
+  if (!value) {
+    return true;
+  }
+
+  return /^linkedin\.com\/(in|company|school)\/[a-z0-9._-]+$/i.test(value);
+}
+
+function touchSectionTimestamps(
+  current: WorkspaceSectionUpdatedAt,
+  touchedSections: WorkspaceSectionKey[],
+  timestamp: string,
+) {
+  const next = { ...current };
+
+  for (const section of touchedSections) {
+    next[section] = timestamp;
+  }
+
+  return next;
+}
+
+function mergeSectionUpdatedAt(raw: unknown) {
+  const source = isRecord(raw) ? raw : {};
+
+  return {
+    cards: isValidDateString(source.cards) ? source.cards : defaultSectionUpdatedAt.cards,
+    notifications: isValidDateString(source.notifications)
+      ? source.notifications
+      : defaultSectionUpdatedAt.notifications,
+    profile: isValidDateString(source.profile) ? source.profile : defaultSectionUpdatedAt.profile,
+    template: isValidDateString(source.template) ? source.template : defaultSectionUpdatedAt.template,
+  } satisfies WorkspaceSectionUpdatedAt;
 }
 
 function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings {
@@ -175,6 +272,7 @@ function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings 
       title: "",
       website: "",
     },
+    sectionUpdatedAt: { ...defaultSectionUpdatedAt },
     updatedAt: null,
     version: SETTINGS_VERSION,
   };
@@ -182,12 +280,9 @@ function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings 
 
 function mapSupabaseProfileToWorkspaceSettings(
   user: WorkspaceUser,
-  profile: Awaited<ReturnType<typeof getSupabaseProfileByUserId>>,
+  profile: SupabaseProfile,
+  extraCards: WorkspaceExtraCard[],
 ) {
-  if (!profile) {
-    return null;
-  }
-
   return mergeWorkspaceSettings(user, {
     card: {
       company: profile.company ?? "",
@@ -204,6 +299,13 @@ function mapSupabaseProfileToWorkspaceSettings(
       title: profile.title ?? "",
       website: profile.website ?? "",
     },
+    sectionUpdatedAt: {
+      cards: profile.cards_updated_at,
+      notifications: profile.notifications_updated_at,
+      profile: profile.profile_updated_at,
+      template: profile.template_updated_at,
+    },
+    extraCards,
     updatedAt: profile.updated_at,
   });
 }
@@ -322,6 +424,49 @@ function mergeExtraCard(raw: unknown): WorkspaceExtraCard | null {
   };
 }
 
+function mapSupabaseWorkspaceCardToExtraCard(card: SupabaseWorkspaceCard): WorkspaceExtraCard {
+  return {
+    id: card.id,
+    label: card.label ?? "",
+    profile: {
+      email: card.email,
+      name: card.name,
+      title: card.title,
+      website: card.website ?? "",
+    },
+    card: {
+      company: card.company ?? "",
+      linkedin: card.linkedin ?? "",
+      phone: card.phone ?? "",
+      qrPreference: isValidQrPreference(card.qr_preference) ? card.qr_preference : "auto",
+    },
+    templateId: validTemplateIds.has(card.template_id) ? card.template_id : defaultTemplateId,
+    createdAt: card.created_at,
+    updatedAt: card.updated_at,
+  };
+}
+
+function mergeExtraCards(
+  primaryCards: WorkspaceExtraCard[],
+  secondaryCards: WorkspaceExtraCard[],
+) {
+  const cardsById = new Map<string, WorkspaceExtraCard>();
+
+  for (const card of [...secondaryCards, ...primaryCards]) {
+    const existing = cardsById.get(card.id);
+
+    if (!existing || isNewerWorkspaceTimestamp(card.updatedAt, existing.updatedAt)) {
+      cardsById.set(card.id, card);
+    }
+  }
+
+  return [...cardsById.values()].sort((left, right) => {
+    const leftTime = new Date(left.updatedAt).getTime();
+    const rightTime = new Date(right.updatedAt).getTime();
+    return rightTime - leftTime;
+  });
+}
+
 function mergeWorkspaceSettings(
   user: WorkspaceUser,
   candidate: Partial<WorkspaceSettings> | null | undefined,
@@ -368,57 +513,92 @@ function mergeWorkspaceSettings(
       title: getOptionalString(candidateProfile?.title, defaults.profile.title),
       website: getOptionalString(candidateProfile?.website, defaults.profile.website),
     },
+    sectionUpdatedAt: mergeSectionUpdatedAt(candidate?.sectionUpdatedAt),
     updatedAt: isValidDateString(candidate?.updatedAt) ? candidate.updatedAt : defaults.updatedAt,
     version: SETTINGS_VERSION,
   } satisfies WorkspaceSettings;
 }
 
-async function persistWorkspaceSettings(user: WorkspaceUser, settings: WorkspaceSettings) {
+async function persistWorkspaceSettings(
+  user: WorkspaceUser,
+  settings: WorkspaceSettings,
+  options: PersistWorkspaceOptions = {},
+): Promise<PersistWorkspaceResult> {
   const baseSettings = mergeWorkspaceSettings(user, settings);
-  let updatedAt = new Date().toISOString();
+  const timestamp = new Date().toISOString();
+  const touchedSections = options.touchedSections ?? [];
+  let updatedAt = touchedSections.length > 0 ? timestamp : baseSettings.updatedAt ?? timestamp;
+  let sectionUpdatedAt = touchSectionTimestamps(
+    baseSettings.sectionUpdatedAt,
+    touchedSections,
+    timestamp,
+  );
+  let storageStatus: WorkspacePersistenceStatus = supabaseEnabled ? "cloud" : "browser";
+  let profileId: string | null = null;
 
   if (supabaseEnabled) {
     try {
       const profile = await upsertSupabaseProfile({
+        cards_updated_at: sectionUpdatedAt.cards,
         company: baseSettings.card.company,
         default_template_id: baseSettings.defaultTemplateId,
         email: baseSettings.profile.email,
         linkedin: baseSettings.card.linkedin,
         name: baseSettings.profile.name,
         notifications: baseSettings.notifications,
+        notifications_updated_at: sectionUpdatedAt.notifications,
         owner_email: baseSettings.owner,
         phone: baseSettings.card.phone,
+        profile_updated_at: sectionUpdatedAt.profile,
         qr_preference: baseSettings.card.qrPreference,
+        template_updated_at: sectionUpdatedAt.template,
         title: baseSettings.profile.title,
         user_id: user.id,
         website: baseSettings.profile.website,
       });
       updatedAt = profile.updated_at;
+      profileId = profile.id;
+      sectionUpdatedAt = {
+        cards: profile.cards_updated_at,
+        notifications: profile.notifications_updated_at,
+        profile: profile.profile_updated_at,
+        template: profile.template_updated_at,
+      };
     } catch (error) {
+      storageStatus = "degraded";
       console.error("Failed to persist workspace settings to Supabase. Falling back to cookie-only.", error);
     }
   }
 
   const normalized = mergeWorkspaceSettings(user, {
     ...baseSettings,
+    sectionUpdatedAt,
     updatedAt,
   });
 
   const cookieStore = await cookies();
 
-  cookieStore.set(SETTINGS_COOKIE_NAME, await encodePayload({
-    owner: normalized.owner,
-    value: normalized,
-    version: SETTINGS_VERSION,
-  }), {
-    httpOnly: true,
-    maxAge: SETTINGS_COOKIE_MAX_AGE,
-    path: "/",
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-  });
+  cookieStore.set(
+    SETTINGS_COOKIE_NAME,
+    await encodePayload({
+      owner: normalized.owner,
+      value: normalized,
+      version: SETTINGS_VERSION,
+    }),
+    {
+      httpOnly: true,
+      maxAge: SETTINGS_COOKIE_MAX_AGE,
+      path: "/",
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    },
+  );
 
-  return normalized;
+  return {
+    profileId,
+    settings: normalized,
+    storageStatus,
+  };
 }
 
 export async function getWorkspaceSettings(user: WorkspaceUser) {
@@ -433,11 +613,119 @@ export async function getWorkspaceSettings(user: WorkspaceUser) {
       (await getSupabaseProfileByUserId(user.id)) ??
       (await getSupabaseProfileByOwnerEmail(getWorkspaceOwner(user)));
 
-    return mapSupabaseProfileToWorkspaceSettings(user, profile) ?? cookieSettings;
+    if (!profile) {
+      return cookieSettings;
+    }
+
+    const supabaseCards = await getSupabaseWorkspaceCardsByProfileId(profile.id);
+    const mergedExtraCards = mergeExtraCards(
+      supabaseCards.map(mapSupabaseWorkspaceCardToExtraCard),
+      cookieSettings.extraCards,
+    );
+    const supabaseSettings = mapSupabaseProfileToWorkspaceSettings(user, profile, mergedExtraCards);
+
+    if (isNewerWorkspaceTimestamp(cookieSettings.updatedAt, supabaseSettings.updatedAt)) {
+      return mergeWorkspaceSettings(user, {
+        ...supabaseSettings,
+        card: cookieSettings.card,
+        defaultTemplateId: cookieSettings.defaultTemplateId,
+        extraCards: mergedExtraCards,
+        notifications: cookieSettings.notifications,
+        profile: cookieSettings.profile,
+        sectionUpdatedAt: cookieSettings.sectionUpdatedAt,
+        updatedAt: cookieSettings.updatedAt,
+      });
+    }
+
+    return supabaseSettings;
   } catch (error) {
     console.error("Failed to load workspace settings from Supabase. Falling back to cookies.", error);
     return cookieSettings;
   }
+}
+
+function validateWorkspaceProfileInput(input: {
+  email: string;
+  linkedin: string;
+  name: string;
+  phone: string;
+  qrPreference: string;
+  title: string;
+  website: string;
+}) {
+  const name = cleanText(input.name, 60);
+  const email = normalizeEmail(input.email);
+  const linkedin = normalizeLinkedIn(input.linkedin);
+  const phone = cleanText(input.phone, 40);
+  const qrPreference = isValidQrPreference(input.qrPreference) ? input.qrPreference : null;
+  const title = cleanText(input.title, 80);
+  const website = normalizeWebsite(input.website);
+
+  if (name.length < 2) {
+    throw new WorkspaceSettingsValidationError(
+      "profile-invalid",
+      "Display name must be at least 2 characters.",
+      { name: "Enter your full name." },
+    );
+  }
+
+  if (!email) {
+    throw new WorkspaceSettingsValidationError(
+      "profile-invalid",
+      "A valid email address is required.",
+      { email: "Enter a valid email address." },
+    );
+  }
+
+  if (!title) {
+    throw new WorkspaceSettingsValidationError(
+      "profile-invalid",
+      "Professional title is required.",
+      { title: "Add a professional title." },
+    );
+  }
+
+  if (!qrPreference) {
+    throw new WorkspaceSettingsValidationError(
+      "qr-invalid",
+      "Choose how the QR code should behave before saving.",
+      { qrPreference: "Choose a QR destination preference." },
+    );
+  }
+
+  if (!isValidWebsite(website)) {
+    throw new WorkspaceSettingsValidationError(
+      "website-invalid",
+      "Enter a valid website or leave it blank.",
+      { website: "Enter a valid website like yoursite.com." },
+    );
+  }
+
+  if (!isValidLinkedIn(linkedin)) {
+    throw new WorkspaceSettingsValidationError(
+      "linkedin-invalid",
+      "Enter a valid LinkedIn username or profile URL.",
+      { linkedin: "Use a LinkedIn username or linkedin.com/in/yourname." },
+    );
+  }
+
+  if (!isValidPhone(phone)) {
+    throw new WorkspaceSettingsValidationError(
+      "phone-invalid",
+      "Enter a valid phone number or leave it blank.",
+      { phone: "Use a phone number with 10 to 15 digits." },
+    );
+  }
+
+  return {
+    email,
+    linkedin,
+    name,
+    phone,
+    qrPreference,
+    title,
+    website,
+  };
 }
 
 export async function saveWorkspaceProfile(
@@ -473,55 +761,31 @@ export async function saveWorkspaceProfileDetails(
   },
 ) {
   const current = await getWorkspaceSettings(user);
-  const name = cleanText(input.name, 60);
-  const email = normalizeEmail(input.email);
-  const qrPreference = isValidQrPreference(input.qrPreference) ? input.qrPreference : null;
-  const title = cleanText(input.title, 80);
-  const website = normalizeWebsite(input.website);
-
-  if (name.length < 2) {
-    throw new WorkspaceSettingsValidationError(
-      "profile-invalid",
-      "Display name must be at least 2 characters.",
-    );
-  }
-
-  if (!email) {
-    throw new WorkspaceSettingsValidationError(
-      "profile-invalid",
-      "A valid email address is required.",
-    );
-  }
-
-  if (!title) {
-    throw new WorkspaceSettingsValidationError(
-      "profile-invalid",
-      "Professional title is required.",
-    );
-  }
-
-  if (!qrPreference) {
-    throw new WorkspaceSettingsValidationError(
-      "qr-invalid",
-      "Choose how the QR code should behave before saving.",
-    );
-  }
-
-  return persistWorkspaceSettings(user, {
-    ...current,
-    card: {
-      company: cleanText(input.company, 80),
-      linkedin: normalizeLinkedIn(input.linkedin),
-      phone: cleanText(input.phone, 40),
-      qrPreference,
+  const validated = validateWorkspaceProfileInput(input);
+  const result = await persistWorkspaceSettings(
+    user,
+    {
+      ...current,
+      card: {
+        company: cleanText(input.company, 80),
+        linkedin: validated.linkedin,
+        phone: validated.phone,
+        qrPreference: validated.qrPreference,
+      },
+      profile: {
+        email: validated.email,
+        name: validated.name,
+        title: validated.title,
+        website: validated.website,
+      },
     },
-    profile: {
-      email,
-      name,
-      title,
-      website,
-    },
-  });
+    { touchedSections: ["cards", "profile"] },
+  );
+
+  return {
+    settings: result.settings,
+    storageStatus: result.storageStatus,
+  };
 }
 
 export async function saveWorkspaceCardDetails(
@@ -550,15 +814,24 @@ export async function saveWorkspaceTemplate(user: WorkspaceUser, templateId: str
     throw new WorkspaceSettingsValidationError(
       "template-invalid",
       "Choose a valid template before saving.",
+      { defaultTemplateId: "Choose one of the available templates." },
     );
   }
 
   const current = await getWorkspaceSettings(user);
+  const result = await persistWorkspaceSettings(
+    user,
+    {
+      ...current,
+      defaultTemplateId: templateId,
+    },
+    { touchedSections: ["template"] },
+  );
 
-  return persistWorkspaceSettings(user, {
-    ...current,
-    defaultTemplateId: templateId,
-  });
+  return {
+    settings: result.settings,
+    storageStatus: result.storageStatus,
+  };
 }
 
 export async function saveWorkspaceCardSnapshot(
@@ -579,60 +852,37 @@ export async function saveWorkspaceCardSnapshot(
     throw new WorkspaceSettingsValidationError(
       "template-invalid",
       "Choose a valid template before saving.",
+      { defaultTemplateId: "Choose one of the available templates." },
     );
   }
 
   const current = await getWorkspaceSettings(user);
-  const name = cleanText(input.name, 60);
-  const email = normalizeEmail(input.email);
-  const qrPreference = isValidQrPreference(input.qrPreference) ? input.qrPreference : null;
-  const title = cleanText(input.title, 80);
-  const website = normalizeWebsite(input.website);
-
-  if (name.length < 2) {
-    throw new WorkspaceSettingsValidationError(
-      "profile-invalid",
-      "Display name must be at least 2 characters.",
-    );
-  }
-
-  if (!email) {
-    throw new WorkspaceSettingsValidationError(
-      "profile-invalid",
-      "A valid email address is required.",
-    );
-  }
-
-  if (!title) {
-    throw new WorkspaceSettingsValidationError(
-      "profile-invalid",
-      "Professional title is required.",
-    );
-  }
-
-  if (!qrPreference) {
-    throw new WorkspaceSettingsValidationError(
-      "qr-invalid",
-      "Choose how the QR code should behave before saving.",
-    );
-  }
-
-  return persistWorkspaceSettings(user, {
-    ...current,
-    card: {
-      company: cleanText(input.company, 80),
-      linkedin: normalizeLinkedIn(input.linkedin),
-      phone: cleanText(input.phone, 40),
-      qrPreference,
+  const validated = validateWorkspaceProfileInput(input);
+  const result = await persistWorkspaceSettings(
+    user,
+    {
+      ...current,
+      card: {
+        company: cleanText(input.company, 80),
+        linkedin: validated.linkedin,
+        phone: validated.phone,
+        qrPreference: validated.qrPreference,
+      },
+      defaultTemplateId: input.defaultTemplateId,
+      profile: {
+        email: validated.email,
+        name: validated.name,
+        title: validated.title,
+        website: validated.website,
+      },
     },
-    defaultTemplateId: input.defaultTemplateId,
-    profile: {
-      email,
-      name,
-      title,
-      website,
-    },
-  });
+    { touchedSections: ["cards", "profile", "template"] },
+  );
+
+  return {
+    settings: result.settings,
+    storageStatus: result.storageStatus,
+  };
 }
 
 export async function saveWorkspaceExtraCard(
@@ -655,42 +905,11 @@ export async function saveWorkspaceExtraCard(
     throw new WorkspaceSettingsValidationError(
       "template-invalid",
       "Choose a valid template before saving.",
+      { defaultTemplateId: "Choose one of the available templates." },
     );
   }
 
-  const name = cleanText(input.name, 60);
-  const email = normalizeEmail(input.email);
-  const qrPreference = isValidQrPreference(input.qrPreference) ? input.qrPreference : null;
-  const title = cleanText(input.title, 80);
-  const website = normalizeWebsite(input.website);
-
-  if (name.length < 2) {
-    throw new WorkspaceSettingsValidationError(
-      "profile-invalid",
-      "Display name must be at least 2 characters.",
-    );
-  }
-
-  if (!email) {
-    throw new WorkspaceSettingsValidationError(
-      "profile-invalid",
-      "A valid email address is required.",
-    );
-  }
-
-  if (!title) {
-    throw new WorkspaceSettingsValidationError(
-      "profile-invalid",
-      "Professional title is required.",
-    );
-  }
-
-  if (!qrPreference) {
-    throw new WorkspaceSettingsValidationError(
-      "qr-invalid",
-      "Choose how the QR code should behave before saving.",
-    );
-  }
+  const validated = validateWorkspaceProfileInput(input);
 
   if (!input.id || input.id === "new") {
     throw new WorkspaceSettingsValidationError(
@@ -708,12 +927,17 @@ export async function saveWorkspaceExtraCard(
   const updatedCard: WorkspaceExtraCard = {
     id: input.id,
     label: cleanText(input.label, 60),
-    profile: { email, name, title, website },
+    profile: {
+      email: validated.email,
+      name: validated.name,
+      title: validated.title,
+      website: validated.website,
+    },
     card: {
       company: cleanText(input.company, 80),
-      linkedin: normalizeLinkedIn(input.linkedin),
-      phone: cleanText(input.phone, 40),
-      qrPreference,
+      linkedin: validated.linkedin,
+      phone: validated.phone,
+      qrPreference: validated.qrPreference,
     },
     templateId: input.defaultTemplateId,
     createdAt,
@@ -724,35 +948,135 @@ export async function saveWorkspaceExtraCard(
     existingIndex >= 0
       ? current.extraCards.map((c, i) => (i === existingIndex ? updatedCard : c))
       : [...current.extraCards, updatedCard];
+  const persistResult = await persistWorkspaceSettings(
+    user,
+    { ...current, extraCards: nextExtraCards },
+    { touchedSections: ["cards"] },
+  );
+  let storageStatus = persistResult.storageStatus;
 
-  return persistWorkspaceSettings(user, { ...current, extraCards: nextExtraCards });
+  if (supabaseEnabled && persistResult.profileId) {
+    try {
+      await upsertSupabaseWorkspaceCard({
+        company: updatedCard.card.company,
+        created_at: updatedCard.createdAt,
+        email: updatedCard.profile.email,
+        id: updatedCard.id,
+        label: updatedCard.label,
+        linkedin: updatedCard.card.linkedin,
+        name: updatedCard.profile.name,
+        phone: updatedCard.card.phone,
+        profile_id: persistResult.profileId,
+        qr_preference: updatedCard.card.qrPreference,
+        template_id: updatedCard.templateId,
+        title: updatedCard.profile.title,
+        updated_at: updatedCard.updatedAt,
+        user_id: user.id,
+        website: updatedCard.profile.website,
+      });
+    } catch (error) {
+      storageStatus = "degraded";
+      console.error("Failed to persist workspace extra card to Supabase.", error);
+    }
+  }
+
+  return {
+    settings: persistResult.settings,
+    storageStatus,
+  };
 }
 
 export async function deleteWorkspaceExtraCard(user: WorkspaceUser, cardId: string) {
   const current = await getWorkspaceSettings(user);
-  return persistWorkspaceSettings(user, {
-    ...current,
-    extraCards: current.extraCards.filter((c) => c.id !== cardId),
-  });
+  const persistResult = await persistWorkspaceSettings(
+    user,
+    {
+      ...current,
+      extraCards: current.extraCards.filter((c) => c.id !== cardId),
+    },
+    { touchedSections: ["cards"] },
+  );
+  let storageStatus = persistResult.storageStatus;
+
+  if (supabaseEnabled && persistResult.profileId) {
+    try {
+      await deleteSupabaseWorkspaceCard(cardId);
+    } catch (error) {
+      storageStatus = "degraded";
+      console.error("Failed to delete workspace extra card from Supabase.", error);
+    }
+  }
+
+  return {
+    settings: persistResult.settings,
+    storageStatus,
+  };
 }
 
 export async function deleteWorkspacePrimaryCard(user: WorkspaceUser) {
   const current = await getWorkspaceSettings(user);
 
-  return persistWorkspaceSettings(user, {
-    ...current,
-    card: {
-      company: "",
-      linkedin: "",
-      phone: "",
-      qrPreference: "auto",
+  const result = await persistWorkspaceSettings(
+    user,
+    {
+      ...current,
+      card: {
+        company: "",
+        linkedin: "",
+        phone: "",
+        qrPreference: "auto",
+      },
+      profile: {
+        ...current.profile,
+        title: "",
+        website: "",
+      },
     },
-    profile: {
-      ...current.profile,
-      title: "",
-      website: "",
+    { touchedSections: ["cards", "profile"] },
+  );
+
+  return {
+    settings: result.settings,
+    storageStatus: result.storageStatus,
+  };
+}
+
+export async function clearWorkspaceCards(user: WorkspaceUser): Promise<WorkspaceSaveResult> {
+  const current = await getWorkspaceSettings(user);
+  const persistResult = await persistWorkspaceSettings(
+    user,
+    {
+      ...current,
+      card: {
+        company: "",
+        linkedin: "",
+        phone: "",
+        qrPreference: "auto",
+      },
+      extraCards: [],
+      profile: {
+        ...current.profile,
+        title: "",
+        website: "",
+      },
     },
-  });
+    { touchedSections: ["cards", "profile"] },
+  );
+  let storageStatus = persistResult.storageStatus;
+
+  if (supabaseEnabled && persistResult.profileId) {
+    try {
+      await deleteSupabaseWorkspaceCardsByProfileId(persistResult.profileId);
+    } catch (error) {
+      storageStatus = "degraded";
+      console.error("Failed to clear workspace cards from Supabase.", error);
+    }
+  }
+
+  return {
+    settings: persistResult.settings,
+    storageStatus,
+  };
 }
 
 export async function saveWorkspaceNotifications(
@@ -768,8 +1092,28 @@ export async function saveWorkspaceNotifications(
     { ...defaultNotificationSettings },
   );
 
-  return persistWorkspaceSettings(user, {
-    ...current,
-    notifications: nextNotifications,
-  });
+  const result = await persistWorkspaceSettings(
+    user,
+    {
+      ...current,
+      notifications: nextNotifications,
+    },
+    { touchedSections: ["notifications"] },
+  );
+
+  return {
+    settings: result.settings,
+    storageStatus: result.storageStatus,
+  };
+}
+
+export function getWorkspaceLatestUpdatedAt(settings: WorkspaceSettings) {
+  return getLatestWorkspaceTimestamp([
+    settings.updatedAt,
+    settings.sectionUpdatedAt.profile,
+    settings.sectionUpdatedAt.template,
+    settings.sectionUpdatedAt.notifications,
+    settings.sectionUpdatedAt.cards,
+    ...settings.extraCards.flatMap((card) => [card.createdAt, card.updatedAt]),
+  ]);
 }
