@@ -6,12 +6,14 @@ type CardsSectionProps = {
   cards: DigiCard[];
   emptyDescription?: string;
   emptyTitle?: string;
+  showAddButton?: boolean;
 };
 
 export function CardsSection({
   cards,
   emptyDescription = "Create your first digital card to get started.",
   emptyTitle = "No cards yet",
+  showAddButton = true,
 }: CardsSectionProps) {
   if (cards.length === 0) {
     return (
@@ -39,14 +41,16 @@ export function CardsSection({
         ))}
       </div>
 
-      <div className="flex items-center justify-end">
-        <Button
-          href="/create-card?cardId=new"
-          className="rounded-full border border-dashed border-[rgba(82,103,217,0.3)] bg-[var(--soft)] px-5 py-2.5 text-sm text-[var(--brand)] hover:border-[var(--brand)] hover:bg-white"
-        >
-          + Add another card
-        </Button>
-      </div>
+      {showAddButton ? (
+        <div className="flex items-center justify-end">
+          <Button
+            href="/create-card?cardId=new"
+            className="rounded-full border border-dashed border-[rgba(82,103,217,0.3)] bg-[var(--soft)] px-5 py-2.5 text-sm text-[var(--brand)] hover:border-[var(--brand)] hover:bg-white"
+          >
+            + Add another card
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }
