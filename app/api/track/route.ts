@@ -11,13 +11,14 @@ export async function GET(request: NextRequest) {
   if (cardId && profileId) {
     try {
       const supabase = createSupabaseAdminClient();
-      await supabase.from("card_events").insert({
+      const { error } = await supabase.from("card_events").insert({
         card_id: cardId,
         profile_id: profileId,
         event_type: "qr_scan",
       });
-    } catch {
-      // Don't fail the redirect if tracking errors
+      if (error) console.error("[track] insert error:", error.message, error.code, { cardId, profileId });
+    } catch (err) {
+      console.error("[track] unexpected error:", err);
     }
   } else if (cardId) {
     // Fallback: look up profile_id via workspace_cards (extra cards only)
@@ -29,15 +30,18 @@ export async function GET(request: NextRequest) {
         .eq("id", cardId)
         .single();
       if (card) {
-        await supabase.from("card_events").insert({
+        const { error } = await supabase.from("card_events").insert({
           card_id: cardId,
           profile_id: card.profile_id,
           event_type: "qr_scan",
         });
+        if (error) console.error("[track] insert error (fallback):", error.message, error.code, { cardId });
       }
-    } catch {
-      // Don't fail the redirect if tracking errors
+    } catch (err) {
+      console.error("[track] unexpected fallback error:", err);
     }
+  } else {
+    console.warn("[track] missing cid or pid — not recording", { cardId, profileId: searchParams.get("pid") });
   }
 
   if (redirectParam) {
