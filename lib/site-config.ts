@@ -112,10 +112,15 @@ function buildVCard(card: Pick<DigiCard, "name" | "title" | "company" | "email" 
   const websiteUrl = normalizePublicUrl(card.website);
   const email = normalizeEmail(card.email);
 
+  const nameParts = card.name.trim().split(/\s+/);
+  const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : nameParts[0];
+  const firstName = nameParts.length > 1 ? nameParts[0] : "";
+
   const lines = [
     "BEGIN:VCARD",
     "VERSION:3.0",
     `FN:${card.name}`,
+    `N:${lastName};${firstName};;;`,
   ];
 
   if (card.title) lines.push(`TITLE:${card.title}`);
