@@ -1,20 +1,28 @@
 "use client";
 
 import type { ChangeEvent } from "react";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   BellRing,
+  Camera,
   CreditCard,
   QrCode,
+  Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import { CardPreview } from "@/components/cards/card-preview";
+import { ProfileAvatar } from "@/components/ui/profile-avatar";
 import type { WorkspaceView } from "@/lib/workspace-view";
 import type { WorkspaceUser } from "@/lib/workspace-auth";
 import { templates } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import {
+  maxWorkspaceAvatarDataUrlLength,
+  maxWorkspaceAvatarFileSizeBytes,
+  workspaceAvatarStorageKey,
+} from "@/lib/workspace-avatar";
 import {
   notificationSettingOptions,
   qrPreferenceOptions,
@@ -36,6 +44,7 @@ type SettingsShellProps = {
 };
 
 type ProfileFormData = {
+  avatarUrl: string;
   company: string;
   email: string;
   linkedin: string;
@@ -89,6 +98,50 @@ function buildPreviewCard(
 
 const manualQrOptions = qrPreferenceOptions.filter((o) => o.key !== "auto");
 
+async function createAvatarDataUrl(file: File) {
+  const objectUrl = URL.createObjectURL(file);
+
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const nextImage = new Image();
+      nextImage.onload = () => resolve(nextImage);
+      nextImage.onerror = () => reject(new Error("Image could not be loaded."));
+      nextImage.src = objectUrl;
+    });
+
+    const size = 320;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+      throw new Error("Image editor is unavailable.");
+    }
+
+    const sourceSize = Math.min(image.naturalWidth, image.naturalHeight);
+    const sourceX = (image.naturalWidth - sourceSize) / 2;
+    const sourceY = (image.naturalHeight - sourceSize) / 2;
+
+    context.drawImage(image, sourceX, sourceY, sourceSize, sourceSize, 0, 0, size, size);
+
+    const primaryDataUrl = canvas.toDataURL("image/webp", 0.82);
+    const fallbackDataUrl = canvas.toDataURL("image/jpeg", 0.86);
+    const chosenDataUrl =
+      primaryDataUrl.length <= maxWorkspaceAvatarDataUrlLength
+        ? primaryDataUrl
+        : fallbackDataUrl;
+
+    if (chosenDataUrl.length > maxWorkspaceAvatarDataUrlLength) {
+      throw new Error("Photo is still too large after compression.");
+    }
+
+    return chosenDataUrl;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
 export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
   const router = useRouter();
   const { settings, summary } = workspaceView;
@@ -97,6 +150,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
     settings.card.qrPreference === "auto" ? "website" : settings.card.qrPreference;
 
   const [profileForm, setProfileForm] = useState<ProfileFormData>({
+    avatarUrl: settings.profile.avatarUrl,
     company: settings.card.company,
     email: settings.profile.email,
     linkedin: settings.card.linkedin,
@@ -106,17 +160,24 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
     title: settings.profile.title,
     website: settings.profile.website,
   });
+  const [avatarError, setAvatarError] = useState<string | null>(null);
   const [notificationState, setNotificationState] = useState(settings.notifications);
   const [profileState, profileAction] = useActionState(saveProfileSettings, initialSettingsActionState);
   const [notificationSaveState, notificationAction] = useActionState(
     saveNotificationSettings,
     initialSettingsActionState,
   );
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const qr: WorkspaceQrPreference =
       settings.card.qrPreference === "auto" ? "website" : settings.card.qrPreference;
+    const storedAvatar =
+      typeof window === "undefined"
+        ? ""
+        : window.localStorage.getItem(workspaceAvatarStorageKey) ?? "";
     setProfileForm({
+      avatarUrl: settings.profile.avatarUrl || storedAvatar,
       company: settings.card.company,
       email: settings.profile.email,
       linkedin: settings.card.linkedin,
@@ -126,6 +187,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
       title: settings.profile.title,
       website: settings.profile.website,
     });
+    setAvatarError(null);
     setNotificationState(settings.notifications);
   }, [
     settings.card.company,
@@ -133,6 +195,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
     settings.card.phone,
     settings.card.qrPreference,
     settings.notifications,
+    settings.profile.avatarUrl,
     settings.profile.email,
     settings.profile.name,
     settings.profile.title,
@@ -160,6 +223,47 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
       setProfileForm((current) => ({ ...current, [field]: event.target.value }));
     };
 
+  const handleAvatarChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      setAvatarError("Choose a PNG, JPG, or WEBP photo.");
+      return;
+    }
+
+    if (file.size > maxWorkspaceAvatarFileSizeBytes) {
+      setAvatarError("Photo must be under 5 MB.");
+      return;
+    }
+
+    try {
+      const avatarUrl = await createAvatarDataUrl(file);
+      setProfileForm((current) => ({ ...current, avatarUrl }));
+      setAvatarError(null);
+      window.localStorage.setItem(workspaceAvatarStorageKey, avatarUrl);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "We could not process that photo.";
+      setAvatarError(message);
+    } finally {
+      event.target.value = "";
+    }
+  };
+
+  const handleAvatarRemove = () => {
+    setProfileForm((current) => ({ ...current, avatarUrl: "" }));
+    setAvatarError(null);
+    window.localStorage.removeItem(workspaceAvatarStorageKey);
+
+    if (avatarInputRef.current) {
+      avatarInputRef.current.value = "";
+    }
+  };
+
   return (
     <section className="space-y-6">
       <header className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6">
@@ -181,6 +285,63 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               description="These details appear on your card and are used as defaults when you create a new card."
             />
             <ActionBanner state={profileState} />
+
+            <input name="avatarUrl" type="hidden" value={profileForm.avatarUrl} />
+
+            <div className="mt-6 rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <ProfileAvatar
+                  avatarUrl={profileForm.avatarUrl}
+                  className="h-20 w-20 rounded-full shadow-[0_18px_36px_rgba(82,103,217,0.18)]"
+                  name={profileForm.name || user.name}
+                  textClassName="text-lg"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-[var(--ink)]">Profile photo</p>
+                  <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                    This shows up in the dashboard profile shortcut and account summary.
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      className="inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_24px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:bg-[rgba(82,103,217,0.04)]"
+                    >
+                      <Camera className="h-4 w-4" />
+                      {profileForm.avatarUrl ? "Change photo" : "Upload photo"}
+                    </button>
+                    {profileForm.avatarUrl ? (
+                      <button
+                        type="button"
+                        onClick={handleAvatarRemove}
+                        className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-[var(--muted)] transition hover:bg-white hover:text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Remove photo
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+
+              <input
+                ref={avatarInputRef}
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={handleAvatarChange}
+                type="file"
+              />
+
+              {avatarError || profileState.fieldErrors.avatarUrl ? (
+                <p className="mt-3 text-sm text-[#991b1b]">
+                  {avatarError ?? profileState.fieldErrors.avatarUrl}
+                </p>
+              ) : (
+                <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
+                  PNG, JPG, or WEBP. We crop it to a square automatically for a cleaner profile chip.
+                </p>
+              )}
+            </div>
 
             <div className="mt-6 grid gap-5 md:grid-cols-2">
               <ProfileField label="Display name" name="name" value={profileForm.name} onChange={handleProfileChange("name")} error={profileState.fieldErrors.name} required />

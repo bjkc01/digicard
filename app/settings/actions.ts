@@ -19,6 +19,7 @@ import { signOutFromWorkspace } from "@/lib/workspace-actions";
 function getValidationMessage(error: WorkspaceSettingsValidationError) {
   switch (error.code) {
     case "profile-invalid":
+    case "avatar-invalid":
     case "qr-invalid":
     case "website-invalid":
     case "phone-invalid":
@@ -78,6 +79,7 @@ export async function saveProfileSettings(
   try {
     const user = await requireWorkspaceUser("/settings");
     const result = await saveWorkspaceProfileDetails(user, {
+      avatarUrl: String(formData.get("avatarUrl") ?? ""),
       company: String(formData.get("company") ?? ""),
       email: String(formData.get("email") ?? ""),
       linkedin: String(formData.get("linkedin") ?? ""),

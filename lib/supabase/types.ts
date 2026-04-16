@@ -18,6 +18,7 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          avatar_url: string | null;
           cards_updated_at: string | null;
           company: string | null;
           created_at: string;
@@ -39,6 +40,7 @@ export type Database = {
           website: string | null;
         };
         Insert: {
+          avatar_url?: string | null;
           cards_updated_at?: string | null;
           company?: string | null;
           created_at?: string;
@@ -60,6 +62,7 @@ export type Database = {
           website?: string | null;
         };
         Update: {
+          avatar_url?: string | null;
           cards_updated_at?: string | null;
           company?: string | null;
           created_at?: string;

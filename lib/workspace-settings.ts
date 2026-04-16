@@ -6,6 +6,9 @@ import {
   type WorkspaceNotificationKey,
   type WorkspaceQrPreference,
 } from "@/lib/workspace-settings-options";
+import {
+  isSupportedWorkspaceAvatarUrl,
+} from "@/lib/workspace-avatar";
 import { normalizeEmail } from "@/lib/email-auth";
 import { templates } from "@/lib/data";
 import {
@@ -40,6 +43,7 @@ export type WorkspaceNotificationSettings = Record<WorkspaceNotificationKey, boo
 export type WorkspaceSectionUpdatedAt = Record<WorkspaceSectionKey, string | null>;
 
 export type WorkspaceProfile = {
+  avatarUrl: string;
   email: string;
   name: string;
   title: string;
@@ -165,6 +169,10 @@ function normalizeWebsite(value: string) {
   return cleanText(value, 120).replace(/^https?:\/\//i, "");
 }
 
+function normalizeAvatarUrl(value: string) {
+  return value.trim();
+}
+
 function isValidWebsite(value: string) {
   if (!value) {
     return true;
@@ -267,6 +275,7 @@ function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings 
     notifications: { ...defaultNotificationSettings },
     owner: getWorkspaceOwner(user),
     profile: {
+      avatarUrl: "",
       email: user.email,
       name: user.name,
       title: "",
@@ -294,6 +303,7 @@ function mapSupabaseProfileToWorkspaceSettings(
     notifications: profile.notifications,
     owner: profile.owner_email,
     profile: {
+      avatarUrl: profile.avatar_url ?? "",
       email: profile.email,
       name: profile.name,
       title: profile.title ?? "",
@@ -407,6 +417,7 @@ function mergeExtraCard(raw: unknown): WorkspaceExtraCard | null {
       email: getOptionalString(rawProfile.email),
       name: getOptionalString(rawProfile.name),
       title: getOptionalString(rawProfile.title),
+      avatarUrl: "",
       website: getOptionalString(rawProfile.website),
     },
     card: {
@@ -429,6 +440,7 @@ function mapSupabaseWorkspaceCardToExtraCard(card: SupabaseWorkspaceCard): Works
     id: card.id,
     label: card.label ?? "",
     profile: {
+      avatarUrl: "",
       email: card.email,
       name: card.name,
       title: card.title,
@@ -511,12 +523,23 @@ function mergeWorkspaceSettings(
       email: getOptionalString(candidateProfile?.email, defaults.profile.email),
       name: getOptionalString(candidateProfile?.name, defaults.profile.name),
       title: getOptionalString(candidateProfile?.title, defaults.profile.title),
+      avatarUrl: getOptionalString(candidateProfile?.avatarUrl, defaults.profile.avatarUrl),
       website: getOptionalString(candidateProfile?.website, defaults.profile.website),
     },
     sectionUpdatedAt: mergeSectionUpdatedAt(candidate?.sectionUpdatedAt),
     updatedAt: isValidDateString(candidate?.updatedAt) ? candidate.updatedAt : defaults.updatedAt,
     version: SETTINGS_VERSION,
   } satisfies WorkspaceSettings;
+}
+
+function buildCookieSafeSettings(settings: WorkspaceSettings): WorkspaceSettings {
+  return {
+    ...settings,
+    profile: {
+      ...settings.profile,
+      avatarUrl: "",
+    },
+  };
 }
 
 async function persistWorkspaceSettings(
@@ -543,6 +566,7 @@ async function persistWorkspaceSettings(
         company: baseSettings.card.company,
         default_template_id: baseSettings.defaultTemplateId,
         email: baseSettings.profile.email,
+        avatar_url: baseSettings.profile.avatarUrl || null,
         linkedin: baseSettings.card.linkedin,
         name: baseSettings.profile.name,
         notifications: baseSettings.notifications,
@@ -582,7 +606,7 @@ async function persistWorkspaceSettings(
     SETTINGS_COOKIE_NAME,
     await encodePayload({
       owner: normalized.owner,
-      value: normalized,
+      value: buildCookieSafeSettings(normalized),
       version: SETTINGS_VERSION,
     }),
     {
@@ -631,7 +655,10 @@ export async function getWorkspaceSettings(user: WorkspaceUser) {
         defaultTemplateId: cookieSettings.defaultTemplateId,
         extraCards: mergedExtraCards,
         notifications: cookieSettings.notifications,
-        profile: cookieSettings.profile,
+        profile: {
+          ...cookieSettings.profile,
+          avatarUrl: cookieSettings.profile.avatarUrl || supabaseSettings.profile.avatarUrl,
+        },
         sectionUpdatedAt: cookieSettings.sectionUpdatedAt,
         updatedAt: cookieSettings.updatedAt,
       });
@@ -645,6 +672,7 @@ export async function getWorkspaceSettings(user: WorkspaceUser) {
 }
 
 function validateWorkspaceProfileInput(input: {
+  avatarUrl: string;
   email: string;
   linkedin: string;
   name: string;
@@ -653,6 +681,7 @@ function validateWorkspaceProfileInput(input: {
   title: string;
   website: string;
 }) {
+  const avatarUrl = normalizeAvatarUrl(input.avatarUrl);
   const name = cleanText(input.name, 60);
   const email = normalizeEmail(input.email);
   const linkedin = normalizeLinkedIn(input.linkedin);
@@ -682,6 +711,14 @@ function validateWorkspaceProfileInput(input: {
       "profile-invalid",
       "Professional title is required.",
       { title: "Add a professional title." },
+    );
+  }
+
+  if (!isSupportedWorkspaceAvatarUrl(avatarUrl)) {
+    throw new WorkspaceSettingsValidationError(
+      "avatar-invalid",
+      "Use a PNG, JPG, or WEBP photo under 5 MB.",
+      { avatarUrl: "Upload a PNG, JPG, or WEBP photo." },
     );
   }
 
@@ -718,6 +755,7 @@ function validateWorkspaceProfileInput(input: {
   }
 
   return {
+    avatarUrl,
     email,
     linkedin,
     name,
@@ -731,6 +769,7 @@ function validateWorkspaceProfileInput(input: {
 export async function saveWorkspaceProfile(
   user: WorkspaceUser,
   input: {
+    avatarUrl?: string;
     email: string;
     name: string;
     title: string;
@@ -740,6 +779,7 @@ export async function saveWorkspaceProfile(
   const current = await getWorkspaceSettings(user);
   return saveWorkspaceProfileDetails(user, {
     ...input,
+    avatarUrl: input.avatarUrl ?? current.profile.avatarUrl,
     company: current.card.company,
     linkedin: current.card.linkedin,
     phone: current.card.phone,
@@ -750,6 +790,7 @@ export async function saveWorkspaceProfile(
 export async function saveWorkspaceProfileDetails(
   user: WorkspaceUser,
   input: {
+    avatarUrl: string;
     company: string;
     email: string;
     linkedin: string;
@@ -773,6 +814,7 @@ export async function saveWorkspaceProfileDetails(
         qrPreference: validated.qrPreference,
       },
       profile: {
+        avatarUrl: validated.avatarUrl,
         email: validated.email,
         name: validated.name,
         title: validated.title,
@@ -800,6 +842,7 @@ export async function saveWorkspaceCardDetails(
   return saveWorkspaceProfileDetails(user, {
     company: input.company,
     email: current.profile.email,
+    avatarUrl: current.profile.avatarUrl,
     linkedin: input.linkedin,
     name: current.profile.name,
     phone: input.phone,
@@ -840,6 +883,7 @@ export async function saveWorkspaceCardSnapshot(
     company: string;
     defaultTemplateId: string;
     email: string;
+    avatarUrl?: string;
     linkedin: string;
     name: string;
     phone: string;
@@ -857,7 +901,10 @@ export async function saveWorkspaceCardSnapshot(
   }
 
   const current = await getWorkspaceSettings(user);
-  const validated = validateWorkspaceProfileInput(input);
+  const validated = validateWorkspaceProfileInput({
+    ...input,
+    avatarUrl: input.avatarUrl ?? current.profile.avatarUrl,
+  });
   const result = await persistWorkspaceSettings(
     user,
     {
@@ -870,6 +917,7 @@ export async function saveWorkspaceCardSnapshot(
       },
       defaultTemplateId: input.defaultTemplateId,
       profile: {
+        avatarUrl: validated.avatarUrl,
         email: validated.email,
         name: validated.name,
         title: validated.title,
@@ -909,7 +957,7 @@ export async function saveWorkspaceExtraCard(
     );
   }
 
-  const validated = validateWorkspaceProfileInput(input);
+  const validated = validateWorkspaceProfileInput({ ...input, avatarUrl: "" });
 
   if (!input.id || input.id === "new") {
     throw new WorkspaceSettingsValidationError(
@@ -931,6 +979,7 @@ export async function saveWorkspaceExtraCard(
       email: validated.email,
       name: validated.name,
       title: validated.title,
+      avatarUrl: "",
       website: validated.website,
     },
     card: {

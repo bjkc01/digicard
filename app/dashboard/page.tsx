@@ -11,6 +11,9 @@ import { getWorkspaceView } from "@/lib/workspace-view";
 export default async function DashboardPage() {
   const workspaceUser = await requireWorkspaceUser("/dashboard");
   const workspaceView = await getWorkspaceView(workspaceUser);
+  const displayName = workspaceView.settings.profile.name || workspaceUser.name;
+  const displayEmail = workspaceView.settings.profile.email || workspaceUser.email;
+  const avatarUrl = workspaceView.settings.profile.avatarUrl;
   const hasActiveCard = workspaceView.summary.activeCardCount > 0;
   const activeCardCount = workspaceView.summary.activeCardCount;
   const profileCompletion = workspaceView.summary.profileCompletion;
@@ -33,15 +36,17 @@ export default async function DashboardPage() {
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
       <Sidebar
         activePath="/dashboard"
-        email={workspaceUser.email}
-        userName={workspaceUser.name}
+        avatarUrl={avatarUrl}
+        email={displayEmail}
+        userName={displayName}
       />
 
       <section className="space-y-6">
         <DashboardHeader
-          email={workspaceUser.email}
+          avatarUrl={avatarUrl}
+          email={displayEmail}
           subtitle={topSubtitle}
-          userName={workspaceUser.name}
+          userName={displayName}
         />
 
         {devAuthBypassEnabled ? (

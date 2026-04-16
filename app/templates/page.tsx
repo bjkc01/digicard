@@ -30,6 +30,9 @@ export default async function TemplatesPage({
 }) {
   const workspaceUser = await requireWorkspaceUser("/templates");
   const workspaceView = await getWorkspaceView(workspaceUser);
+  const displayName = workspaceView.settings.profile.name || workspaceUser.name;
+  const displayEmail = workspaceView.settings.profile.email || workspaceUser.email;
+  const avatarUrl = workspaceView.settings.profile.avatarUrl;
   const { category } = await searchParams;
 
   const validCategories: TemplateCategory[] = ["corporate", "creative", "bold", "minimal"];
@@ -43,7 +46,7 @@ export default async function TemplatesPage({
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
-      <Sidebar activePath="/templates" email={workspaceUser.email} userName={workspaceUser.name} />
+      <Sidebar activePath="/templates" avatarUrl={avatarUrl} email={displayEmail} userName={displayName} />
 
       <section className="panel p-6 md:p-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">

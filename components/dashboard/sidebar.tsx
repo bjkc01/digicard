@@ -2,11 +2,13 @@ import Link from "next/link";
 import { CreditCard, LayoutTemplate, LogOut, Settings, Sparkles, WalletCards } from "lucide-react";
 import { navigationItems } from "@/lib/data";
 import { Button } from "@/components/ui/button";
+import { ProfileAvatar } from "@/components/ui/profile-avatar";
 import { cn } from "@/lib/utils";
 import { signOutFromWorkspace } from "@/lib/workspace-actions";
 
 type SidebarProps = {
   activePath: string;
+  avatarUrl?: string;
   email: string;
   userName: string;
 };
@@ -18,14 +20,7 @@ const icons = {
   Settings: Settings,
 } as const;
 
-export function Sidebar({ activePath, email, userName }: SidebarProps) {
-  const initials = userName
-    .split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
+export function Sidebar({ activePath, avatarUrl, email, userName }: SidebarProps) {
   return (
     <aside className="panel flex h-fit flex-col gap-8 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 lg:sticky lg:top-6">
       <div className="flex items-center gap-3 border-b border-[rgba(82,103,217,0.1)] pb-6">
@@ -63,9 +58,12 @@ export function Sidebar({ activePath, email, userName }: SidebarProps) {
       <div className="mt-auto border-t border-[rgba(82,103,217,0.08)] pt-6">
         <div className="rounded-[1.35rem] bg-[var(--soft)] px-4 py-4 shadow-[0_10px_24px_rgba(21,32,58,0.04)]">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,_#172340,_#5267d9)] text-xs font-bold text-white shadow-[0_12px_24px_rgba(82,103,217,0.22)]">
-              {initials}
-            </div>
+            <ProfileAvatar
+              avatarUrl={avatarUrl}
+              className="h-10 w-10 flex-shrink-0 rounded-full text-xs shadow-[0_12px_24px_rgba(82,103,217,0.22)]"
+              name={userName}
+              textClassName="text-xs font-bold"
+            />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-[var(--ink)]">{userName}</p>
               <p className="truncate text-xs text-[var(--muted)]">{email}</p>

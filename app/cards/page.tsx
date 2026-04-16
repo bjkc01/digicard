@@ -9,10 +9,13 @@ import { getWorkspaceView } from "@/lib/workspace-view";
 export default async function CardsPage() {
   const workspaceUser = await requireWorkspaceUser("/cards");
   const workspaceView = await getWorkspaceView(workspaceUser);
+  const displayName = workspaceView.settings.profile.name || workspaceUser.name;
+  const displayEmail = workspaceView.settings.profile.email || workspaceUser.email;
+  const avatarUrl = workspaceView.settings.profile.avatarUrl;
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
-      <Sidebar activePath="/cards" email={workspaceUser.email} userName={workspaceUser.name} />
+      <Sidebar activePath="/cards" avatarUrl={avatarUrl} email={displayEmail} userName={displayName} />
 
       <section className="space-y-6">
         <header className="panel flex flex-col gap-5 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 lg:flex-row lg:items-end lg:justify-between">

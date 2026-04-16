@@ -1,12 +1,14 @@
 import Link from "next/link";
+import { ProfileAvatar } from "@/components/ui/profile-avatar";
 
 type DashboardHeaderProps = {
+  avatarUrl?: string;
   email: string;
   subtitle: string;
   userName: string;
 };
 
-export function DashboardHeader({ email, subtitle, userName }: DashboardHeaderProps) {
+export function DashboardHeader({ avatarUrl, email, subtitle, userName }: DashboardHeaderProps) {
   return (
     <header className="panel flex flex-col gap-4 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 sm:flex-row sm:items-center sm:justify-between">
       <div>
@@ -23,7 +25,12 @@ export function DashboardHeader({ email, subtitle, userName }: DashboardHeaderPr
         aria-label={`Open profile settings for ${userName}`}
         className="flex items-center gap-3 rounded-[1.4rem] border border-[rgba(82,103,217,0.08)] bg-white px-4 py-3 shadow-[0_10px_24px_rgba(21,32,58,0.04)] transition hover:-translate-y-0.5 hover:border-[rgba(82,103,217,0.18)] hover:shadow-[0_16px_30px_rgba(21,32,58,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(82,103,217,0.35)] focus-visible:ring-offset-2"
       >
-        <div className="h-12 w-12 rounded-full bg-[linear-gradient(135deg,_#172340,_#5267d9)]" />
+        <ProfileAvatar
+          avatarUrl={avatarUrl}
+          className="h-12 w-12 rounded-full shadow-[0_12px_24px_rgba(82,103,217,0.18)]"
+          name={userName}
+          textClassName="text-sm"
+        />
         <div className="min-w-0">
           <p className="text-sm font-semibold text-[var(--ink)]">{userName}</p>
           <p className="truncate text-xs text-[var(--muted)]">{email}</p>

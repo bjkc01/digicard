@@ -1,4 +1,5 @@
 export type SettingsFieldErrorKey =
+  | "avatarUrl"
   | "company"
   | "defaultTemplateId"
   | "email"
