@@ -280,23 +280,10 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
 
           {/* Profile */}
           <form action={profileAction} className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
-            <SectionHeader
-              title="Profile"
-              description="Your name, contact details, and card defaults."
-            />
+            <h2 className="text-lg font-semibold text-[var(--ink)]">Profile</h2>
             <ActionBanner state={profileState} />
 
             <input name="avatarUrl" type="hidden" value={profileForm.avatarUrl} />
-
-            <div className="mt-6 grid gap-5 md:grid-cols-2">
-              <ProfileField label="Display name" name="name" value={profileForm.name} onChange={handleProfileChange("name")} error={profileState.fieldErrors.name} required />
-              <ProfileField label="Email" name="email" type="email" value={profileForm.email} onChange={handleProfileChange("email")} error={profileState.fieldErrors.email} required />
-              <ProfileField label="Professional title" name="title" value={profileForm.title} onChange={handleProfileChange("title")} error={profileState.fieldErrors.title} required />
-              <ProfileField label="School or company" name="company" value={profileForm.company} onChange={handleProfileChange("company")} error={profileState.fieldErrors.company} />
-              <ProfileField label="Website" name="website" value={profileForm.website} onChange={handleProfileChange("website")} error={profileState.fieldErrors.website} />
-              <ProfileField label="LinkedIn" name="linkedin" value={profileForm.linkedin} onChange={handleProfileChange("linkedin")} error={profileState.fieldErrors.linkedin} />
-              <ProfileField className="md:col-span-2" label="Phone" name="phone" value={profileForm.phone} onChange={handleProfileChange("phone")} error={profileState.fieldErrors.phone} />
-            </div>
 
             <div className="mt-6 rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -347,6 +334,16 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
                   {avatarError ?? profileState.fieldErrors.avatarUrl}
                 </p>
               ) : null}
+            </div>
+
+            <div className="mt-6 grid gap-5 md:grid-cols-2">
+              <ProfileField label="Display name" name="name" value={profileForm.name} onChange={handleProfileChange("name")} error={profileState.fieldErrors.name} required />
+              <ProfileField label="Email" name="email" type="email" value={profileForm.email} onChange={handleProfileChange("email")} error={profileState.fieldErrors.email} required />
+              <ProfileField label="Professional title" name="title" value={profileForm.title} onChange={handleProfileChange("title")} error={profileState.fieldErrors.title} required />
+              <ProfileField label="School or company" name="company" value={profileForm.company} onChange={handleProfileChange("company")} error={profileState.fieldErrors.company} />
+              <ProfileField label="Website" name="website" value={profileForm.website} onChange={handleProfileChange("website")} error={profileState.fieldErrors.website} />
+              <ProfileField label="LinkedIn" name="linkedin" value={profileForm.linkedin} onChange={handleProfileChange("linkedin")} error={profileState.fieldErrors.linkedin} />
+              <ProfileField className="md:col-span-2" label="Phone" name="phone" value={profileForm.phone} onChange={handleProfileChange("phone")} error={profileState.fieldErrors.phone} />
             </div>
 
             {/* QR destination */}
