@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type DashboardHeaderProps = {
   email: string;
   subtitle: string;
@@ -16,13 +18,17 @@ export function DashboardHeader({ email, subtitle, userName }: DashboardHeaderPr
         </p>
       </div>
 
-      <div className="flex items-center gap-3 rounded-[1.4rem] border border-[rgba(82,103,217,0.08)] bg-white px-4 py-3 shadow-[0_10px_24px_rgba(21,32,58,0.04)]">
+      <Link
+        href="/settings"
+        aria-label={`Open profile settings for ${userName}`}
+        className="flex items-center gap-3 rounded-[1.4rem] border border-[rgba(82,103,217,0.08)] bg-white px-4 py-3 shadow-[0_10px_24px_rgba(21,32,58,0.04)] transition hover:-translate-y-0.5 hover:border-[rgba(82,103,217,0.18)] hover:shadow-[0_16px_30px_rgba(21,32,58,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(82,103,217,0.35)] focus-visible:ring-offset-2"
+      >
         <div className="h-12 w-12 rounded-full bg-[linear-gradient(135deg,_#172340,_#5267d9)]" />
         <div className="min-w-0">
           <p className="text-sm font-semibold text-[var(--ink)]">{userName}</p>
           <p className="truncate text-xs text-[var(--muted)]">{email}</p>
         </div>
-      </div>
+      </Link>
     </header>
   );
 }
