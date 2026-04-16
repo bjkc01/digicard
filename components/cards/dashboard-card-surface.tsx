@@ -9,9 +9,10 @@ import { DigiCard } from "@/lib/data";
 
 type DashboardCardSurfaceProps = {
   card: DigiCard;
+  profileId?: string;
 };
 
-export function DashboardCardSurface({ card }: DashboardCardSurfaceProps) {
+export function DashboardCardSurface({ card, profileId }: DashboardCardSurfaceProps) {
   const isPrimary = card.id === "primary";
 
   // Primary card: legacy email-based key. Extra cards: ID-based key.
@@ -46,7 +47,7 @@ export function DashboardCardSurface({ card }: DashboardCardSurfaceProps) {
 
   return (
     <div className="group relative">
-      <CardPreview card={card} compact imageUrl={imageUrl} />
+      <CardPreview card={card} compact imageUrl={imageUrl} profileId={profileId} />
 
       {card.label ? (
         <div className="absolute left-3 top-3 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-white backdrop-blur-sm">

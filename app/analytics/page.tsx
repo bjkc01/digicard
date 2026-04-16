@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import { getWorkspaceView } from "@/lib/workspace-view";

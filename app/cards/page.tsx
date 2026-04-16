@@ -3,12 +3,18 @@ import { CreditCard, LayoutTemplate, ShieldCheck } from "lucide-react";
 import { CardsSection } from "@/components/cards/cards-section";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Button } from "@/components/ui/button";
+import { supabaseEnabled } from "@/lib/supabase-env";
+import { getSupabaseProfileByUserId } from "@/lib/supabase/profiles";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import { getWorkspaceView } from "@/lib/workspace-view";
 
 export default async function CardsPage() {
   const workspaceUser = await requireWorkspaceUser("/cards");
-  const workspaceView = await getWorkspaceView(workspaceUser);
+  const [workspaceView, supabaseProfile] = await Promise.all([
+    getWorkspaceView(workspaceUser),
+    supabaseEnabled ? getSupabaseProfileByUserId(workspaceUser.id).catch(() => null) : Promise.resolve(null),
+  ]);
+  const profileId = supabaseProfile?.id;
   const displayName = workspaceView.settings.profile.name || workspaceUser.name;
   const displayEmail = workspaceView.settings.profile.email || workspaceUser.email;
   const avatarUrl = workspaceView.settings.profile.avatarUrl;
@@ -69,6 +75,7 @@ export default async function CardsPage() {
               cards={workspaceView.cards}
               emptyDescription="Complete your name, email, and title in the card builder to create your workspace card."
               emptyTitle="No workspace card yet"
+              profileId={profileId}
             />
           </div>
 

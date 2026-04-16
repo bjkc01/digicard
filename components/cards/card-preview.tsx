@@ -11,6 +11,7 @@ type CardPreviewProps = {
   compact?: boolean;
   imageUrl?: string;
   phoneHero?: boolean;
+  profileId?: string;
 };
 
 type TP = { card: DigiCard; imageUrl: string | undefined; qrValue: string; compact: boolean };
@@ -709,12 +710,15 @@ export function CardPreview({
   compact = false,
   imageUrl,
   phoneHero: _phoneHero = false,
+  profileId,
 }: CardPreviewProps) {
   const shareTarget = getCardShareTarget(card);
   const isVCard = shareTarget.url.startsWith("BEGIN:VCARD");
-  const qrValue = isVCard
-    ? shareTarget.url
-    : `${siteConfig.url}/api/track?cid=${encodeURIComponent(card.id)}&url=${encodeURIComponent(shareTarget.url)}`;
+  const trackingUrl = new URL(`${siteConfig.url}/api/track`);
+  trackingUrl.searchParams.set("cid", card.id);
+  if (profileId) trackingUrl.searchParams.set("pid", profileId);
+  trackingUrl.searchParams.set("url", shareTarget.url);
+  const qrValue = isVCard ? shareTarget.url : trackingUrl.toString();
   const tp: TP = { card, imageUrl, qrValue, compact };
   let preview = <Blueprint {...tp} />;
 

@@ -6,7 +6,21 @@ export async function GET(request: NextRequest) {
   const cardId = searchParams.get("cid");
   const redirectParam = searchParams.get("url");
 
-  if (cardId) {
+  const profileId = searchParams.get("pid");
+
+  if (cardId && profileId) {
+    try {
+      const supabase = createSupabaseAdminClient();
+      await supabase.from("card_events").insert({
+        card_id: cardId,
+        profile_id: profileId,
+        event_type: "qr_scan",
+      });
+    } catch {
+      // Don't fail the redirect if tracking errors
+    }
+  } else if (cardId) {
+    // Fallback: look up profile_id via workspace_cards (extra cards only)
     try {
       const supabase = createSupabaseAdminClient();
       const { data: card } = await supabase
@@ -14,7 +28,6 @@ export async function GET(request: NextRequest) {
         .select("profile_id")
         .eq("id", cardId)
         .single();
-
       if (card) {
         await supabase.from("card_events").insert({
           card_id: cardId,
