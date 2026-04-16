@@ -16,6 +16,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      card_events: {
+        Row: {
+          id: string;
+          card_id: string;
+          profile_id: string;
+          event_type: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          card_id: string;
+          profile_id: string;
+          event_type?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          card_id?: string;
+          profile_id?: string;
+          event_type?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;

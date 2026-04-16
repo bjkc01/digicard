@@ -3,7 +3,7 @@
 import { AtSign, Globe, Mail, Phone } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import type { DigiCard } from "@/lib/data";
-import { getCardShareTarget } from "@/lib/site-config";
+import { getCardShareTarget, siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
 type CardPreviewProps = {
@@ -711,7 +711,10 @@ export function CardPreview({
   phoneHero: _phoneHero = false,
 }: CardPreviewProps) {
   const shareTarget = getCardShareTarget(card);
-  const qrValue = shareTarget.url;
+  const isVCard = shareTarget.url.startsWith("BEGIN:VCARD");
+  const qrValue = isVCard
+    ? shareTarget.url
+    : `${siteConfig.url}/api/track?cid=${encodeURIComponent(card.id)}&url=${encodeURIComponent(shareTarget.url)}`;
   const tp: TP = { card, imageUrl, qrValue, compact };
   let preview = <Blueprint {...tp} />;
 

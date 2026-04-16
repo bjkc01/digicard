@@ -36,6 +36,7 @@ export const navigationItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "My Card", href: "/cards" },
   { label: "Templates", href: "/templates" },
+  { label: "Analytics", href: "/analytics" },
   { label: "Settings", href: "/settings" },
 ];
 
