@@ -11,7 +11,7 @@ import {
   verifyEmailLoginToken,
 } from "@/lib/email-auth";
 
-const protectedRoutes = ["/analytics", "/dashboard", "/cards", "/create-card", "/settings", "/templates"];
+const protectedRoutes = ["/dashboard", "/cards", "/create-card", "/settings", "/templates"];
 
 export const googleAuthEnabled = Boolean(
   authSecret && googleClientId && googleClientSecret,

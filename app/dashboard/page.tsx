@@ -5,18 +5,12 @@ import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { WalletComingSoon } from "@/components/dashboard/wallet-coming-soon";
 import { Button } from "@/components/ui/button";
-import { supabaseEnabled } from "@/lib/supabase-env";
-import { getSupabaseProfileByUserId } from "@/lib/supabase/profiles";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import { getWorkspaceView } from "@/lib/workspace-view";
 
 export default async function DashboardPage() {
   const workspaceUser = await requireWorkspaceUser("/dashboard");
-  const [workspaceView, supabaseProfile] = await Promise.all([
-    getWorkspaceView(workspaceUser),
-    supabaseEnabled ? getSupabaseProfileByUserId(workspaceUser.id).catch(() => null) : Promise.resolve(null),
-  ]);
-  const profileId = supabaseProfile?.id;
+  const workspaceView = await getWorkspaceView(workspaceUser);
   const displayName = workspaceView.settings.profile.name || workspaceUser.name;
   const displayEmail = workspaceView.settings.profile.email || workspaceUser.email;
   const avatarUrl = workspaceView.settings.profile.avatarUrl;
@@ -92,7 +86,6 @@ export default async function DashboardPage() {
               cards={workspaceView.cards}
               emptyDescription="Complete your profile details in the card builder to generate the first saved workspace card."
               emptyTitle="No active card yet"
-              profileId={profileId}
               showAddButton={false}
             />
           </div>

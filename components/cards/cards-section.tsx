@@ -6,7 +6,6 @@ type CardsSectionProps = {
   cards: DigiCard[];
   emptyDescription?: string;
   emptyTitle?: string;
-  profileId?: string;
   showAddButton?: boolean;
 };
 
@@ -14,7 +13,6 @@ export function CardsSection({
   cards,
   emptyDescription = "Create your first digital card to get started.",
   emptyTitle = "No cards yet",
-  profileId,
   showAddButton = true,
 }: CardsSectionProps) {
   if (cards.length === 0) {
@@ -39,7 +37,6 @@ export function CardsSection({
           <DashboardCardSurface
             key={card.id}
             card={card}
-            profileId={profileId}
           />
         ))}
       </div>
