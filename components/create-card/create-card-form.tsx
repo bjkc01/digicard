@@ -5,16 +5,12 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import {
   AlertCircle,
   AtSign,
-  BriefcaseBusiness,
   Camera,
   Check,
   Download,
   Globe,
   Mail,
   Phone,
-  QrCode,
-  ShieldCheck,
-  Sparkles,
   SwatchBook,
   Wallet,
 } from "lucide-react";
@@ -46,7 +42,7 @@ export type CardFormValues = {
 
 type FieldConfig = {
   hint?: string;
-  icon: ComponentType<{ className?: string }>;
+  icon?: ComponentType<{ className?: string }>;
   key: keyof CardFormValues;
   label: string;
   maxLength?: number;
@@ -64,29 +60,15 @@ type CreateCardFormProps = {
 };
 
 const profileFields: FieldConfig[] = [
-  { key: "name", label: "Full name", placeholder: "Your name", icon: Sparkles, required: true, maxLength: 60 },
-  {
-    key: "title",
-    label: "Professional title",
-    placeholder: "Student, founder, designer...",
-    icon: BriefcaseBusiness,
-    required: true,
-    maxLength: 80,
-  },
-  { key: "company", label: "School or company", placeholder: "University or company", icon: ShieldCheck, maxLength: 80 },
+  { key: "name", label: "Full name", placeholder: "Your name", required: true, maxLength: 60 },
+  { key: "title", label: "Professional title", placeholder: "Student, founder, designer...", required: true, maxLength: 80 },
+  { key: "company", label: "School or company", placeholder: "University or company", maxLength: 80 },
 ];
 
 const contactFields: FieldConfig[] = [
   { key: "email", label: "Email", placeholder: "you@example.com", type: "email", icon: Mail, required: true, maxLength: 254 },
   { key: "phone", label: "Phone", placeholder: "+1 (555) 000-0000", icon: Phone, maxLength: 40 },
-  {
-    key: "linkedin",
-    label: "LinkedIn",
-    placeholder: "yourname or linkedin.com/in/yourname",
-    hint: "DigiCard normalizes to linkedin.com/in/yourname.",
-    icon: AtSign,
-    maxLength: 200,
-  },
+  { key: "linkedin", label: "LinkedIn", placeholder: "yourname or linkedin.com/in/yourname", icon: AtSign, maxLength: 200 },
   { key: "website", label: "Website", placeholder: "yourwebsite.com", icon: Globe, span: "full", maxLength: 120 },
 ];
 
@@ -257,11 +239,11 @@ export function CreateCardForm({
           <h1 className="text-2xl font-bold tracking-tight text-[#0E1318]">
             {isNewCard ? "Create new card" : isExtraCard ? "Edit card" : "Your workspace card"}
           </h1>
-          <p className="mt-1 text-sm text-[#6b7280]">
-            {isExtraCard
-              ? "This card is independent from your workspace profile. Fill in the details and pick a template."
-              : "Fill in your details and pick a template. Everything updates live."}
-          </p>
+          {isExtraCard ? (
+            <p className="mt-1 text-sm text-[#6b7280]">
+              This card is independent from your workspace profile. Fill in the details and pick a template.
+            </p>
+          ) : null}
         </div>
 
         {statusVisible && actionState.status !== "idle" ? (
@@ -314,106 +296,6 @@ export function CreateCardForm({
                 </div>
               </div>
             ) : null}
-
-            {/* Identity */}
-            <div
-              role="group"
-              aria-labelledby="identity-section-label"
-              className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
-            >
-              <p id="identity-section-label" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
-                Identity
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
-                {profileFields.map((field) => (
-                  <Field
-                    key={field.key}
-                    icon={field.icon}
-                    label={field.label}
-                    maxLength={field.maxLength}
-                    name={field.key}
-                    onChange={handleChange(field.key)}
-                    placeholder={field.placeholder}
-                    required={field.required}
-                    type={field.type}
-                    value={formData[field.key]}
-                  />
-                ))}
-
-                {/* QR destination */}
-                <div className="sm:col-span-2 2xl:col-span-3">
-                  <div
-                    role="radiogroup"
-                    aria-labelledby="qr-label"
-                    className="rounded-xl border border-gray-200 bg-white p-4"
-                  >
-                    <div className="mb-3 flex items-center gap-2">
-                      <QrCode className="h-4 w-4 text-[#00C4CC]" />
-                      <p id="qr-label" className="text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
-                        QR destination
-                      </p>
-                    </div>
-                    <div className="grid gap-2 md:grid-cols-3">
-                      {qrPreferenceOptions.map((option) => {
-                        const isSelected = formData.qrPreference === option.key;
-                        return (
-                          <label
-                            key={option.key}
-                            className={cn(
-                              "flex cursor-pointer items-center justify-between rounded-xl border px-4 py-3 transition-all duration-300",
-                              isSelected
-                                ? "border-[#00C4CC] bg-[#00C4CC]/5 ring-2 ring-[#00C4CC]/20"
-                                : "border-gray-200 bg-[#F8F9F9] hover:border-[#00C4CC]/40 hover:bg-white",
-                            )}
-                          >
-                            <input
-                              aria-label={option.label}
-                              checked={isSelected}
-                              className="sr-only"
-                              name="qrPreference"
-                              onChange={handleChange("qrPreference")}
-                              type="radio"
-                              value={option.key}
-                            />
-                            <span className="text-sm font-medium text-[#0E1318]">{option.label}</span>
-                            {isSelected ? <Check className="h-4 w-4 text-[#00C4CC]" /> : null}
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact */}
-            <div
-              role="group"
-              aria-labelledby="contact-section-label"
-              className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
-            >
-              <p id="contact-section-label" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
-                Contact
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {contactFields.map((field) => (
-                  <Field
-                    key={field.key}
-                    className={field.span === "full" ? "sm:col-span-2" : undefined}
-                    hint={field.hint}
-                    icon={field.icon}
-                    label={field.label}
-                    maxLength={field.maxLength}
-                    name={field.key}
-                    onChange={handleChange(field.key)}
-                    placeholder={field.placeholder}
-                    required={field.required}
-                    type={field.type}
-                    value={formData[field.key]}
-                  />
-                ))}
-              </div>
-            </div>
 
             {/* Portrait */}
             <div
@@ -477,6 +359,103 @@ export function CreateCardForm({
                 onChange={handleImageChange}
                 type="file"
               />
+            </div>
+
+            {/* Identity */}
+            <div
+              role="group"
+              aria-labelledby="identity-section-label"
+              className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
+            >
+              <p id="identity-section-label" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
+                Identity
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+                {profileFields.map((field) => (
+                  <Field
+                    key={field.key}
+                    icon={field.icon}
+                    label={field.label}
+                    maxLength={field.maxLength}
+                    name={field.key}
+                    onChange={handleChange(field.key)}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    type={field.type}
+                    value={formData[field.key]}
+                  />
+                ))}
+
+                {/* QR destination */}
+                <div className="sm:col-span-2 2xl:col-span-3">
+                  <div
+                    role="radiogroup"
+                    aria-labelledby="qr-label"
+                    className="rounded-xl border border-gray-200 bg-white p-4"
+                  >
+                    <p id="qr-label" className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
+                      QR destination
+                    </p>
+                    <div className="grid gap-2 grid-cols-2 md:grid-cols-4">
+                      {qrPreferenceOptions.map((option) => {
+                        const isSelected = formData.qrPreference === option.key;
+                        return (
+                          <label
+                            key={option.key}
+                            className={cn(
+                              "flex cursor-pointer items-center justify-between rounded-xl border px-4 py-3 transition-all duration-300",
+                              isSelected
+                                ? "border-[#00C4CC] bg-[#00C4CC]/5 ring-2 ring-[#00C4CC]/20"
+                                : "border-gray-200 bg-[#F8F9F9] hover:border-[#00C4CC]/40 hover:bg-white",
+                            )}
+                          >
+                            <input
+                              aria-label={option.label}
+                              checked={isSelected}
+                              className="sr-only"
+                              name="qrPreference"
+                              onChange={handleChange("qrPreference")}
+                              type="radio"
+                              value={option.key}
+                            />
+                            <span className="text-sm font-medium text-[#0E1318]">{option.label}</span>
+                            {isSelected ? <Check className="h-4 w-4 text-[#00C4CC]" /> : null}
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact */}
+            <div
+              role="group"
+              aria-labelledby="contact-section-label"
+              className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
+            >
+              <p id="contact-section-label" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
+                Contact
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {contactFields.map((field) => (
+                  <Field
+                    key={field.key}
+                    className={field.span === "full" ? "sm:col-span-2" : undefined}
+                    hint={field.hint}
+                    icon={field.icon}
+                    label={field.label}
+                    maxLength={field.maxLength}
+                    name={field.key}
+                    onChange={handleChange(field.key)}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    type={field.type}
+                    value={formData[field.key]}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Visual direction */}
@@ -683,7 +662,7 @@ function CreateCardSubmitButton({ isExtraCard, isNewCard }: { isExtraCard: boole
 type FieldProps = {
   className?: string;
   hint?: string;
-  icon: ComponentType<{ className?: string }>;
+  icon?: ComponentType<{ className?: string }>;
   label: string;
   maxLength?: number;
   name: keyof CardFormValues;
@@ -715,13 +694,18 @@ function Field({
         {required ? <span className="ml-0.5 text-[#00C4CC]" aria-hidden="true">*</span> : null}
       </label>
       <div className="group relative">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-300 group-focus-within:text-[#00C4CC]">
-          <Icon className="h-4 w-4" />
-        </div>
+        {Icon ? (
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-300 group-focus-within:text-[#00C4CC]">
+            <Icon className="h-4 w-4" />
+          </div>
+        ) : null}
         <input
           id={id}
           aria-required={required}
-          className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition-colors duration-300 focus:border-[#00C4CC] focus:ring-2 focus:ring-[#00C4CC]/20"
+          className={cn(
+            "h-11 w-full rounded-xl border border-gray-200 bg-white pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition-colors duration-300 focus:border-[#00C4CC] focus:ring-2 focus:ring-[#00C4CC]/20",
+            Icon ? "pl-10" : "pl-4",
+          )}
           maxLength={maxLength}
           name={name}
           onChange={onChange}

@@ -98,12 +98,21 @@ export function getAbsoluteUrl(path = "/") {
   return new URL(resolvedPath, siteConfig.url).toString();
 }
 
+function normalizePhoneUrl(value: string | undefined) {
+  if (!value) return undefined;
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return undefined;
+  const hasPlus = value.trim().startsWith("+");
+  return `tel:${hasPlus ? "+" : ""}${digits}`;
+}
+
 export function getCardShareTarget(
-  card: Pick<DigiCard, "email" | "linkedin" | "website" | "qrPreference">,
+  card: Pick<DigiCard, "email" | "linkedin" | "phone" | "website" | "qrPreference">,
 ) {
   const websiteUrl = normalizePublicUrl(card.website);
   const linkedInUrl = normalizeLinkedInUrl(card.linkedin);
   const email = normalizeEmail(card.email);
+  const phoneUrl = normalizePhoneUrl(card.phone);
   const preference = card.qrPreference ?? "auto";
 
   const candidates =
@@ -119,11 +128,18 @@ export function getCardShareTarget(
             linkedInUrl ? { label: "LinkedIn", url: linkedInUrl } : null,
             email ? { label: "Email", url: `mailto:${email}` } : null,
           ]
-        : [
-            websiteUrl ? { label: "Website", url: websiteUrl } : null,
-            linkedInUrl ? { label: "LinkedIn", url: linkedInUrl } : null,
-            email ? { label: "Email", url: `mailto:${email}` } : null,
-          ];
+        : preference === "phone"
+          ? [
+              phoneUrl ? { label: "Phone", url: phoneUrl } : null,
+              websiteUrl ? { label: "Website", url: websiteUrl } : null,
+              linkedInUrl ? { label: "LinkedIn", url: linkedInUrl } : null,
+              email ? { label: "Email", url: `mailto:${email}` } : null,
+            ]
+          : [
+              websiteUrl ? { label: "Website", url: websiteUrl } : null,
+              linkedInUrl ? { label: "LinkedIn", url: linkedInUrl } : null,
+              email ? { label: "Email", url: `mailto:${email}` } : null,
+            ];
 
   const selectedTarget = candidates.find(Boolean);
 

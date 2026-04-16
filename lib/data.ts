@@ -14,7 +14,7 @@ export type DigiCardTemplate = {
   category: TemplateCategory;
 };
 
-export type CardQrPreference = "auto" | "linkedin" | "website";
+export type CardQrPreference = "auto" | "linkedin" | "phone" | "website";
 
 export type DigiCard = {
   id: string;

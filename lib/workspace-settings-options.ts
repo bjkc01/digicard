@@ -41,6 +41,11 @@ export const qrPreferenceOptions = [
     key: "linkedin",
     label: "LinkedIn",
   },
+  {
+    description: "Encode your phone number so scanners can save or call it directly.",
+    key: "phone",
+    label: "Phone",
+  },
 ] as const;
 
 export type WorkspaceQrPreference = (typeof qrPreferenceOptions)[number]["key"];
