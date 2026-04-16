@@ -32,7 +32,7 @@ export type Database = {
           owner_email: string;
           phone: string | null;
           profile_updated_at: string | null;
-          qr_preference: "auto" | "linkedin" | "website";
+          qr_preference: "auto" | "linkedin" | "phone" | "website";
           template_updated_at: string | null;
           title: string | null;
           updated_at: string;
@@ -54,7 +54,7 @@ export type Database = {
           owner_email: string;
           phone?: string | null;
           profile_updated_at?: string | null;
-          qr_preference?: "auto" | "linkedin" | "website";
+          qr_preference?: "auto" | "linkedin" | "phone" | "website";
           template_updated_at?: string | null;
           title?: string | null;
           updated_at?: string;
@@ -76,7 +76,7 @@ export type Database = {
           owner_email?: string;
           phone?: string | null;
           profile_updated_at?: string | null;
-          qr_preference?: "auto" | "linkedin" | "website";
+          qr_preference?: "auto" | "linkedin" | "phone" | "website";
           template_updated_at?: string | null;
           title?: string | null;
           updated_at?: string;
@@ -96,7 +96,7 @@ export type Database = {
           name: string;
           phone: string | null;
           profile_id: string;
-          qr_preference: "auto" | "linkedin" | "website";
+          qr_preference: "auto" | "linkedin" | "phone" | "website";
           template_id: string;
           title: string;
           updated_at: string;
@@ -113,7 +113,7 @@ export type Database = {
           name: string;
           phone?: string | null;
           profile_id: string;
-          qr_preference?: "auto" | "linkedin" | "website";
+          qr_preference?: "auto" | "linkedin" | "phone" | "website";
           template_id?: string;
           title: string;
           updated_at?: string;
@@ -130,7 +130,7 @@ export type Database = {
           name?: string;
           phone?: string | null;
           profile_id?: string;
-          qr_preference?: "auto" | "linkedin" | "website";
+          qr_preference?: "auto" | "linkedin" | "phone" | "website";
           template_id?: string;
           title?: string;
           updated_at?: string;
