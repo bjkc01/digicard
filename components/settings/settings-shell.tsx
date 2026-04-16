@@ -6,13 +6,7 @@ import {
   AlertTriangle,
   BellRing,
   CreditCard,
-  Globe,
-  LayoutTemplate,
-  Mail,
-  Phone,
   QrCode,
-  ShieldCheck,
-  UserRound,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
@@ -20,7 +14,6 @@ import { CardPreview } from "@/components/cards/card-preview";
 import type { WorkspaceView } from "@/lib/workspace-view";
 import type { WorkspaceUser } from "@/lib/workspace-auth";
 import { templates } from "@/lib/data";
-import { formatWorkspaceTimestamp } from "@/lib/workspace-format";
 import { cn } from "@/lib/utils";
 import {
   notificationSettingOptions,
@@ -29,10 +22,8 @@ import {
   type WorkspaceQrPreference,
 } from "@/lib/workspace-settings-options";
 import {
-  clearSavedCardsSettingsAction,
   saveNotificationSettings,
   saveProfileSettings,
-  saveTemplateSettings,
 } from "@/app/settings/actions";
 import {
   initialSettingsActionState,
@@ -71,11 +62,6 @@ function getActionTone(state: SettingsActionState) {
   return "";
 }
 
-function formatSectionTimestamp(value: string | null) {
-  const formatted = formatWorkspaceTimestamp(value);
-  return formatted === "Not saved yet" ? formatted : `Updated ${formatted}`;
-}
-
 function buildPreviewCard(
   templateId: string,
   profile: ProfileFormData,
@@ -101,53 +87,51 @@ function buildPreviewCard(
   };
 }
 
+const manualQrOptions = qrPreferenceOptions.filter((o) => o.key !== "auto");
+
 export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
   const router = useRouter();
   const { settings, summary } = workspaceView;
+
+  const initialQr: WorkspaceQrPreference =
+    settings.card.qrPreference === "auto" ? "website" : settings.card.qrPreference;
+
   const [profileForm, setProfileForm] = useState<ProfileFormData>({
     company: settings.card.company,
     email: settings.profile.email,
     linkedin: settings.card.linkedin,
     name: settings.profile.name,
     phone: settings.card.phone,
-    qrPreference: settings.card.qrPreference,
+    qrPreference: initialQr,
     title: settings.profile.title,
     website: settings.profile.website,
   });
-  const [selectedTemplateId, setSelectedTemplateId] = useState(settings.defaultTemplateId);
   const [notificationState, setNotificationState] = useState(settings.notifications);
-  const [confirmClearCards, setConfirmClearCards] = useState(false);
-  const [browserResetMessage, setBrowserResetMessage] = useState("");
   const [profileState, profileAction] = useActionState(saveProfileSettings, initialSettingsActionState);
-  const [templateState, templateAction] = useActionState(saveTemplateSettings, initialSettingsActionState);
   const [notificationSaveState, notificationAction] = useActionState(
     saveNotificationSettings,
     initialSettingsActionState,
   );
-  const [clearCardsState, clearCardsAction] = useActionState(
-    clearSavedCardsSettingsAction,
-    initialSettingsActionState,
-  );
 
   useEffect(() => {
+    const qr: WorkspaceQrPreference =
+      settings.card.qrPreference === "auto" ? "website" : settings.card.qrPreference;
     setProfileForm({
       company: settings.card.company,
       email: settings.profile.email,
       linkedin: settings.card.linkedin,
       name: settings.profile.name,
       phone: settings.card.phone,
-      qrPreference: settings.card.qrPreference,
+      qrPreference: qr,
       title: settings.profile.title,
       website: settings.profile.website,
     });
-    setSelectedTemplateId(settings.defaultTemplateId);
     setNotificationState(settings.notifications);
   }, [
     settings.card.company,
     settings.card.linkedin,
     settings.card.phone,
     settings.card.qrPreference,
-    settings.defaultTemplateId,
     settings.notifications,
     settings.profile.email,
     settings.profile.name,
@@ -159,94 +143,42 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
     if (
       profileState.status === "success" ||
       profileState.status === "warning" ||
-      templateState.status === "success" ||
-      templateState.status === "warning" ||
       notificationSaveState.status === "success" ||
-      notificationSaveState.status === "warning" ||
-      clearCardsState.status === "success" ||
-      clearCardsState.status === "warning"
+      notificationSaveState.status === "warning"
     ) {
       router.refresh();
     }
-  }, [
-    clearCardsState.status,
-    notificationSaveState.status,
-    profileState.status,
-    router,
-    templateState.status,
-  ]);
+  }, [notificationSaveState.status, profileState.status, router]);
 
   const selectedTemplate =
-    templates.find((template) => template.id === selectedTemplateId) ??
-    templates.find((template) => template.id === settings.defaultTemplateId) ??
-    templates[0]!;
-  const previewCard = buildPreviewCard(selectedTemplateId, profileForm, settings.defaultTemplateId);
+    templates.find((t) => t.id === settings.defaultTemplateId) ?? templates[0]!;
+  const previewCard = buildPreviewCard(settings.defaultTemplateId, profileForm, settings.defaultTemplateId);
   const enabledNotificationCount = Object.values(notificationState).filter(Boolean).length;
 
   const handleProfileChange =
     (field: keyof ProfileFormData) => (event: ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      setProfileForm((current) => ({
-        ...current,
-        [field]: value,
-      }));
+      setProfileForm((current) => ({ ...current, [field]: event.target.value }));
     };
-
-  const handleClearBrowserMedia = () => {
-    const keysToRemove: string[] = [];
-
-    for (let index = 0; index < window.localStorage.length; index += 1) {
-      const key = window.localStorage.key(index);
-      if (key?.startsWith("digicard-portrait-")) {
-        keysToRemove.push(key);
-      }
-    }
-
-    keysToRemove.forEach((key) => window.localStorage.removeItem(key));
-    setBrowserResetMessage(
-      keysToRemove.length > 0 ? "Saved portrait images were removed from this browser." : "No saved portrait images were found on this browser.",
-    );
-  };
 
   return (
     <section className="space-y-6">
-      <header className="panel flex flex-col gap-5 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <h1 className="text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
-            Account and card settings
-          </h1>
-          <p className="mt-2 max-w-2xl text-[0.98rem] leading-7 text-[var(--muted)]">
-            Update your details, default style, and alert preferences. Extra cards can still override these defaults in the card editor.
-          </p>
-        </div>
-
-        <div className="subtle-panel flex items-center gap-4 px-4 py-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(82,103,217,0.12)] text-[var(--brand)]">
-            <ShieldCheck className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-[var(--ink)]">Storage</p>
-            <p className="mt-1 text-sm text-[var(--muted)]">{summary.storageScopeLabel}</p>
-          </div>
-        </div>
+      <header className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6">
+        <h1 className="text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
+          Account and card settings
+        </h1>
+        <p className="mt-2 max-w-2xl text-[0.98rem] leading-7 text-[var(--muted)]">
+          Update your profile details, notification preferences, and card defaults.
+        </p>
       </header>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-6">
-          <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
-            <div className="grid gap-4 md:grid-cols-3">
-              <SummaryCard label="Signed in as" value={user.name} detail={user.email} icon={UserRound} />
-              <SummaryCard label="Provider" value={user.authLabel} detail={user.authDescription} icon={ShieldCheck} />
-              <SummaryCard label="Cards ready" value={summary.cardStatusLabel} detail="Your saved cards stay available from the dashboard and My Card views." icon={CreditCard} />
-            </div>
-          </div>
 
+          {/* Profile */}
           <form action={profileAction} className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
             <SectionHeader
               title="Profile"
-              description="Edit the details used for your main card. New cards start from these defaults."
-              badge={`${summary.profileCompletion}% complete`}
-              updatedLabel={formatSectionTimestamp(settings.sectionUpdatedAt.profile)}
+              description="These details appear on your card and are used as defaults when you create a new card."
             />
             <ActionBanner state={profileState} />
 
@@ -260,6 +192,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               <ProfileField className="md:col-span-2" label="Phone" name="phone" value={profileForm.phone} onChange={handleProfileChange("phone")} error={profileState.fieldErrors.phone} />
             </div>
 
+            {/* QR destination */}
             <div className="mt-6 rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-5">
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-[0_10px_22px_rgba(21,32,58,0.05)]">
@@ -268,15 +201,15 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
                 <div>
                   <p className="text-sm font-semibold text-[var(--ink)]">QR destination</p>
                   <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
-                    Pick the link your QR should prefer when someone scans your card.
+                    Choose where your QR code takes people when they scan your card.
                   </p>
                 </div>
               </div>
               {profileState.fieldErrors.qrPreference ? (
                 <p className="mt-3 text-sm text-[#991b1b]">{profileState.fieldErrors.qrPreference}</p>
               ) : null}
-              <div className="mt-4 grid gap-3 md:grid-cols-3">
-                {qrPreferenceOptions.map((option) => {
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {manualQrOptions.map((option) => {
                   const isSelected = profileForm.qrPreference === option.key;
                   return (
                     <label key={option.key} className="cursor-pointer">
@@ -306,53 +239,12 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
             </div>
           </form>
 
-          <form action={templateAction} className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
-            <SectionHeader
-              title="Default template"
-              description="Choose the design every new card should start from."
-              badge={selectedTemplate.name}
-              updatedLabel={formatSectionTimestamp(settings.sectionUpdatedAt.template)}
-            />
-            <ActionBanner state={templateState} />
-
-            <input type="hidden" name="defaultTemplateId" value={selectedTemplateId} />
-
-            <div className="mt-6 grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
-              {templates.map((template) => {
-                const isSelected = template.id === selectedTemplateId;
-                return (
-                  <button
-                    key={template.id}
-                    type="button"
-                    onClick={() => setSelectedTemplateId(template.id)}
-                    className={cn("rounded-[1.7rem] border p-4 text-left transition", isSelected ? "border-[var(--brand)] bg-white shadow-[0_18px_40px_rgba(15,23,42,0.08)]" : "border-transparent bg-[var(--soft)] hover:border-[rgba(82,103,217,0.14)] hover:bg-white")}
-                  >
-                    <div className="mx-auto w-[118px]">
-                      <CardPreview card={buildPreviewCard(template.id, profileForm, settings.defaultTemplateId)} compact />
-                    </div>
-                    <div className="mt-4 flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-semibold text-[var(--ink)]">{template.name}</p>
-                        <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{template.description}</p>
-                      </div>
-                      {isSelected ? <span className="rounded-full bg-[rgba(82,103,217,0.1)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">Selected</span> : null}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <FormSubmitButton label="Save template" />
-            </div>
-          </form>
-
+          {/* Notifications */}
           <form action={notificationAction} className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
             <SectionHeader
               title="Notifications"
-              description="Choose which updates should stay enabled for this account."
+              description="Choose which updates you'd like to receive for this account."
               badge={`${enabledNotificationCount} of ${notificationSettingOptions.length} enabled`}
-              updatedLabel={formatSectionTimestamp(settings.sectionUpdatedAt.notifications)}
             />
             <ActionBanner state={notificationSaveState} />
 
@@ -392,76 +284,53 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
             </div>
           </form>
 
+          {/* Danger zone */}
           <div className="panel border-red-100 bg-[linear-gradient(180deg,_rgba(255,248,248,0.96),_rgba(255,255,255,0.98))] p-6">
-            <SectionHeader title="Danger zone" description="Sensitive actions are split clearly so card cleanup is available without pretending full account deletion is ready." />
-            <ActionBanner state={clearCardsState} />
+            <SectionHeader
+              title="Danger zone"
+              description="Permanent actions that cannot be undone."
+            />
 
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-              <form action={clearCardsAction} className="rounded-[1.6rem] border border-red-200 bg-white/80 p-5">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-red-100 text-red-600">
-                    <CreditCard className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-red-700">Delete saved cards</p>
-                    <p className="mt-1 text-sm leading-6 text-red-600">Clears your main card and every extra saved card, but keeps your account access.</p>
-                  </div>
+            <div className="mt-6 max-w-sm rounded-[1.6rem] border border-red-200 bg-white/80 p-5">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600">
+                  <AlertTriangle className="h-4 w-4" />
                 </div>
-                <button
-                  type="submit"
-                  onClick={(event) => {
-                    if (!confirmClearCards) {
-                      event.preventDefault();
-                      setConfirmClearCards(true);
-                    }
-                  }}
-                  className="mt-5 rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50"
-                >
-                  {confirmClearCards ? "Confirm delete" : "Delete cards"}
-                </button>
-              </form>
-
-              <div className="rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-white/80 p-5">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--soft)] text-[var(--brand)]">
-                    <Globe className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[var(--ink)]">Reset browser media</p>
-                    <p className="mt-1 text-sm leading-6 text-[var(--muted)]">Removes locally saved portrait images from this browser without touching your account data.</p>
-                  </div>
+                <div>
+                  <p className="text-sm font-semibold text-red-700">Delete account</p>
+                  <p className="mt-1 text-sm leading-6 text-red-600">
+                    Permanently removes your account and all saved cards. Contact support to request deletion.
+                  </p>
                 </div>
-                <button type="button" onClick={handleClearBrowserMedia} className="mt-5 rounded-full border border-[rgba(82,103,217,0.14)] px-4 py-2 text-sm font-semibold text-[var(--brand)] transition hover:bg-[var(--soft)]">
-                  Clear browser media
-                </button>
-                {browserResetMessage ? <p className="mt-3 text-sm text-[var(--muted)]">{browserResetMessage}</p> : null}
               </div>
-
-              <div className="rounded-[1.6rem] border border-red-200 bg-white/80 p-5">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-red-100 text-red-600">
-                    <AlertTriangle className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-red-700">Delete account</p>
-                    <p className="mt-1 text-sm leading-6 text-red-600">Still unavailable until ownership verification, safe data removal, and audit history are fully built.</p>
-                  </div>
-                </div>
-                <button type="button" disabled className="mt-5 rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-400">
-                  Not available yet
-                </button>
-              </div>
+              <button
+                type="button"
+                disabled
+                className="mt-5 rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-400 disabled:cursor-not-allowed"
+              >
+                Contact support
+              </button>
             </div>
           </div>
         </div>
 
+        {/* Sidebar */}
         <aside className="space-y-6 xl:sticky xl:top-6 xl:h-fit">
           <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
             <p className="text-sm font-semibold text-[var(--ink)]">Account summary</p>
             <div className="mt-5 space-y-3">
-              <SummaryCard label="Cards ready" value={summary.cardStatusLabel} detail="Saved cards available from your dashboard and My Card pages." icon={CreditCard} />
-              <SummaryCard label="Last saved" value={summary.lastUpdatedLabel} detail="Most recent profile, template, notification, or card update." icon={BellRing} />
-              <SummaryCard label="Storage" value={summary.storageScopeLabel} detail="Cloud sync is preferred, with signed browser fallback when needed." icon={ShieldCheck} />
+              <SummaryCard
+                label="Cards ready"
+                value={summary.cardStatusLabel}
+                detail="Saved cards available from your dashboard and My Card pages."
+                icon={CreditCard}
+              />
+              <SummaryCard
+                label="Last saved"
+                value={summary.lastUpdatedLabel}
+                detail="Most recent profile, notification, or card update."
+                icon={BellRing}
+              />
             </div>
           </div>
 
@@ -471,16 +340,6 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               <CardPreview card={previewCard} compact />
             </div>
             <p className="mt-4 text-sm leading-6 text-[var(--muted)]">{selectedTemplate.description}</p>
-          </div>
-
-          <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
-            <p className="text-sm font-semibold text-[var(--ink)]">Section activity</p>
-            <div className="mt-4 space-y-3 text-sm text-[var(--muted)]">
-              <ActivityRow label="Profile" value={formatSectionTimestamp(settings.sectionUpdatedAt.profile)} />
-              <ActivityRow label="Template" value={formatSectionTimestamp(settings.sectionUpdatedAt.template)} />
-              <ActivityRow label="Notifications" value={formatSectionTimestamp(settings.sectionUpdatedAt.notifications)} />
-              <ActivityRow label="Cards" value={formatSectionTimestamp(settings.sectionUpdatedAt.cards)} />
-            </div>
           </div>
         </aside>
       </div>
@@ -492,12 +351,10 @@ function SectionHeader({
   title,
   description,
   badge,
-  updatedLabel,
 }: {
   title: string;
   description: string;
   badge?: string;
-  updatedLabel?: string;
 }) {
   return (
     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -505,10 +362,11 @@ function SectionHeader({
         <h2 className="text-lg font-semibold text-[var(--ink)]">{title}</h2>
         <p className="mt-1 text-sm text-[var(--muted)]">{description}</p>
       </div>
-      <div className="flex flex-wrap gap-2 md:justify-end">
-        {updatedLabel ? <span className="inline-flex h-fit rounded-full bg-[var(--soft)] px-3 py-1 text-xs font-semibold text-[var(--muted)]">{updatedLabel}</span> : null}
-        {badge ? <span className="inline-flex h-fit rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold text-[var(--brand)]">{badge}</span> : null}
-      </div>
+      {badge ? (
+        <span className="inline-flex h-fit w-fit rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold text-[var(--brand)]">
+          {badge}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -518,7 +376,11 @@ function ActionBanner({ state }: { state: SettingsActionState }) {
     return null;
   }
 
-  return <div className={cn("mt-5 rounded-[1.2rem] border px-4 py-3 text-sm font-medium", getActionTone(state))}>{state.message}</div>;
+  return (
+    <div className={cn("mt-5 rounded-[1.2rem] border px-4 py-3 text-sm font-medium", getActionTone(state))}>
+      {state.message}
+    </div>
+  );
 }
 
 function SummaryCard({
@@ -528,7 +390,7 @@ function SummaryCard({
   icon: Icon,
 }: {
   detail: string;
-  icon: typeof UserRound;
+  icon: typeof CreditCard;
   label: string;
   value: string;
 }) {
@@ -542,15 +404,6 @@ function SummaryCard({
       </div>
       <p className="mt-3 text-xl font-semibold text-[var(--ink)]">{value}</p>
       <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{detail}</p>
-    </div>
-  );
-}
-
-function ActivityRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-4 rounded-[1rem] bg-[var(--soft)] px-4 py-3">
-      <span className="font-medium text-[var(--ink)]">{label}</span>
-      <span className="text-right">{value}</span>
     </div>
   );
 }
