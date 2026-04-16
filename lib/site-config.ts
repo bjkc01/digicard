@@ -98,22 +98,49 @@ export function getAbsoluteUrl(path = "/") {
   return new URL(resolvedPath, siteConfig.url).toString();
 }
 
-function normalizePhoneUrl(value: string | undefined) {
+function normalizePhoneDigits(value: string | undefined) {
   if (!value) return undefined;
   const digits = value.replace(/\D/g, "");
   if (!digits) return undefined;
   const hasPlus = value.trim().startsWith("+");
-  return `tel:${hasPlus ? "+" : ""}${digits}`;
+  return `${hasPlus ? "+" : ""}${digits}`;
+}
+
+function buildVCard(card: Pick<DigiCard, "name" | "title" | "company" | "email" | "phone" | "website" | "linkedin">) {
+  const phone = normalizePhoneDigits(card.phone);
+  const linkedInUrl = normalizeLinkedInUrl(card.linkedin);
+  const websiteUrl = normalizePublicUrl(card.website);
+  const email = normalizeEmail(card.email);
+
+  const lines = [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    `FN:${card.name}`,
+  ];
+
+  if (card.title) lines.push(`TITLE:${card.title}`);
+  if (card.company) lines.push(`ORG:${card.company}`);
+  if (phone) lines.push(`TEL;TYPE=CELL:${phone}`);
+  if (email) lines.push(`EMAIL:${email}`);
+  if (websiteUrl) lines.push(`URL:${websiteUrl}`);
+  else if (linkedInUrl) lines.push(`URL:${linkedInUrl}`);
+
+  lines.push("END:VCARD");
+  return lines.join("\n");
 }
 
 export function getCardShareTarget(
-  card: Pick<DigiCard, "email" | "linkedin" | "phone" | "website" | "qrPreference">,
+  card: Pick<DigiCard, "company" | "email" | "linkedin" | "name" | "phone" | "title" | "website" | "qrPreference">,
 ) {
   const websiteUrl = normalizePublicUrl(card.website);
   const linkedInUrl = normalizeLinkedInUrl(card.linkedin);
   const email = normalizeEmail(card.email);
-  const phoneUrl = normalizePhoneUrl(card.phone);
   const preference = card.qrPreference ?? "auto";
+
+  if (preference === "phone") {
+    const vcard = buildVCard(card);
+    return { label: "Contact", url: vcard };
+  }
 
   const candidates =
     preference === "linkedin"
@@ -128,18 +155,11 @@ export function getCardShareTarget(
             linkedInUrl ? { label: "LinkedIn", url: linkedInUrl } : null,
             email ? { label: "Email", url: `mailto:${email}` } : null,
           ]
-        : preference === "phone"
-          ? [
-              phoneUrl ? { label: "Phone", url: phoneUrl } : null,
-              websiteUrl ? { label: "Website", url: websiteUrl } : null,
-              linkedInUrl ? { label: "LinkedIn", url: linkedInUrl } : null,
-              email ? { label: "Email", url: `mailto:${email}` } : null,
-            ]
-          : [
-              websiteUrl ? { label: "Website", url: websiteUrl } : null,
-              linkedInUrl ? { label: "LinkedIn", url: linkedInUrl } : null,
-              email ? { label: "Email", url: `mailto:${email}` } : null,
-            ];
+        : [
+            websiteUrl ? { label: "Website", url: websiteUrl } : null,
+            linkedInUrl ? { label: "LinkedIn", url: linkedInUrl } : null,
+            email ? { label: "Email", url: `mailto:${email}` } : null,
+          ];
 
   const selectedTarget = candidates.find(Boolean);
 
