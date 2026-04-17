@@ -14,16 +14,28 @@
 
 html {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
   @apply antialiased;
   min-height: 100vh;
+  min-height: 100dvh;
+  max-width: 100%;
+  overflow-x: clip;
   background:
     radial-gradient(circle at top left, rgba(82, 103, 217, 0.06), transparent 24%),
     linear-gradient(180deg, #f8f9fd 0%, #fbfbfd 22%, #ffffff 100%);
   color: var(--ink);
   font-family: var(--font-manrope), sans-serif;
+}
+
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
 }
 
 body main {
@@ -42,6 +54,24 @@ body[data-auth-modal-open="true"] main {
 
 * {
   font-family: var(--font-manrope), sans-serif;
+}
+
+a,
+button,
+input,
+select,
+textarea,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(82, 103, 217, 0.24);
+  outline-offset: 3px;
 }
 
 .panel {
@@ -409,6 +439,16 @@ body[data-auth-modal-open="true"] main {
     filter: none;
     opacity: 1;
     transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .panel {
+    border-radius: 1.5rem;
+  }
+
+  .subtle-panel {
+    border-radius: 1.25rem;
   }
 }
 

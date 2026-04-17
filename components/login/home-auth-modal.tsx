@@ -105,7 +105,7 @@ export function HomeAuthModal({
       {mounted && open
         ? createPortal(
             <div
-              className="fixed inset-0 z-[120] flex items-center justify-center px-4 py-8"
+              className="fixed inset-0 z-[120] overflow-y-auto px-3 py-6 sm:px-4 sm:py-8"
               onClick={(event) => {
                 if (event.target === event.currentTarget) {
                   handleClose();
@@ -114,22 +114,24 @@ export function HomeAuthModal({
             >
               <div className="auth-modal-backdrop absolute inset-0 bg-[rgba(12,18,31,0.42)] backdrop-blur-[12px]" />
 
-              <div
-                role="dialog"
-                aria-modal="true"
-                aria-label="Sign in to DigiCard"
-                className="auth-modal-panel relative z-10"
-              >
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="absolute -right-3 -top-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-[var(--ink)] shadow-[0_4px_16px_rgba(15,23,42,0.18)] transition hover:bg-slate-50"
-                  aria-label="Close sign in"
+              <div className="relative z-10 flex min-h-full items-start justify-center sm:items-center">
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Sign in to DigiCard"
+                  className="auth-modal-panel relative"
                 >
-                  <X className="h-4 w-4" />
-                </button>
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="absolute right-2 top-2 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--ink)] shadow-[0_4px_16px_rgba(15,23,42,0.18)] transition hover:bg-slate-50 sm:-right-3 sm:-top-3"
+                    aria-label="Close sign in"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
 
-                {children}
+                  {children}
+                </div>
               </div>
             </div>,
             document.body,
