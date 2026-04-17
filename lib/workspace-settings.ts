@@ -1064,6 +1064,7 @@ export async function deleteWorkspaceExtraCard(user: WorkspaceUser, cardId: stri
 
 export async function deleteWorkspacePrimaryCard(user: WorkspaceUser) {
   const current = await getWorkspaceSettings(user);
+  const defaults = createDefaultWorkspaceSettings(user);
 
   const result = await persistWorkspaceSettings(
     user,
@@ -1076,9 +1077,8 @@ export async function deleteWorkspacePrimaryCard(user: WorkspaceUser) {
         qrPreference: "auto",
       },
       profile: {
-        ...current.profile,
-        title: "",
-        website: "",
+        ...defaults.profile,
+        avatarUrl: current.profile.avatarUrl,
       },
     },
     { touchedSections: ["cards", "profile"] },
@@ -1092,6 +1092,7 @@ export async function deleteWorkspacePrimaryCard(user: WorkspaceUser) {
 
 export async function clearWorkspaceCards(user: WorkspaceUser): Promise<WorkspaceSaveResult> {
   const current = await getWorkspaceSettings(user);
+  const defaults = createDefaultWorkspaceSettings(user);
   const persistResult = await persistWorkspaceSettings(
     user,
     {
@@ -1104,9 +1105,8 @@ export async function clearWorkspaceCards(user: WorkspaceUser): Promise<Workspac
       },
       extraCards: [],
       profile: {
-        ...current.profile,
-        title: "",
-        website: "",
+        ...defaults.profile,
+        avatarUrl: current.profile.avatarUrl,
       },
     },
     { touchedSections: ["cards", "profile"] },
