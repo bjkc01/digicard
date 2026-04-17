@@ -130,14 +130,14 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
       </div>
 
       <div className="border-b border-[rgba(25,35,61,0.08)] bg-[#5267d9] text-white">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-2 px-4 py-3 text-center text-sm font-medium sm:flex-row sm:gap-4 sm:px-6">
+        <div className="mx-auto flex max-w-7xl flex-row flex-wrap items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium sm:gap-4 sm:px-6">
           <span className="hidden sm:inline">
             Built for students and early professionals meeting people in real-world events.
           </span>
-          <span className="sm:hidden">Built for real-world networking.</span>
+          <span className="sm:hidden">Built for real-world events.</span>
           <a
             href="#how-it-works"
-            className="inline-flex min-h-[44px] items-center rounded-full border border-white/35 px-4 py-2 text-xs font-semibold transition hover:bg-white/10"
+            className="inline-flex items-center whitespace-nowrap rounded-full border border-white/35 px-3 py-1.5 text-xs font-semibold transition hover:bg-white/10 sm:min-h-[44px] sm:px-4 sm:py-2"
           >
             See how it works
           </a>
@@ -218,39 +218,39 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
           </ScrollReveal>
 
           <ScrollReveal
-            className="mt-12 rounded-[2rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_#ffffff_0%,_#f8faff_100%)] p-5 shadow-[0_22px_50px_rgba(21,32,58,0.06)] sm:p-7"
+            className="mt-12 rounded-[2rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_#ffffff_0%,_#f8faff_100%)] p-3 shadow-[0_22px_50px_rgba(21,32,58,0.06)] sm:p-5 lg:p-7"
             delayMs={120}
           >
-            <div className="grid gap-4 lg:grid-cols-2 stagger-children">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4 stagger-children">
               {comparisonColumns.map((column) => (
                 <div
                   key={column.label}
-                  className={`rounded-[1.6rem] border px-5 py-5 ${
+                  className={`rounded-[1.2rem] border px-3 py-3 sm:rounded-[1.6rem] sm:px-5 sm:py-5 ${
                     column.tone === "brand"
                       ? "border-[rgba(82,103,217,0.16)] bg-[linear-gradient(160deg,_rgba(82,103,217,0.12),_rgba(255,255,255,0.96))]"
                       : "border-[rgba(25,35,61,0.08)] bg-white"
                   }`}
                 >
                   <p
-                    className={`text-xs font-semibold uppercase tracking-[0.24em] ${
+                    className={`text-[0.6rem] font-semibold uppercase tracking-[0.18em] sm:text-xs sm:tracking-[0.24em] ${
                       column.tone === "brand" ? "text-[var(--brand)]" : "text-[var(--muted)]"
                     }`}
                   >
                     {column.label}
                   </p>
-                  <div className="mt-4 space-y-3">
+                  <div className="mt-2 space-y-2 sm:mt-4 sm:space-y-3">
                     {column.points.map((point) => (
-                      <div key={point} className="flex items-start gap-3">
+                      <div key={point} className="flex items-start gap-1.5 sm:gap-3">
                         <div
-                          className={`mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${
+                          className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full sm:h-7 sm:w-7 ${
                             column.tone === "brand"
                               ? "bg-[rgba(82,103,217,0.12)] text-[var(--brand)]"
                               : "bg-[var(--soft)] text-[var(--muted)]"
                           }`}
                         >
-                          <CheckCircle2 className="h-4 w-4" />
+                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4" />
                         </div>
-                        <p className="text-sm leading-7 text-[var(--ink)]">{point}</p>
+                        <p className="text-[0.72rem] leading-5 text-[var(--ink)] sm:text-sm sm:leading-7">{point}</p>
                       </div>
                     ))}
                   </div>
