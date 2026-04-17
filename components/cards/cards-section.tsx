@@ -5,27 +5,35 @@ import { Button } from "@/components/ui/button";
 type CardsSectionProps = {
   cards: DigiCard[];
   emptyDescription?: string;
+  emptyActionHref?: string;
+  emptyActionLabel?: string;
   emptyTitle?: string;
   showAddButton?: boolean;
+  showEmptyButton?: boolean;
 };
 
 export function CardsSection({
   cards,
   emptyDescription = "Create your first digital card to get started.",
+  emptyActionHref = "/create-card",
+  emptyActionLabel = "Create card",
   emptyTitle = "No cards yet",
   showAddButton = true,
+  showEmptyButton = true,
 }: CardsSectionProps) {
   if (cards.length === 0) {
     return (
       <div className="mt-8 flex min-h-48 flex-col items-center justify-center rounded-[28px] border border-dashed border-[rgba(82,103,217,0.22)] bg-[var(--soft)] p-8 text-center">
         <p className="text-sm font-semibold text-[var(--ink)]">{emptyTitle}</p>
         <p className="mt-2 text-sm text-[var(--muted)]">{emptyDescription}</p>
-        <Button
-          href="/create-card"
-          className="mt-5 rounded-full bg-[var(--brand)] px-5 py-3 text-white hover:bg-[#4459cb]"
-        >
-          Create card
-        </Button>
+        {showEmptyButton ? (
+          <Button
+            href={emptyActionHref}
+            className="mt-5 rounded-full bg-[var(--brand)] px-5 py-3 text-white hover:bg-[#4459cb]"
+          >
+            {emptyActionLabel}
+          </Button>
+        ) : null}
       </div>
     );
   }

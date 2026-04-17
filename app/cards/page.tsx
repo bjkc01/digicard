@@ -12,6 +12,9 @@ export default async function CardsPage() {
   const displayName = workspaceView.settings.profile.name || workspaceUser.name;
   const displayEmail = workspaceView.settings.profile.email || workspaceUser.email;
   const avatarUrl = workspaceView.settings.profile.avatarUrl;
+  const hasPrimaryCard = workspaceView.cards.some((card) => card.id === "primary");
+  const hasCards = workspaceView.cards.length > 0;
+  const primaryActionLabel = hasPrimaryCard ? "Edit workspace card" : "Create workspace card";
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
@@ -26,23 +29,33 @@ export default async function CardsPage() {
             </h1>
             <p className="mt-2 max-w-2xl text-[0.98rem] leading-7 text-[var(--muted)]">
               Manage all your digital cards. Your workspace card stays in sync with your profile.
-              Extra cards are fully independent — each with their own details and template.
+              Extra cards stay independent, each with their own details and template.
             </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="rounded-full border border-[rgba(82,103,217,0.14)] bg-white px-3 py-1 text-xs font-semibold text-[var(--brand)] shadow-[0_8px_20px_rgba(21,32,58,0.04)]">
+                {workspaceView.summary.cardStatusLabel}
+              </span>
+              <span className="rounded-full border border-[rgba(82,103,217,0.1)] bg-[var(--soft)] px-3 py-1 text-xs font-medium text-[var(--muted)]">
+                Last saved {workspaceView.summary.lastUpdatedLabel}
+              </span>
+            </div>
           </div>
 
-          <div className="flex shrink-0 gap-3">
+          <div className="flex shrink-0 flex-wrap gap-3">
             <Button
               href="/create-card"
               className="whitespace-nowrap rounded-full border border-[rgba(82,103,217,0.22)] bg-white px-5 py-3 text-[var(--brand)] hover:bg-[var(--soft)]"
             >
-              Edit workspace card
+              {primaryActionLabel}
             </Button>
-            <Button
-              href="/create-card?cardId=new"
-              className="whitespace-nowrap rounded-full bg-[var(--brand)] px-5 py-3 text-white shadow-[0_16px_34px_rgba(82,103,217,0.22)] hover:bg-[#4459cb]"
-            >
-              + Add card
-            </Button>
+            {hasCards ? (
+              <Button
+                href="/create-card?cardId=new"
+                className="whitespace-nowrap rounded-full bg-[var(--brand)] px-5 py-3 text-white shadow-[0_16px_34px_rgba(82,103,217,0.22)] hover:bg-[#4459cb]"
+              >
+                + Add card
+              </Button>
+            ) : null}
           </div>
         </header>
 
@@ -67,8 +80,10 @@ export default async function CardsPage() {
 
             <CardsSection
               cards={workspaceView.cards}
-              emptyDescription="Complete your name, email, and title in the card builder to create your workspace card."
-              emptyTitle="No workspace card yet"
+              emptyDescription="Create your workspace card to get started. Once it is set up, you can add extra cards for different roles, events, or contexts."
+              emptyTitle="No cards yet"
+              showAddButton={false}
+              showEmptyButton={false}
             />
           </div>
 

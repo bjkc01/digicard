@@ -476,7 +476,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               <SummaryCard
                 label="Cards ready"
                 value={summary.cardStatusLabel}
-                detail="Saved cards available from your dashboard and My Card pages."
+                detail="Saved cards available from your dashboard and My Cards pages."
                 icon={CreditCard}
               />
               <SummaryCard

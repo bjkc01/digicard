@@ -15,7 +15,7 @@ type SidebarProps = {
 
 const icons = {
   Dashboard: Sparkles,
-  "My Card": WalletCards,
+  "My Cards": WalletCards,
   Templates: LayoutTemplate,
   Settings: Settings,
 } as const;
