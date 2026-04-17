@@ -2,7 +2,7 @@
 
 import { motion, type Variants } from "framer-motion";
 import { UserPen, LayoutList, ScanLine } from "lucide-react";
-import type { ComponentType } from "react";
+import type { ComponentType, SVGProps } from "react";
 import { GlowCard } from "@/components/ui/spotlight-card";
 import { ShineBorder } from "@/components/ui/shine-border";
 
