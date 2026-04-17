@@ -70,7 +70,7 @@ export function PremiumHeader({ children, showAuthModal }: PremiumHeaderProps) {
           </HomeAuthModal>
           <Link
             href="/dashboard"
-            className="inline-flex min-h-[38px] items-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg sm:min-h-[44px] sm:px-5 sm:py-2.5"
+            className="hidden sm:inline-flex min-h-[44px] items-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
           >
             Create my card
           </Link>
