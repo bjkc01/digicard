@@ -24,7 +24,7 @@ export function PremiumHeader({ children, showAuthModal }: PremiumHeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4">
-        <Link href="/" className="flex min-h-[44px] min-w-0 items-center gap-3">
+        <Link href="/" className="flex min-h-[44px] min-w-0 items-center gap-3" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
           <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,_#172340,_#5267d9)] shadow-[0_16px_30px_rgba(82,103,217,0.18)] sm:h-11 sm:w-11">
             <CreditCard className="h-4 w-4 text-white sm:h-5 sm:w-5" />
           </div>
