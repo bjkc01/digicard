@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type WheelEvent } from "react";
+import { useMotionValue, useSpring, motion } from "framer-motion";
 import { AtSign, Globe, Mail, Phone } from "lucide-react";
 import QRCode from "react-qr-code";
 
@@ -21,6 +22,53 @@ export function InteractiveHeroPreview() {
   const [placeholder, setPlaceholder] = useState("Live preview");
   const screenScrollRef = useRef<HTMLDivElement>(null);
   const [showPlaceholderText, setShowPlaceholderText] = useState(true);
+
+  // 3D drag rotation
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const lastX = useRef(0);
+  const lastY = useRef(0);
+
+  const rotateX = useMotionValue(18);
+  const rotateY = useMotionValue(-22);
+  const springX = useSpring(rotateX, { stiffness: 120, damping: 22 });
+  const springY = useSpring(rotateY, { stiffness: 120, damping: 22 });
+
+  // Idle floating animation
+  const floatY = useMotionValue(0);
+  useEffect(() => {
+    let frame: number;
+    let start: number | null = null;
+    const animate = (ts: number) => {
+      if (!start) start = ts;
+      const elapsed = ts - start;
+      floatY.set(Math.sin(elapsed / 1600) * 8);
+      frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [floatY]);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    isDragging.current = true;
+    lastX.current = e.clientX;
+    lastY.current = e.clientY;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!isDragging.current) return;
+    const dx = e.clientX - lastX.current;
+    const dy = e.clientY - lastY.current;
+    lastX.current = e.clientX;
+    lastY.current = e.clientY;
+    rotateY.set(rotateY.get() + dx * 0.55);
+    rotateX.set(rotateX.get() - dy * 0.55);
+  };
+
+  const onPointerUp = () => {
+    isDragging.current = false;
+  };
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -113,12 +161,34 @@ export function InteractiveHeroPreview() {
           </span>
         </div>
 
-        <div className="phone-mockup-container relative mx-auto w-[min(100%,320px)] [perspective:1400px]">
+        <div
+          ref={containerRef}
+          className="phone-mockup-container relative mx-auto w-[min(100%,320px)] select-none"
+          style={{ perspective: "1400px" }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerLeave={onPointerUp}
+        >
+          {/* Drag hint */}
+          <p className="pointer-events-none absolute -bottom-7 left-0 right-0 text-center text-[0.65rem] font-medium uppercase tracking-[0.22em] text-white/25 select-none">
+            drag to rotate
+          </p>
+
           <div className="hero-device-glow pointer-events-none absolute -left-6 top-[18%] -z-20 h-32 w-32 rounded-full bg-[rgba(255,255,255,0.9)] blur-[72px] sm:-left-12 sm:h-40 sm:w-40" />
           <div className="hero-device-glow hero-device-glow--delay pointer-events-none absolute -right-6 top-[12%] -z-20 h-36 w-36 rounded-full bg-[rgba(150,218,255,0.26)] blur-[86px] sm:-right-10 sm:h-48 sm:w-48" />
           <div className="hero-device-glow pointer-events-none absolute -bottom-8 right-[12%] -z-20 h-28 w-28 rounded-full bg-[rgba(82,103,217,0.22)] blur-[74px] sm:h-36 sm:w-36" />
 
-          <div className="hero-device relative aspect-[9/19.5] w-full" onWheelCapture={handlePhoneWheel}>
+          <motion.div
+            className="hero-device relative aspect-[9/19.5] w-full cursor-grab active:cursor-grabbing"
+            style={{
+              rotateX: springX,
+              rotateY: springY,
+              y: floatY,
+              transformStyle: "preserve-3d",
+            }}
+            onWheelCapture={handlePhoneWheel}
+          >
             <div className="absolute -left-[0.96%] top-[24.6%] z-10 h-[4.1%] w-[0.72%] rounded-full bg-[linear-gradient(180deg,#d8dde5_0%,#919bac_24%,#56606f_64%,#161d28_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.42),inset_0_-1px_0_rgba(0,0,0,0.28),0_2px_4px_rgba(15,23,42,0.12)]">
               <div className="absolute inset-x-[22%] top-[12%] h-[18%] rounded-full bg-[rgba(255,255,255,0.32)]" />
             </div>
@@ -196,7 +266,7 @@ export function InteractiveHeroPreview() {
                 <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(128deg,rgba(255,255,255,0.13),rgba(255,255,255,0)_24%,rgba(255,255,255,0)_64%,rgba(255,255,255,0.05)_100%)] mix-blend-screen" />
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
