@@ -468,8 +468,8 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
           </div>
         </div>
 
-        {/* Sidebar */}
-        <aside className="space-y-6 xl:sticky xl:top-6 xl:h-fit">
+        {/* Sidebar — only visible on xl+ as a sticky panel */}
+        <aside className="hidden space-y-6 xl:block xl:sticky xl:top-6 xl:h-fit">
           <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
             <p className="text-sm font-semibold text-[var(--ink)]">Account summary</p>
             <div className="mt-5 space-y-3">
