@@ -114,11 +114,12 @@ export function HomeAuthModal({
             >
               <div className="auth-modal-backdrop absolute inset-0 bg-[rgba(12,18,31,0.42)] backdrop-blur-[12px]" />
 
+              <div className="relative z-10 flex min-h-full items-center justify-center">
               <div
                 role="dialog"
                 aria-modal="true"
                 aria-label="Sign in to DigiCard"
-                className="auth-modal-panel relative z-10"
+                className="auth-modal-panel relative"
               >
                 <button
                   type="button"
@@ -130,6 +131,7 @@ export function HomeAuthModal({
                 </button>
 
                 {children}
+              </div>
               </div>
             </div>,
             document.body,
