@@ -412,6 +412,7 @@ textarea:focus-visible {
   color: var(--ink);
 }
 
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

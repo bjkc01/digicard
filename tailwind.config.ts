@@ -34,6 +34,16 @@ const config: Config = {
         "hero-grid":
           "linear-gradient(to right, rgba(148,163,184,0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.12) 1px, transparent 1px)",
       },
+      animation: {
+        shine: "shine var(--duration) infinite linear",
+      },
+      keyframes: {
+        shine: {
+          "0%": { "background-position": "0% 0%" },
+          "50%": { "background-position": "100% 100%" },
+          to: { "background-position": "0% 0%" },
+        },
+      },
     },
   },
   plugins: [],

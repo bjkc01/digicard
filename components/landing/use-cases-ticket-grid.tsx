@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { GlowCard } from "@/components/ui/spotlight-card";
+import { ShineBorder } from "@/components/ui/shine-border";
 
 type UseCaseTicketGridProps = {
   items: ReadonlyArray<{
@@ -23,7 +25,6 @@ export function UseCasesTicketGrid({ items }: UseCaseTicketGridProps) {
       {items.map((item, index) => (
         <motion.div
           key={item.title}
-          className="group relative overflow-hidden rounded-[1.9rem] border border-[rgba(25,35,61,0.08)] bg-white p-6 [box-shadow:inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(25,35,61,0.04),0_18px_40px_rgba(21,32,58,0.05)] transition-all duration-300 hover:-translate-y-1 hover:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(25,35,61,0.06),0_28px_56px_rgba(21,32,58,0.1)]"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportConfig}
@@ -34,14 +35,27 @@ export function UseCasesTicketGrid({ items }: UseCaseTicketGridProps) {
             delay: index * 0.08,
           }}
         >
-          <div className="flex items-start justify-between gap-4">
-            <p className="text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{item.title}</p>
-            <span className="rounded-full border border-[rgba(82,103,217,0.14)] bg-[rgba(82,103,217,0.08)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
-              0{index + 1}
-            </span>
-          </div>
-
-          <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{item.copy}</p>
+          <ShineBorder
+            borderRadius={30}
+            borderWidth={1}
+            duration={24}
+            color={["#7b97ff", "#5267d9", "#a5b8ff"]}
+            className="w-full"
+          >
+            <GlowCard
+              glowColor="blue"
+              borderRadius={30}
+              className="group relative w-full overflow-hidden bg-white/[0.06] p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <p className="text-lg font-semibold tracking-[-0.03em] text-white">{item.title}</p>
+                <span className="rounded-full border border-[rgba(123,151,255,0.3)] bg-[rgba(123,151,255,0.12)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#7b97ff]">
+                  0{index + 1}
+                </span>
+              </div>
+              <p className="mt-4 text-sm leading-7 text-white/60">{item.copy}</p>
+            </GlowCard>
+          </ShineBorder>
         </motion.div>
       ))}
     </motion.div>

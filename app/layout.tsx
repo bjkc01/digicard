@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 import { Toaster } from "sonner";
 import { siteConfig } from "@/lib/site-config";
+import { CursorGlow } from "@/components/ui/cursor-glow";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -50,6 +51,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={manrope.variable}>
+        <CursorGlow />
         {children}
         <Toaster
           position="bottom-right"

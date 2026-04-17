@@ -93,26 +93,24 @@ export function InteractiveHeroPreview() {
           <div className="absolute bottom-[8%] left-[26%] h-40 w-40 rounded-full bg-[rgba(255,255,255,0.72)] blur-[64px] sm:h-56 sm:w-56" />
         </div>
 
-        <div className="relative z-20 flex w-full justify-center md:absolute md:right-0 md:top-0 md:w-auto">
-          <div className="relative w-full max-w-[20rem] md:w-auto">
-            <input
-              aria-label="Type your name to preview the card"
-              autoComplete="off"
-              className="min-h-[48px] w-full rounded-full border border-[rgba(82,103,217,0.15)] bg-white/92 px-5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_28px_rgba(21,32,58,0.1)] backdrop-blur-xl transition-[border-color,box-shadow,background-color,transform] duration-300 ease-in-out focus:border-[rgba(82,103,217,0.3)] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] md:w-[13rem] lg:w-[14.5rem]"
-              onChange={(event) => setName(event.target.value)}
-              spellCheck={false}
-              type="text"
-              value={name}
-            />
-            <span
-              aria-hidden="true"
-              className={`pointer-events-none absolute inset-y-0 left-5 flex items-center whitespace-nowrap text-sm font-semibold text-[var(--muted)] transition-opacity duration-500 ease-in-out ${
-                name.length > 0 || !showPlaceholderText ? "opacity-0" : "opacity-100"
-              }`}
-            >
-              {placeholder}
-            </span>
-          </div>
+        <div className="absolute right-0 top-0 z-20">
+          <input
+            aria-label="Type your name to preview the card"
+            autoComplete="off"
+            className="h-12 w-[13rem] rounded-full border border-white/15 bg-white/[0.08] px-5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(0,0,0,0.2)] backdrop-blur-md transition-[border-color,box-shadow,background-color,transform] duration-300 ease-in-out placeholder:text-transparent focus:-translate-y-0.5 focus:border-white/25 focus:bg-white/[0.13] focus:outline-none focus:ring-2 focus:ring-white/10 sm:w-[14.5rem]"
+            onChange={(event) => setName(event.target.value)}
+            spellCheck={false}
+            type="text"
+            value={name}
+          />
+          <span
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-y-0 left-5 flex items-center whitespace-nowrap text-sm font-semibold text-white/50 transition-all duration-700 ease-in-out ${
+              name.length > 0 || !showPlaceholderText ? "opacity-0 translate-y-1" : "opacity-100 translate-y-0"
+            }`}
+          >
+            {placeholder}
+          </span>
         </div>
 
         <div className="phone-mockup-container relative mx-auto w-[min(100%,320px)] [perspective:1400px]">
