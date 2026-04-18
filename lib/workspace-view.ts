@@ -15,6 +15,8 @@ export type WorkspaceSummary = {
   activeCardCount: number;
   cardStatusLabel: string;
   enabledNotificationCount: number;
+  profileChecksCompleted: number;
+  profileChecksTotal: number;
   lastUpdatedLabel: string;
   profileCompletion: number;
   selectedTemplateName: string;
@@ -113,8 +115,9 @@ export async function getWorkspaceView(user: WorkspaceUser): Promise<WorkspaceVi
     Boolean(selectedTemplate),
     cards.length > 0,
   ];
+  const completedChecks = readinessChecks.filter(Boolean).length;
   const profileCompletion = Math.round(
-    (readinessChecks.filter(Boolean).length / readinessChecks.length) * 100,
+    (completedChecks / readinessChecks.length) * 100,
   );
   const enabledNotificationCount = Object.values(settings.notifications).filter(Boolean).length;
   const hasActiveCard = cards.length > 0;
@@ -128,6 +131,8 @@ export async function getWorkspaceView(user: WorkspaceUser): Promise<WorkspaceVi
       cardStatusLabel: hasActiveCard ? (cards.length === 1 ? "1 card ready" : `${cards.length} cards ready`) : "Needs setup",
       enabledNotificationCount,
       lastUpdatedLabel: formatWorkspaceTimestamp(latestUpdatedAt),
+      profileChecksCompleted: completedChecks,
+      profileChecksTotal: readinessChecks.length,
       profileCompletion,
       selectedTemplateName: selectedTemplate.name,
       storageScopeLabel: supabaseEnabled ? "Cloud sync with browser fallback" : "Saved on this browser",

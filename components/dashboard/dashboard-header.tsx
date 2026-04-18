@@ -4,7 +4,7 @@ import { ProfileAvatar } from "@/components/ui/profile-avatar";
 type DashboardHeaderProps = {
   avatarUrl?: string;
   email: string;
-  subtitle: string;
+  subtitle?: string;
   userName: string;
 };
 
@@ -12,12 +12,14 @@ export function DashboardHeader({ avatarUrl, email, subtitle, userName }: Dashbo
   return (
     <header className="panel flex flex-col gap-4 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-[var(--ink)]">
+        <h1 className="overflow-hidden text-ellipsis whitespace-nowrap text-[clamp(1.6rem,6.4vw,2.25rem)] font-semibold leading-[1.08] tracking-tight text-[var(--ink)] sm:text-3xl">
           Welcome back, {userName}
         </h1>
-        <p className="mt-2 text-[0.98rem] text-[var(--muted)]">
-          {subtitle}
-        </p>
+        {subtitle ? (
+          <p className="mt-2 text-[0.98rem] text-[var(--muted)]">
+            {subtitle}
+          </p>
+        ) : null}
       </div>
 
       <Link

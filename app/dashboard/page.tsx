@@ -17,20 +17,17 @@ export default async function DashboardPage() {
   const hasActiveCard = workspaceView.summary.activeCardCount > 0;
   const activeCardCount = workspaceView.summary.activeCardCount;
   const profileCompletion = workspaceView.summary.profileCompletion;
+  const profileChecksCompleted = workspaceView.summary.profileChecksCompleted;
+  const profileChecksTotal = workspaceView.summary.profileChecksTotal;
   const metrics = [
     {
       icon: UserRound,
-      label: "Profile complete",
+      label: "Setup progress",
       value: `${profileCompletion}%`,
-      helper: "More complete details make every card more useful in person.",
+      helper: `${profileChecksCompleted} of ${profileChecksTotal} setup checks done: name, email, title, company, link, phone, QR target, template, and one saved card.`,
       progress: profileCompletion,
     },
   ];
-  const topSubtitle = hasActiveCard
-    ? activeCardCount === 1
-      ? "Your card is ready to share. Keep it updated before your next event."
-      : "Your cards are ready to share. Keep them updated before your next event."
-    : "Complete your profile to generate your first shareable card.";
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
@@ -45,7 +42,6 @@ export default async function DashboardPage() {
         <DashboardHeader
           avatarUrl={avatarUrl}
           email={displayEmail}
-          subtitle={topSubtitle}
           userName={displayName}
         />
 
@@ -62,16 +58,15 @@ export default async function DashboardPage() {
                 <h2 className="max-w-[34rem] text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
                   Your saved cards
                 </h2>
-                <p className="mt-2 max-w-xl text-[0.98rem] leading-7 text-[var(--muted)]">
-                  Keep your main card and event-specific versions polished, current, and ready to share.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap gap-2">
                   <span className="rounded-full border border-[rgba(82,103,217,0.14)] bg-white px-3 py-1 text-xs font-semibold text-[var(--brand)] shadow-[0_8px_20px_rgba(21,32,58,0.04)]">
                     {workspaceView.summary.cardStatusLabel}
                   </span>
-                  <span className="rounded-full border border-[rgba(82,103,217,0.1)] bg-[var(--soft)] px-3 py-1 text-xs font-medium text-[var(--muted)]">
-                    Last saved {workspaceView.summary.lastUpdatedLabel}
-                  </span>
+                  {hasActiveCard ? (
+                    <span className="rounded-full border border-[rgba(82,103,217,0.1)] bg-[var(--soft)] px-3 py-1 text-xs font-medium text-[var(--muted)]">
+                      Last saved {workspaceView.summary.lastUpdatedLabel}
+                    </span>
+                  ) : null}
                 </div>
               </div>
               <Button
@@ -84,9 +79,10 @@ export default async function DashboardPage() {
 
             <CardsSection
               cards={workspaceView.cards}
-              emptyDescription="Complete your profile details in the card builder to generate the first saved workspace card."
-              emptyTitle="No active card yet"
+              emptyDescription="Finish your details to create your first card."
+              emptyTitle="No saved cards yet"
               showAddButton={false}
+              showEmptyButton={false}
             />
           </div>
 
@@ -94,12 +90,7 @@ export default async function DashboardPage() {
             <WalletComingSoon />
 
             <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
-              <div>
-                <p className="text-sm font-semibold text-[var(--ink)]">Profile overview</p>
-                <p className="mt-1 text-sm text-[var(--muted)]">
-                  A quick look at how complete your card details are right now.
-                </p>
-              </div>
+              <p className="text-sm font-semibold text-[var(--ink)]">Profile overview</p>
 
               <div className="mt-6 space-y-3">
                 {metrics.map(({ value, label, helper, icon: Icon, progress }) => (
@@ -133,22 +124,17 @@ export default async function DashboardPage() {
             </div>
 
             <div className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,247,255,0.92))] p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm font-semibold text-[var(--ink)]">Share readiness</p>
-                  <p className="mt-1 text-sm text-[var(--muted)]">
-                    Keep each version targeted for the role, event, or audience you are walking into.
-                  </p>
-                </div>
-                <span className="rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold text-[var(--brand)]">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-[var(--ink)]">Share readiness</p>
+                <span className="shrink-0 whitespace-nowrap rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold leading-none text-[var(--brand)]">
                   {activeCardCount === 1 ? "1 live card" : `${activeCardCount} live cards`}
                 </span>
               </div>
 
-              <p className="mt-5 text-sm leading-7 text-[var(--muted)]">
+              <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
                 {hasActiveCard
-                  ? `Last updated ${workspaceView.summary.lastUpdatedLabel}. Your saved cards are ready for career fairs, classes, coffee chats, and campus events.`
-                  : `Your profile is ${profileCompletion}% complete. Fill in the remaining details to generate a card you can share at career fairs, campus events, and meetups.`}
+                  ? `Last updated ${workspaceView.summary.lastUpdatedLabel}. Your saved cards are ready for your next event.`
+                  : "Create your first card to start sharing in person."}
               </p>
             </div>
           </div>
