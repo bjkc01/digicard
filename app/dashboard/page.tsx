@@ -30,7 +30,7 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
+    <main className="mx-auto grid w-full max-w-7xl min-w-0 gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
       <Sidebar
         activePath="/dashboard"
         avatarUrl={avatarUrl}
@@ -38,7 +38,7 @@ export default async function DashboardPage() {
         userName={displayName}
       />
 
-      <section className="space-y-6">
+      <section className="min-w-0 space-y-4 sm:space-y-6">
         <DashboardHeader
           avatarUrl={avatarUrl}
           email={displayEmail}
@@ -51,8 +51,8 @@ export default async function DashboardPage() {
           </div>
         ) : null}
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
-          <div className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.94),_rgba(244,247,255,0.92))] p-6">
+        <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
+          <div className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.94),_rgba(244,247,255,0.92))] p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <h2 className="max-w-[34rem] text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
@@ -86,10 +86,10 @@ export default async function DashboardPage() {
             />
           </div>
 
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-4 sm:space-y-6">
             <WalletComingSoon />
 
-            <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
+            <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
               <p className="text-sm font-semibold text-[var(--ink)]">Profile overview</p>
 
               <div className="mt-6 space-y-3">
@@ -123,7 +123,7 @@ export default async function DashboardPage() {
               </div>
             </div>
 
-            <div className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,247,255,0.92))] p-6">
+            <div className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,247,255,0.92))] p-5 sm:p-6">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold text-[var(--ink)]">Share readiness</p>
                 <span className="shrink-0 whitespace-nowrap rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold leading-none text-[var(--brand)]">

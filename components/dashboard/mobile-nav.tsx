@@ -29,7 +29,7 @@ export function MobileNav({ activePath, avatarUrl, className, email, userName }:
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className={className}>
+    <div className={cn("w-full min-w-0 max-w-full", className)}>
       {/* Compact top bar — sits in normal flow as a grid item on mobile */}
       <div className="flex items-center justify-between rounded-2xl border border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(244,247,255,0.92))] px-4 py-3 shadow-[0_8px_20px_rgba(21,32,58,0.04)]">
         <div className="flex items-center gap-3">

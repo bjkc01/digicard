@@ -2,7 +2,7 @@ import { Wallet } from "lucide-react";
 
 export function WalletComingSoon() {
   return (
-    <div className="overflow-hidden rounded-[1.8rem] border border-[#e2e8f0] bg-white shadow-[0_20px_44px_rgba(15,23,42,0.06)]">
+    <div className="w-full max-w-full overflow-hidden rounded-[1.8rem] border border-[#e2e8f0] bg-white shadow-[0_20px_44px_rgba(15,23,42,0.06)]">
       <div className="border-b border-[#e2e8f0] px-5 py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3.5">
@@ -17,7 +17,7 @@ export function WalletComingSoon() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 p-4">
+      <div className="grid grid-cols-2 gap-2.5 p-4 sm:gap-3">
         <button
           type="button"
           disabled

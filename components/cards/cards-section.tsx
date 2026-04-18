@@ -23,7 +23,7 @@ export function CardsSection({
 }: CardsSectionProps) {
   if (cards.length === 0) {
     return (
-      <div className="mt-8 flex min-h-48 flex-col items-center justify-center rounded-[28px] border border-dashed border-[rgba(82,103,217,0.22)] bg-[var(--soft)] p-8 text-center">
+      <div className="mt-6 flex min-h-48 w-full max-w-full flex-col items-center justify-center rounded-[28px] border border-dashed border-[rgba(82,103,217,0.22)] bg-[var(--soft)] p-6 text-center sm:mt-8 sm:p-8">
         <p className="text-sm font-semibold text-[var(--ink)]">{emptyTitle}</p>
         <p className="mt-2 text-sm text-[var(--muted)]">{emptyDescription}</p>
         {showEmptyButton ? (
@@ -39,8 +39,8 @@ export function CardsSection({
   }
 
   return (
-    <div className="mt-8 space-y-5">
-      <div className="grid gap-5 md:grid-cols-2">
+    <div className="mt-6 space-y-5 sm:mt-8">
+      <div className="grid min-w-0 gap-5 md:grid-cols-2">
         {cards.map((card) => (
           <DashboardCardSurface
             key={card.id}

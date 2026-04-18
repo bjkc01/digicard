@@ -14,16 +14,18 @@
 
 html {
   scroll-behavior: smooth;
+  width: 100%;
   max-width: 100%;
-  overflow-x: clip;
+  overflow-x: hidden;
 }
 
 body {
   @apply antialiased;
   min-height: 100vh;
   min-height: 100dvh;
+  width: 100%;
   max-width: 100%;
-  overflow-x: clip;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at top left, rgba(82, 103, 217, 0.06), transparent 24%),
     linear-gradient(180deg, #f8f9fd 0%, #fbfbfd 22%, #ffffff 100%);
@@ -75,11 +77,11 @@ textarea:focus-visible {
 }
 
 .panel {
-  @apply rounded-[2rem] border border-slate-200/80 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)];
+  @apply w-full min-w-0 max-w-full rounded-[2rem] border border-slate-200/80 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)];
 }
 
 .subtle-panel {
-  @apply rounded-[1.6rem] border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)];
+  @apply w-full min-w-0 max-w-full rounded-[1.6rem] border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)];
 }
 
 .section-title {
