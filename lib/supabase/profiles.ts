@@ -41,9 +41,11 @@ export async function getSupabaseProfileByOwnerEmail(ownerEmail: string) {
 
 export async function upsertSupabaseProfile(profile: SupabaseProfileInsert) {
   const supabase = createSupabaseAdminClient();
+  const now = new Date().toISOString();
   const normalizedProfile = {
     ...profile,
     owner_email: normalizeOwnerEmail(profile.owner_email),
+    updated_at: now,
   };
   const existingProfile =
     (await getSupabaseProfileByUserId(normalizedProfile.user_id)) ??
@@ -53,7 +55,7 @@ export async function upsertSupabaseProfile(profile: SupabaseProfileInsert) {
         .from("profiles")
         .update(normalizedProfile)
         .eq("id", existingProfile.id)
-    : supabase.from("profiles").insert(normalizedProfile);
+    : supabase.from("profiles").insert({ created_at: now, ...normalizedProfile });
   const { data, error } = await query.select("*").single();
 
   if (error) {
