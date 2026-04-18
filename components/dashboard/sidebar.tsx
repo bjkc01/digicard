@@ -50,6 +50,7 @@ export function Sidebar({ activePath, avatarUrl, email, userName }: SidebarProps
               <Link
                 key={item.label}
                 href={item.href}
+                prefetch
                 className={cn(
                   "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition",
                   isActive

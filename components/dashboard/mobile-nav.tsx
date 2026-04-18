@@ -97,6 +97,7 @@ export function MobileNav({ activePath, avatarUrl, className, email, userName }:
                     <Link
                       key={item.label}
                       href={item.href}
+                      prefetch
                       onClick={() => setIsOpen(false)}
                       className={cn(
                         "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition",

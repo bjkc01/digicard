@@ -45,31 +45,29 @@ export default async function TemplatesPage({
     : templates;
 
   return (
-    <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
+    <main className="mx-auto grid w-full max-w-7xl min-w-0 gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
       <Sidebar activePath="/templates" avatarUrl={avatarUrl} email={displayEmail} userName={displayName} />
 
-      <section className="panel p-6 md:p-8">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-2xl">
-            <p className="eyebrow">Templates</p>
-            <h1 className="section-title mt-4">Pick a clean starting point</h1>
-            <p className="section-copy mt-5">
-              Browse the available directions for your workspace card. Your current default is{" "}
-              {workspaceView.summary.selectedTemplateName}.
-            </p>
+      <section className="panel min-w-0 p-5 sm:p-6 md:p-8">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div className="min-w-0 max-w-2xl">
+            <h1 className="section-title">Pick a clean starting point</h1>
           </div>
-          <Button href="/create-card" variant="secondary">
+          <Button
+            href="/create-card"
+            className="w-full whitespace-nowrap rounded-full bg-slate-900 px-5 py-3 text-white hover:bg-slate-800 sm:w-auto"
+          >
             Edit workspace card
           </Button>
         </div>
 
         {/* Category filter */}
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           <Suspense
             fallback={
-              <div className="flex gap-2">
+              <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {["All", "Corporate", "Creative", "Bold", "Minimal"].map((label) => (
-                  <div key={label} className="h-8 w-20 animate-pulse rounded-full bg-slate-100" />
+                  <div key={label} className="h-10 w-24 shrink-0 animate-pulse rounded-full bg-slate-100" />
                 ))}
               </div>
             }
@@ -79,7 +77,7 @@ export default async function TemplatesPage({
         </div>
 
         {/* Grid */}
-        <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-6 grid min-w-0 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
           {visibleTemplates.map((template) => (
             <TemplateTile
               key={template.id}
