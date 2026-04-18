@@ -590,6 +590,10 @@ async function persistWorkspaceSettings(
       };
     } catch (error) {
       storageStatus = "degraded";
+      // Restore the pre-save timestamp so the local cookie doesn't appear newer than
+      // Supabase on other devices. A fresh local timestamp would incorrectly "win" the
+      // next sync comparison and hide cloud data (e.g. a card saved on another device).
+      updatedAt = baseSettings.updatedAt ?? updatedAt;
       console.error("Failed to persist workspace settings to Supabase. Falling back to cookie-only.", error);
     }
   }
