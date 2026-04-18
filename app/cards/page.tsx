@@ -23,8 +23,7 @@ export default async function CardsPage() {
       <section className="min-w-0 space-y-4 sm:space-y-6">
         <header className="panel flex flex-col gap-5 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-5 sm:p-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="min-w-0">
-            <p className="eyebrow text-[var(--brand)]">My Cards</p>
-            <h1 className="mt-2 text-[clamp(1.8rem,8vw,2.5rem)] font-semibold tracking-tight text-[var(--ink)]">
+            <h1 className="text-[clamp(1.8rem,8vw,2.5rem)] font-semibold tracking-tight text-[var(--ink)]">
               Your cards
             </h1>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -44,7 +43,7 @@ export default async function CardsPage() {
               href="/create-card"
               className={hasPrimaryCard
                 ? "w-full whitespace-nowrap rounded-full border border-[rgba(82,103,217,0.22)] bg-white px-5 py-3 text-[var(--brand)] hover:bg-[var(--soft)] sm:w-auto"
-                : "w-full whitespace-nowrap rounded-full bg-[var(--brand)] px-5 py-3 text-white shadow-[0_16px_34px_rgba(82,103,217,0.22)] hover:bg-[#4459cb] sm:w-auto"}
+                : "w-full whitespace-nowrap rounded-full bg-slate-900 px-5 py-3 text-white shadow-[0_16px_34px_rgba(15,23,42,0.18)] hover:bg-slate-800 sm:w-auto"}
             >
               {primaryActionLabel}
             </Button>
