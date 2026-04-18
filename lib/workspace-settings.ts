@@ -653,14 +653,25 @@ export async function getWorkspaceSettings(user: WorkspaceUser) {
     const supabaseSettings = mapSupabaseProfileToWorkspaceSettings(user, profile, mergedExtraCards);
 
     if (isNewerWorkspaceTimestamp(cookieSettings.updatedAt, supabaseSettings.updatedAt)) {
+      // Cookie is newer (local edits not yet reflected in Supabase). Use cookie data but fall back
+      // to Supabase for any fields that are empty — empty values indicate a degraded/default cookie
+      // state (e.g. from a failed save), not an intentional edit.
       return mergeWorkspaceSettings(user, {
         ...supabaseSettings,
-        card: cookieSettings.card,
+        card: {
+          company: cookieSettings.card.company || supabaseSettings.card.company,
+          linkedin: cookieSettings.card.linkedin || supabaseSettings.card.linkedin,
+          phone: cookieSettings.card.phone || supabaseSettings.card.phone,
+          qrPreference: cookieSettings.card.qrPreference,
+        },
         defaultTemplateId: cookieSettings.defaultTemplateId,
         extraCards: mergedExtraCards,
         notifications: cookieSettings.notifications,
         profile: {
-          ...cookieSettings.profile,
+          email: cookieSettings.profile.email || supabaseSettings.profile.email,
+          name: cookieSettings.profile.name || supabaseSettings.profile.name,
+          title: cookieSettings.profile.title || supabaseSettings.profile.title,
+          website: cookieSettings.profile.website || supabaseSettings.profile.website,
           avatarUrl: cookieSettings.profile.avatarUrl || supabaseSettings.profile.avatarUrl,
         },
         sectionUpdatedAt: cookieSettings.sectionUpdatedAt,
