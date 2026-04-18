@@ -59,7 +59,7 @@ export async function upsertSupabaseProfile(profile: SupabaseProfileInsert) {
   const { data, error } = await query.select("*").single();
 
   if (error) {
-    throw new Error(`Failed to upsert Supabase profile: ${error.message}`);
+    throw new Error(`Failed to upsert Supabase profile: [code=${error.code}] ${error.message}${error.details ? ` | details: ${error.details}` : ""}${error.hint ? ` | hint: ${error.hint}` : ""}`);
   }
 
   return data satisfies SupabaseProfile;
