@@ -265,44 +265,44 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
   };
 
   return (
-    <section className="space-y-6">
-      <header className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-6">
-        <h1 className="text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
-          Account and card settings
+    <section className="min-w-0 space-y-4 sm:space-y-6">
+      <header className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-5 sm:p-6">
+        <h1 className="text-[clamp(1.7rem,7vw,2.15rem)] font-semibold leading-tight tracking-tight text-[var(--ink)]">
+          Account settings
         </h1>
-        <p className="mt-2 max-w-2xl text-[0.98rem] leading-7 text-[var(--muted)]">
+        <p className="mt-1.5 max-w-2xl text-[0.95rem] leading-6 text-[var(--muted)]">
           Update your profile details, notification preferences, and card defaults.
         </p>
       </header>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-6">
+      <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 space-y-4 sm:space-y-6">
 
           {/* Profile */}
-          <form action={profileAction} className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
+          <form action={profileAction} className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
             <h2 className="text-lg font-semibold text-[var(--ink)]">Profile</h2>
             <ActionBanner state={profileState} />
 
             <input name="avatarUrl" type="hidden" value={profileForm.avatarUrl} />
 
-            <div className="mt-6 rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-5">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="mt-4 rounded-[1.4rem] border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-4 sm:p-[1.125rem]">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <ProfileAvatar
                   avatarUrl={profileForm.avatarUrl}
-                  className="h-20 w-20 rounded-full shadow-[0_18px_36px_rgba(82,103,217,0.18)]"
+                  className="h-16 w-16 rounded-full shadow-[0_16px_32px_rgba(82,103,217,0.16)]"
                   name={profileForm.name || user.name}
-                  textClassName="text-lg"
+                  textClassName="text-base"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-[var(--ink)]">Photo</p>
-                  <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                  <p className="mt-0.5 text-sm leading-5 text-[var(--muted)]">
                     Appears in your account summary and dashboard.
                   </p>
-                  <div className="mt-4 flex flex-wrap gap-3">
+                  <div className="mt-3 flex flex-wrap gap-2.5">
                     <button
                       type="button"
                       onClick={() => avatarInputRef.current?.click()}
-                      className="inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_24px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:bg-[rgba(82,103,217,0.04)]"
+                      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_22px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:bg-[rgba(82,103,217,0.04)]"
                     >
                       <Camera className="h-4 w-4" />
                       {profileForm.avatarUrl ? "Change photo" : "Upload photo"}
@@ -311,7 +311,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
                       <button
                         type="button"
                         onClick={handleAvatarRemove}
-                        className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-[var(--muted)] transition hover:bg-white hover:text-red-600"
+                        className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-[var(--muted)] transition hover:bg-white hover:text-red-600"
                       >
                         <Trash2 className="h-4 w-4" />
                         Remove photo
@@ -330,13 +330,13 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               />
 
               {avatarError || profileState.fieldErrors.avatarUrl ? (
-                <p className="mt-3 text-sm text-[#991b1b]">
+                <p className="mt-2.5 text-sm text-[#991b1b]">
                   {avatarError ?? profileState.fieldErrors.avatarUrl}
                 </p>
               ) : null}
             </div>
 
-            <div className="mt-6 grid gap-5 md:grid-cols-2">
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
               <ProfileField label="Display name" name="name" value={profileForm.name} onChange={handleProfileChange("name")} error={profileState.fieldErrors.name} required />
               <ProfileField label="Email" name="email" type="email" value={profileForm.email} onChange={handleProfileChange("email")} error={profileState.fieldErrors.email} required />
               <ProfileField label="Professional title" name="title" value={profileForm.title} onChange={handleProfileChange("title")} error={profileState.fieldErrors.title} required />
@@ -347,22 +347,22 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
             </div>
 
             {/* QR destination */}
-            <div className="mt-6 rounded-[1.6rem] border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-5">
+            <div className="mt-4 rounded-[1.4rem] border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-4 sm:p-[1.125rem]">
               <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-[0_10px_22px_rgba(21,32,58,0.05)]">
+                <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-[0_10px_20px_rgba(21,32,58,0.05)]">
                   <QrCode className="h-4 w-4" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-[var(--ink)]">QR destination</p>
-                  <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                  <p className="mt-0.5 text-sm leading-5 text-[var(--muted)]">
                     Choose where your QR code takes people when they scan your card.
                   </p>
                 </div>
               </div>
               {profileState.fieldErrors.qrPreference ? (
-                <p className="mt-3 text-sm text-[#991b1b]">{profileState.fieldErrors.qrPreference}</p>
+                <p className="mt-2.5 text-sm text-[#991b1b]">{profileState.fieldErrors.qrPreference}</p>
               ) : null}
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
+              <div className="mt-3 grid gap-2.5 md:grid-cols-2">
                 {manualQrOptions.map((option) => {
                   const isSelected = profileForm.qrPreference === option.key;
                   return (
@@ -375,12 +375,12 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
                         checked={isSelected}
                         onChange={() => setProfileForm((current) => ({ ...current, qrPreference: option.key }))}
                       />
-                      <div className={cn("rounded-[1.3rem] border bg-white p-4 transition", isSelected ? "border-[var(--brand)] bg-[rgba(82,103,217,0.04)] shadow-[0_12px_30px_rgba(15,23,42,0.05)]" : "border-[rgba(82,103,217,0.08)] hover:border-[rgba(82,103,217,0.18)]")}>
+                      <div className={cn("rounded-[1.2rem] border bg-white p-3.5 transition", isSelected ? "border-[rgba(82,103,217,0.5)] bg-[rgba(82,103,217,0.03)] shadow-[0_10px_24px_rgba(15,23,42,0.04)]" : "border-[rgba(82,103,217,0.08)] hover:border-[rgba(82,103,217,0.18)]")}>
                         <div className="flex items-center justify-between gap-3">
                           <p className="text-sm font-semibold text-[var(--ink)]">{option.label}</p>
-                          {isSelected ? <span className="rounded-full bg-[rgba(82,103,217,0.1)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">Selected</span> : null}
+                          {isSelected ? <span className="rounded-full bg-[rgba(82,103,217,0.08)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">Selected</span> : null}
                         </div>
-                        <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{option.description}</p>
+                        <p className="mt-1.5 text-xs leading-5 text-[var(--muted)]">{option.description}</p>
                       </div>
                     </label>
                   );
@@ -388,13 +388,13 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-4 flex justify-end">
               <FormSubmitButton label="Save profile" />
             </div>
           </form>
 
           {/* Notifications */}
-          <form action={notificationAction} className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
+          <form action={notificationAction} className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
             <SectionHeader
               title="Notifications"
               description="Choose which updates you'd like to receive for this account."
@@ -402,16 +402,16 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
             />
             <ActionBanner state={notificationSaveState} />
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-4 space-y-2.5">
               {notificationSettingOptions.map((option) => {
                 const enabled = notificationState[option.key];
                 return (
-                  <label key={option.key} className="flex cursor-pointer flex-col gap-4 rounded-[1.5rem] border border-[rgba(82,103,217,0.08)] bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="max-w-2xl">
+                  <label key={option.key} className="grid cursor-pointer grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-[1.3rem] border border-[rgba(82,103,217,0.08)] bg-white px-4 py-3.5">
+                    <div className="min-w-0 max-w-2xl">
                       <p className="text-sm font-semibold text-[var(--ink)]">{option.label}</p>
-                      <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{option.description}</p>
+                      <p className="mt-0.5 text-sm leading-5 text-[var(--muted)]">{option.description}</p>
                     </div>
-                    <span className="relative inline-flex h-7 w-12 shrink-0 items-center">
+                    <span className="relative inline-flex h-11 w-14 shrink-0 items-center justify-center">
                       <input
                         className="peer sr-only"
                         name="notifications"
@@ -425,34 +425,34 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
                           }))
                         }
                       />
-                      <span className="absolute inset-0 rounded-full border border-slate-200 bg-slate-200 transition peer-checked:border-[var(--brand)] peer-checked:bg-[var(--brand)]" />
-                      <span className="absolute left-1 h-5 w-5 rounded-full bg-white shadow-[0_6px_16px_rgba(15,23,42,0.16)] transition-transform peer-checked:translate-x-5" />
+                      <span className="absolute inset-x-0 top-1/2 h-8 -translate-y-1/2 rounded-full border border-slate-200 bg-slate-200 transition peer-checked:border-[var(--brand)] peer-checked:bg-[var(--brand)]" />
+                      <span className="absolute left-1 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-white shadow-[0_6px_16px_rgba(15,23,42,0.16)] transition-transform peer-checked:translate-x-6" />
                     </span>
                   </label>
                 );
               })}
             </div>
 
-            <div className="mt-6 flex justify-end">
-              <FormSubmitButton label="Save alerts" secondary />
+            <div className="mt-4 flex justify-end">
+              <FormSubmitButton label="Save alerts" />
             </div>
           </form>
 
           {/* Danger zone */}
-          <div className="panel border-red-100 bg-[linear-gradient(180deg,_rgba(255,248,248,0.96),_rgba(255,255,255,0.98))] p-6">
+          <div className="panel border-[rgba(248,113,113,0.18)] bg-[linear-gradient(180deg,_rgba(255,251,251,0.96),_rgba(255,255,255,0.98))] p-5 sm:p-6">
             <SectionHeader
               title="Danger zone"
               description="Permanent actions that cannot be undone."
             />
 
-            <div className="mt-6 max-w-sm rounded-[1.6rem] border border-red-200 bg-white/80 p-5">
+            <div className="mt-4 max-w-sm rounded-[1.45rem] border border-[rgba(248,113,113,0.24)] bg-white/88 p-[1.125rem]">
               <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600">
+                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-500">
                   <AlertTriangle className="h-4 w-4" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-red-700">Delete account</p>
-                  <p className="mt-1 text-sm leading-6 text-red-600">
+                  <p className="mt-0.5 text-sm leading-5 text-red-600">
                     Permanently removes your account and all saved cards. Contact support to request deletion.
                   </p>
                 </div>
@@ -460,7 +460,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               <button
                 type="button"
                 disabled
-                className="mt-5 rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-400 disabled:cursor-not-allowed"
+                className="mt-4 rounded-full border border-[rgba(248,113,113,0.28)] px-4 py-2 text-sm font-semibold text-red-400 disabled:cursor-not-allowed"
               >
                 Contact support
               </button>
@@ -469,10 +469,10 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
         </div>
 
         {/* Sidebar — only visible on xl+ as a sticky panel */}
-        <aside className="hidden space-y-6 xl:block xl:sticky xl:top-6 xl:h-fit">
-          <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
+        <aside className="hidden space-y-4 xl:block xl:sticky xl:top-6 xl:h-fit">
+          <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5">
             <p className="text-sm font-semibold text-[var(--ink)]">Account summary</p>
-            <div className="mt-5 space-y-3">
+            <div className="mt-4 space-y-3">
               <SummaryCard
                 label="Cards ready"
                 value={summary.cardStatusLabel}
@@ -488,12 +488,12 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
             </div>
           </div>
 
-          <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-6">
+          <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5">
             <p className="text-sm font-semibold text-[var(--ink)]">Selected style</p>
-            <div className="mt-5">
+            <div className="mt-4">
               <CardPreview card={previewCard} compact />
             </div>
-            <p className="mt-4 text-sm leading-6 text-[var(--muted)]">{selectedTemplate.description}</p>
+            <p className="mt-3 text-sm leading-5 text-[var(--muted)]">{selectedTemplate.description}</p>
           </div>
         </aside>
       </div>
@@ -511,13 +511,13 @@ function SectionHeader({
   badge?: string;
 }) {
   return (
-    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+    <div className="flex flex-col gap-2.5 md:flex-row md:items-start md:justify-between">
       <div>
         <h2 className="text-lg font-semibold text-[var(--ink)]">{title}</h2>
-        <p className="mt-1 text-sm text-[var(--muted)]">{description}</p>
+        <p className="mt-0.5 text-sm leading-5 text-[var(--muted)]">{description}</p>
       </div>
       {badge ? (
-        <span className="inline-flex h-fit w-fit rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold text-[var(--brand)]">
+        <span className="inline-flex h-fit w-fit rounded-full bg-[rgba(82,103,217,0.08)] px-3 py-1 text-xs font-semibold text-[var(--brand)]">
           {badge}
         </span>
       ) : null}
@@ -531,7 +531,7 @@ function ActionBanner({ state }: { state: SettingsActionState }) {
   }
 
   return (
-    <div className={cn("mt-5 rounded-[1.2rem] border px-4 py-3 text-sm font-medium", getActionTone(state))}>
+    <div className={cn("mt-4 rounded-[1.1rem] border px-4 py-2.5 text-sm font-medium", getActionTone(state))}>
       {state.message}
     </div>
   );
@@ -549,15 +549,15 @@ function SummaryCard({
   value: string;
 }) {
   return (
-    <div className="rounded-[1.4rem] bg-[var(--soft)] p-4">
+    <div className="rounded-[1.3rem] bg-[var(--soft)] p-3.5">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-[0_10px_22px_rgba(21,32,58,0.05)]">
+        <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-[0_10px_20px_rgba(21,32,58,0.05)]">
           <Icon className="h-4 w-4" />
         </div>
         <p className="text-sm font-semibold text-[var(--ink)]">{label}</p>
       </div>
-      <p className="mt-3 text-xl font-semibold text-[var(--ink)]">{value}</p>
-      <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{detail}</p>
+      <p className="mt-2.5 text-xl font-semibold leading-tight text-[var(--ink)]">{value}</p>
+      <p className="mt-1 text-sm leading-5 text-[var(--muted)]">{detail}</p>
     </div>
   );
 }
@@ -586,11 +586,11 @@ function ProfileField({
   const id = `settings-${name}`;
 
   return (
-    <label className={cn("flex flex-col gap-2 text-sm font-medium text-slate-700", className)}>
+    <label className={cn("flex flex-col gap-1.5 text-sm font-medium text-slate-700", className)}>
       {label}
       <input
         id={id}
-        className={cn("h-12 rounded-2xl border bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100", error ? "border-red-300 focus:border-red-500 focus:ring-red-100" : "border-slate-200")}
+        className={cn("h-11 rounded-2xl border bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100", error ? "border-red-300 focus:border-red-500 focus:ring-red-100" : "border-slate-200")}
         name={name}
         onChange={onChange}
         required={required}
@@ -611,10 +611,10 @@ function FormSubmitButton({ label, secondary = false }: { label: string; seconda
       type="submit"
       disabled={pending}
       className={cn(
-        "rounded-full px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60",
+        "min-h-11 rounded-full px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60",
         secondary
           ? "border border-[rgba(82,103,217,0.14)] bg-white text-[var(--ink)] hover:bg-[var(--soft)]"
-          : "bg-[var(--brand)] text-white shadow-[0_16px_34px_rgba(82,103,217,0.2)] hover:bg-[#4459cb]",
+          : "bg-slate-900 text-white shadow-[0_16px_34px_rgba(15,23,42,0.16)] hover:bg-slate-800",
       )}
     >
       {pending ? "Saving..." : label}
