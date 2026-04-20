@@ -10,7 +10,7 @@ type DashboardHeaderProps = {
 
 export function DashboardHeader({ avatarUrl, email, subtitle, userName }: DashboardHeaderProps) {
   return (
-    <header className="panel flex flex-col gap-4 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+    <header className="panel hidden flex-col gap-4 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-5 sm:flex sm:flex-row sm:items-center sm:justify-between sm:p-6">
       <div className="min-w-0">
         <h1 className="overflow-hidden text-ellipsis whitespace-nowrap text-[clamp(1.6rem,6.4vw,2.25rem)] font-semibold leading-[1.08] tracking-tight text-[var(--ink)] sm:text-3xl">
           Welcome back, {userName}
