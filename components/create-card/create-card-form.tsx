@@ -168,6 +168,13 @@ export function CreateCardForm({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [mobileTab, setMobileTab] = useState<"profile" | "contact" | "design">("profile");
+
+  const mobileTabs = [
+    { id: "profile" as const, label: "Profile" },
+    { id: "contact" as const, label: "Contact" },
+    { id: "design" as const, label: "Design" },
+  ] as const;
   const buildTemplatePreviewCard = (template: DigiCardTemplate) => ({
     color: template.accent,
     company: formData.company || "University or Company",
@@ -244,8 +251,28 @@ export function CreateCardForm({
   return (
     <section className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(400px,0.92fr)]">
       {/* ── Form column ── */}
-      <div className="order-2 xl:order-1 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-        <div className="mb-8">
+      <div className="order-2 xl:order-1 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        {/* Mobile tab bar */}
+        <div className="flex border-b border-gray-200 xl:hidden">
+          {mobileTabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setMobileTab(tab.id)}
+              className={cn(
+                "flex-1 py-3 text-sm font-semibold transition-colors duration-150",
+                mobileTab === tab.id
+                  ? "border-b-2 border-[#00C4CC] text-[#00C4CC]"
+                  : "text-[#6b7280] hover:text-[#0E1318]",
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="p-4 md:p-6 xl:p-8">
+        <div className="mb-8 hidden xl:block">
           <h1 className="text-2xl font-bold tracking-tight text-[#0E1318]">
             {isNewCard ? "Create new card" : isExtraCard ? "Edit card" : "Your workspace card"}
           </h1>
@@ -279,7 +306,7 @@ export function CreateCardForm({
               <div
                 role="group"
                 aria-labelledby="card-label-section"
-                className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
+                className={cn("rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5", mobileTab !== "profile" ? "hidden xl:block" : "")}
               >
                 <p id="card-label-section" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
                   Card nickname
@@ -311,7 +338,7 @@ export function CreateCardForm({
             <div
               role="group"
               aria-labelledby="portrait-label"
-              className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
+              className={cn("rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5", mobileTab !== "profile" ? "hidden xl:block" : "")}
             >
               <p id="portrait-label" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
                 Portrait
@@ -375,7 +402,7 @@ export function CreateCardForm({
             <div
               role="group"
               aria-labelledby="identity-section-label"
-              className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
+              className={cn("rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5", mobileTab !== "profile" ? "hidden xl:block" : "")}
             >
               <p id="identity-section-label" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
                 Identity
@@ -447,7 +474,7 @@ export function CreateCardForm({
             <div
               role="group"
               aria-labelledby="contact-section-label"
-              className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5"
+              className={cn("rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5", mobileTab !== "contact" ? "hidden xl:block" : "")}
             >
               <p id="contact-section-label" className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
                 Contact
@@ -473,7 +500,7 @@ export function CreateCardForm({
             </div>
 
             {/* Visual direction */}
-            <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5">
+            <div className={cn("rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5", mobileTab !== "design" ? "hidden xl:block" : "")}>
               <div className="mb-4 flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
                   Visual direction
@@ -535,13 +562,14 @@ export function CreateCardForm({
             <CreateCardSubmitButton isExtraCard={isExtraCard} isNewCard={isNewCard} />
           </div>
         </form>
+        </div>{/* end padding wrapper */}
       </div>
 
       {/* ── Preview column ── */}
       <div className="relative order-1 xl:order-2">
-        <div className="sticky top-6 flex flex-col gap-3">
+        <div className="xl:sticky xl:top-6 flex flex-col gap-3">
           {/* Card preview */}
-          <div className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-4 shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-[#F8F9F9] p-3 shadow-sm xl:p-4">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#00C4CC]">
               Live preview
             </p>
@@ -565,12 +593,12 @@ export function CreateCardForm({
             </div>
           </div>
 
-          {/* Download */}
+          {/* Download — desktop only */}
           <button
             type="button"
             onClick={handleDownload}
             disabled={isDownloading}
-            className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-[#0F172A] px-5 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#1e293b] disabled:cursor-not-allowed disabled:opacity-60"
+            className="hidden xl:flex w-full items-center justify-center gap-2.5 rounded-2xl bg-[#0F172A] px-5 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#1e293b] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isDownloading ? (
               <>
@@ -585,8 +613,8 @@ export function CreateCardForm({
             )}
           </button>
 
-          {/* Wallet — coming soon */}
-          <div className="overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-[0_18px_44px_rgba(15,23,42,0.06)]">
+          {/* Wallet — coming soon, desktop only */}
+          <div className="hidden xl:block overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-[0_18px_44px_rgba(15,23,42,0.06)]">
             <div className="border-b border-[#e2e8f0] px-4 py-3">
               <div className="flex items-start gap-3">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#e2e8f0] bg-[#f8fafc] text-[#64748b]">
