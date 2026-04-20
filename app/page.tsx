@@ -1,8 +1,4 @@
 import Link from "next/link";
-import { FloatingPaths } from "@/components/ui/background-paths";
-import { GlowCard } from "@/components/ui/spotlight-card";
-import { ShineBorder } from "@/components/ui/shine-border";
-import { HowItWorksSection } from "@/components/landing/how-it-works-section";
 import { InteractiveHeroPreview } from "@/components/landing/interactive-hero-preview";
 import { PremiumHeader } from "@/components/landing/premium-header";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
@@ -21,11 +17,35 @@ import {
   UserRound,
 } from "lucide-react";
 
-const quickPoints = [
-  "LinkedIn, resume, and portfolio — one tap, no typing",
-  "Share while the conversation is still happening",
-  "Make it easy for recruiters to find you after the event",
+const steps = [
+  {
+    id: "01",
+    title: "Create your profile",
+    body: "Set up a clean digital card with your name, university, major, and professional identity.",
+  },
+  {
+    id: "02",
+    title: "Add your links and details",
+    body: "Include LinkedIn, portfolio, resume, email, and the contact information you want people to see first.",
+  },
+  {
+    id: "03",
+    title: "Share it instantly with QR",
+    body: "Open your card at an event, let someone scan it, and give them everything they need in one tap.",
+  },
 ];
+
+const quickPoints = [
+  "Share LinkedIn, resume, and portfolio with one scan",
+  "Make a better first impression in short conversations",
+  "Give recruiters and professionals an easy way to remember you",
+];
+
+const networkingQuote = {
+  line: "If you're not networking, you're not working.",
+  source: "A reminder students hear for a reason",
+  body: "DigiCard helps you turn that idea into something practical by making it easier to share your profile in the moment, not after the opportunity has passed.",
+};
 
 const comparisonColumns = [
   {
@@ -108,56 +128,61 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
   const showAuthModal = shouldOpenAuthModal(resolvedSearchParams);
 
   return (
-    <main className="min-h-screen overflow-hidden text-[var(--ink)]">
-      {/* Full-page dark background */}
-      <div className="fixed inset-0 -z-50 bg-[#0d1528]" />
+    <main className="min-h-screen overflow-hidden bg-[var(--canvas)] text-[var(--ink)]">
+      <div className="absolute inset-x-0 top-0 -z-10 h-[620px] overflow-hidden">
+        <div className="orb-drift-1 absolute -top-24 left-[6%] h-[520px] w-[520px] rounded-full bg-[rgba(82,103,217,0.13)] blur-[130px]" />
+        <div className="orb-drift-2 absolute -top-12 right-[4%] h-[400px] w-[400px] rounded-full bg-[rgba(255,141,87,0.08)] blur-[110px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,_#f8f9fd_0%,_#fbfbfd_58%,_#ffffff_100%)]" />
+      </div>
 
-      {/* Hero floating paths */}
-      <div
-        className="absolute inset-x-0 top-[60px] -z-10 h-[1400px] pointer-events-none"
-        style={{
-          maskImage: "linear-gradient(to bottom, transparent 0%, black 6%, black 32%, transparent 72%)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 6%, black 32%, transparent 72%)",
-        }}
-      >
-        <div className="absolute inset-0 opacity-[0.4]">
-          <FloatingPaths position={1} svgClassName="w-full h-full text-white" />
-          <FloatingPaths position={-1} svgClassName="w-full h-full text-white" />
+      <div className="border-b border-[rgba(25,35,61,0.08)] bg-[#5267d9] text-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-center gap-4 px-6 py-3 text-center text-sm font-medium">
+          <span className="hidden sm:inline">
+            Built for students and early professionals meeting people in real-world events.
+          </span>
+          <span className="sm:hidden">Built for real-world networking.</span>
+          <a
+            href="#how-it-works"
+            className="inline-flex items-center rounded-full border border-white/35 px-4 py-1.5 text-xs font-semibold transition hover:bg-white/10"
+          >
+            See how it works
+          </a>
         </div>
       </div>
 
-<PremiumHeader showAuthModal={showAuthModal}>
+      <PremiumHeader showAuthModal={showAuthModal}>
         <HomeAuthModalContent originPath="/" searchParams={resolvedSearchParams} />
       </PremiumHeader>
 
-      <section className="mx-auto max-w-7xl px-4 pb-12 pt-5 sm:px-6 lg:pt-6">
-        <div className="grid gap-10 lg:grid-cols-[1fr_0.96fr] lg:items-start">
+      <section className="mx-auto max-w-7xl px-6 pb-10 pt-10 lg:pt-12">
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.96fr]">
           <div>
-            <div className="anim-1 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm">
-              <Sparkles className="h-4 w-4 text-[#7b97ff]" />
-              Built for career fairs and campus events
+            <div className="anim-1 inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white/90 px-4 py-2 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_24px_rgba(21,32,58,0.05)]">
+              <Sparkles className="h-4 w-4 text-[var(--brand)]" />
+              Made for career fairs, campus events, and networking meetups
             </div>
 
-            <h1 className="anim-2 mt-5 max-w-[34rem] text-[2.7rem] font-semibold leading-[0.96] tracking-[-0.065em] text-white sm:text-[3.5rem] lg:text-[4.2rem]">
-              Your whole profile,
+            <h1 className="anim-2 mt-5 max-w-[34rem] text-[2.7rem] font-semibold leading-[0.96] tracking-[-0.065em] text-[var(--ink)] sm:text-[3.5rem] lg:text-[4.2rem]">
+              Share your profile
               <br />
-              <span className="text-[#7b97ff]">one scan away.</span>
+              <span className="text-[var(--brand)]">in one scan.</span>
             </h1>
 
-            <p className="anim-3 mt-5 max-w-[32rem] text-[0.98rem] leading-7 text-white/60 sm:text-[1.02rem]">
-              Stop scrambling for your LinkedIn. One QR scan hands recruiters your portfolio, resume, and contact info — while the conversation is still going.
+            <p className="anim-3 mt-5 max-w-[32rem] text-[0.98rem] leading-7 text-[var(--muted)] sm:text-[1.02rem]">
+              Your digital networking card - LinkedIn, portfolio, resume, and contact details in one place.
+              Perfect for career fairs, campus events, and meetups.
             </p>
 
-            <div className="anim-4 mt-6 grid gap-2.5 text-sm">
+            <div className="anim-4 mt-6 grid gap-2.5 text-sm text-[var(--ink)]">
               {quickPoints.map((item) => (
                 <div
                   key={item}
-                  className="flex items-center gap-3 rounded-2xl border border-white/[0.12] bg-[rgba(13,21,40,0.65)] px-4 py-3 backdrop-blur-md"
+                  className="flex items-center gap-3 rounded-2xl border border-[rgba(25,35,61,0.06)] bg-white/88 px-4 py-2.5 shadow-[0_10px_24px_rgba(21,32,58,0.04)]"
                 >
-                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-[#7b97ff]/30 bg-[#5267d9]/30">
-                    <Check className="h-3.5 w-3.5 text-[#7b97ff]" />
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(82,103,217,0.12)]">
+                    <Check className="h-4 w-4 text-[var(--brand)]" />
                   </div>
-                  <span className="font-medium text-white/90">{item}</span>
+                  <span className="font-medium">{item}</span>
                 </div>
               ))}
             </div>
@@ -165,22 +190,22 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
             <div className="anim-5 mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#5267d9] px-8 py-4 text-base font-semibold text-white shadow-[0_20px_40px_rgba(82,103,217,0.35)] transition hover:scale-[1.03] hover:bg-[#6278e8] hover:shadow-[0_24px_48px_rgba(82,103,217,0.45)] active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-8 py-4 text-base font-semibold text-[var(--ink)] shadow-[0_20px_40px_rgba(255,141,87,0.32)] transition hover:scale-[1.03] hover:bg-[#ff9a67] hover:shadow-[0_24px_48px_rgba(255,141,87,0.4)] active:scale-[0.98]"
               >
                 Create my card - it&apos;s free
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center justify-center gap-1.5 py-4 text-sm font-medium text-white/50 transition hover:text-white"
+                className="inline-flex items-center justify-center gap-1.5 py-4 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--ink)]"
               >
                 See how it works
                 <SquareArrowOutUpRight className="h-3.5 w-3.5" />
               </a>
             </div>
 
-            <p className="anim-6 mt-4 text-xs text-white/35">
-              Works from any phone &middot; No app download needed
+            <p className="anim-6 mt-4 text-xs text-[var(--muted)]">
+              No app download needed &middot; Works instantly at any event
             </p>
           </div>
 
@@ -188,121 +213,145 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
         </div>
       </section>
 
-      <section id="why-it-matters">
+      <section id="why-it-matters" className="border-y border-[rgba(25,35,61,0.06)] bg-white/88">
         <div className="mx-auto max-w-7xl px-6 py-24">
-          <ScrollReveal className="max-w-3xl">
+          <ScrollReveal className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end stagger-children">
             <div className="max-w-3xl">
-              <h2 className="text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Why this matters</p>
+              <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
                 Great networking opportunities are often lost in small, awkward moments.
               </h2>
             </div>
+
+            <div className="rounded-[1.9rem] border border-[rgba(82,103,217,0.12)] bg-[linear-gradient(135deg,_rgba(82,103,217,0.1),_rgba(255,255,255,0.96))] p-7 shadow-[0_18px_40px_rgba(21,32,58,0.05)] sm:p-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">
+                {networkingQuote.source}
+              </p>
+              <blockquote className="mt-3 max-w-3xl text-2xl font-semibold leading-tight tracking-[-0.04em] text-[var(--ink)] sm:text-[2rem]">
+                &ldquo;{networkingQuote.line}&rdquo;
+              </blockquote>
+              <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--muted)]">{networkingQuote.body}</p>
+            </div>
           </ScrollReveal>
 
-          <ScrollReveal
-            className="mt-12 rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-5 sm:p-7"
-            delayMs={120}
-          >
-            <div className="grid grid-cols-2 gap-2 sm:gap-4 stagger-children">
+          <ScrollReveal className="mt-12 rounded-[2rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_#ffffff_0%,_#f8faff_100%)] p-5 shadow-[0_22px_50px_rgba(21,32,58,0.06)] sm:p-7" delayMs={120}>
+            <div className="grid gap-4 lg:grid-cols-2 stagger-children">
               {comparisonColumns.map((column) => (
-                <ShineBorder
+                <div
                   key={column.label}
-                  borderRadius={26}
-                  borderWidth={1}
-                  duration={column.tone === "brand" ? 18 : 26}
-                  color={column.tone === "brand" ? ["#7b97ff", "#5267d9", "#a5b8ff"] : ["#ffffff22", "#ffffff11", "#ffffff33"]}
-                  className="w-full"
+                  className={`rounded-[1.6rem] border px-5 py-5 ${
+                    column.tone === "brand"
+                      ? "border-[rgba(82,103,217,0.16)] bg-[linear-gradient(160deg,_rgba(82,103,217,0.12),_rgba(255,255,255,0.96))]"
+                      : "border-[rgba(25,35,61,0.08)] bg-white"
+                  }`}
                 >
-                  <GlowCard
-                    glowColor="blue"
-                    borderRadius={26}
-                    className={`w-full px-5 py-5 ${
-                      column.tone === "brand"
-                        ? "bg-[linear-gradient(160deg,_rgba(82,103,217,0.2),_rgba(82,103,217,0.04))]"
-                        : "bg-white/[0.05]"
+                  <p
+                    className={`text-xs font-semibold uppercase tracking-[0.24em] ${
+                      column.tone === "brand" ? "text-[var(--brand)]" : "text-[var(--muted)]"
                     }`}
                   >
-                    <p
-                      className={`text-xs font-semibold uppercase tracking-[0.24em] ${
-                        column.tone === "brand" ? "text-[#7b97ff]" : "text-white/40"
-                      }`}
-                    >
-                      {column.label}
-                    </p>
-                    <div className="mt-4 space-y-3">
-                      {column.points.map((point) => (
-                        <div key={point} className="flex items-start gap-3">
-                          <div
-                            className={`mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${
-                              column.tone === "brand"
-                                ? "bg-[rgba(82,103,217,0.3)] text-[#7b97ff]"
-                                : "bg-white/[0.08] text-white/40"
-                            }`}
-                          >
-                            <CheckCircle2 className="h-4 w-4" />
-                          </div>
-                          <p className="text-sm leading-7 text-white/75">{point}</p>
+                    {column.label}
+                  </p>
+                  <div className="mt-4 space-y-3">
+                    {column.points.map((point) => (
+                      <div key={point} className="flex items-start gap-3">
+                        <div
+                          className={`mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${
+                            column.tone === "brand"
+                              ? "bg-[rgba(82,103,217,0.12)] text-[var(--brand)]"
+                              : "bg-[var(--soft)] text-[var(--muted)]"
+                          }`}
+                        >
+                          <CheckCircle2 className="h-4 w-4" />
                         </div>
-                      ))}
-                    </div>
-                  </GlowCard>
-                </ShineBorder>
+                        <p className="text-sm leading-7 text-[var(--ink)]">{point}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </ScrollReveal>
         </div>
       </section>
 
-      <HowItWorksSection />
+      <section id="how-it-works" className="mx-auto max-w-7xl px-6 py-24">
+        <ScrollReveal className="max-w-3xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">How it works</p>
+          <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
+            A simple flow built for the way networking actually happens.
+          </h2>
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+            Set up your card once, open it in seconds, and share it when the conversation matters most.
+          </p>
+        </ScrollReveal>
 
-      <section className="border-y border-white/[0.07]">
+        <ScrollReveal className="mt-14 grid gap-5 lg:grid-cols-3 stagger-children">
+          {steps.map((step) => (
+            <article
+              key={step.id}
+              className="hover-lift relative overflow-hidden rounded-[1.9rem] border border-[rgba(25,35,61,0.07)] bg-white p-6 shadow-[0_18px_40px_rgba(21,32,58,0.05)] hover:shadow-[0_28px_56px_rgba(21,32,58,0.1)]"
+            >
+              <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,_#5267d9,_#8da0ff)]" />
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(82,103,217,0.1)] text-sm font-semibold text-[var(--brand)]">
+                {step.id}
+              </div>
+              <h3 className="mt-6 text-2xl font-semibold tracking-[-0.04em] text-[var(--ink)]">{step.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{step.body}</p>
+              {step.id !== "03" ? (
+                <div className="mt-6 hidden items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)] lg:inline-flex">
+                  Next step
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </div>
+              ) : null}
+            </article>
+          ))}
+        </ScrollReveal>
+      </section>
+
+      <section className="border-y border-[rgba(25,35,61,0.06)] bg-[linear-gradient(180deg,_#ffffff_0%,_#f6f8ff_100%)]">
         <div className="mx-auto grid max-w-7xl gap-14 px-6 py-24 lg:grid-cols-[0.92fr_1.08fr]">
           <ScrollReveal>
-            <h2 className="text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">
+              What your card includes
+            </p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
               Everything needed to make a strong first impression.
             </h2>
-            <p className="mt-5 max-w-xl text-lg leading-8 text-white/60">
+            <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--muted)]">
               Keep the essentials in one place so the person who scans your code can understand who you are and how to reach you immediately.
             </p>
           </ScrollReveal>
 
           <ScrollReveal className="grid gap-4 sm:grid-cols-2 stagger-children">
             {includedFeatures.map((item, index) => (
-              <ShineBorder
+              <div
                 key={item.title}
-                borderRadius={24}
-                borderWidth={1}
-                duration={22}
-                color={["#7b97ff", "#5267d9", "#a5b8ff"]}
-                className="w-full"
+                className="hover-lift rounded-[1.5rem] border border-[rgba(25,35,61,0.07)] bg-white px-5 py-5 shadow-[0_16px_35px_rgba(21,32,58,0.05)] hover:shadow-[0_24px_48px_rgba(21,32,58,0.1)]"
               >
-                <GlowCard
-                  glowColor="blue"
-                  borderRadius={24}
-                  className="w-full bg-white/[0.06] px-5 py-5 backdrop-blur-sm"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/[0.1] text-[#7b97ff]">
-                      {index === 0 ? <UserRound className="h-4 w-4" /> : null}
-                      {index === 1 ? <GraduationCap className="h-4 w-4" /> : null}
-                      {index === 2 ? <BriefcaseBusiness className="h-4 w-4" /> : null}
-                      {index === 3 ? <QrCode className="h-4 w-4" /> : null}
-                    </div>
-                    <p className="text-sm font-semibold text-white">{item.title}</p>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--soft)] text-[var(--brand)]">
+                    {index === 0 ? <UserRound className="h-4 w-4" /> : null}
+                    {index === 1 ? <GraduationCap className="h-4 w-4" /> : null}
+                    {index === 2 ? <BriefcaseBusiness className="h-4 w-4" /> : null}
+                    {index === 3 ? <QrCode className="h-4 w-4" /> : null}
                   </div>
-                  <p className="mt-4 text-sm leading-7 text-white/60">{item.description}</p>
-                </GlowCard>
-              </ShineBorder>
+                  <p className="text-sm font-semibold text-[var(--ink)]">{item.title}</p>
+                </div>
+                <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{item.description}</p>
+              </div>
             ))}
           </ScrollReveal>
         </div>
       </section>
 
-      <section id="use-cases" className="scroll-mt-24 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24 sm:scroll-mt-28">
+      <section id="use-cases" className="mx-auto max-w-7xl px-6 py-24">
         <ScrollReveal className="max-w-3xl">
-          <h2 className="text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Use cases</p>
+          <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-5xl">
             Built for the places where students meet real opportunities.
           </h2>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
             DigiCard is designed for fast, in-person moments where a clean profile and quick QR share can make networking easier.
           </p>
         </ScrollReveal>
@@ -310,61 +359,44 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
         <UseCasesTicketGrid items={useCaseDetails} />
       </section>
 
-      {/* Final CTA — full-bleed, blends into page background */}
-      <section className="relative overflow-hidden px-6 py-32 text-center">
-        {/* Ambient glow orbs */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#5267d9] opacity-[0.12] blur-[120px]" />
-          <div className="absolute left-1/4 top-1/3 h-[300px] w-[300px] rounded-full bg-[#7b97ff] opacity-[0.07] blur-[90px]" />
-          <div className="absolute right-1/4 top-1/2 h-[280px] w-[280px] rounded-full bg-[#5267d9] opacity-[0.08] blur-[80px]" />
-        </div>
+      <section className="mx-auto max-w-7xl px-6 py-24">
+        <ScrollReveal className="rounded-[2.4rem] border border-[rgba(255,255,255,0.18)] bg-[linear-gradient(135deg,_#172340_0%,_#2d4177_36%,_#5267d9_72%,_#8ca0ff_100%)] px-8 py-10 text-white shadow-[0_32px_80px_rgba(35,51,103,0.22)] md:px-12 md:py-14">
+          <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/60">Build your own version</p>
+              <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">
+                Launch a card that feels ready before the next opportunity even starts.
+              </h2>
+              <p className="mt-5 text-lg leading-8 text-white/74">
+                Start with the same polished experience you just explored, customize it in minutes, and walk into your next event already prepared.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3 text-sm text-white/78">
+                {["Live profile", "QR share", "Resume links", "Instant follow-up"].map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-white/18 bg-white/10 px-4 py-2 font-medium backdrop-blur"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
 
-        {/* Faint grid lines */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
-            backgroundSize: "80px 80px",
-          }}
-        />
-
-        <ScrollReveal className="relative z-10 mx-auto max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#7b97ff]">
-            Ready when you are
-          </p>
-          <h2 className="mt-5 text-5xl font-semibold leading-[0.95] tracking-[-0.055em] text-white sm:text-6xl lg:text-7xl">
-            Your card.<br />
-            <span className="text-white/40">One scan.</span><br />
-            Every opportunity.
-          </h2>
-          <p className="mx-auto mt-7 max-w-xl text-lg leading-8 text-white/50">
-            Set it up in 60 seconds and walk into your next career fair already prepared.
-          </p>
-
-          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-2 rounded-full bg-[#5267d9] px-8 py-4 text-base font-semibold text-white shadow-[0_20px_50px_rgba(82,103,217,0.4)] transition hover:scale-[1.03] hover:bg-[#6278e8] hover:shadow-[0_24px_60px_rgba(82,103,217,0.5)] active:scale-[0.98]"
-            >
-              Create my card — it&apos;s free
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <a
-              href="#live-preview"
-              className="inline-flex items-center gap-1.5 py-4 text-sm font-medium text-white/40 transition hover:text-white"
-            >
-              See live preview
-              <SquareArrowOutUpRight className="h-3.5 w-3.5" />
-            </a>
-          </div>
-
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs font-medium text-white/25">
-            {["No app download", "Works on any phone", "Free to start", "Share in seconds"].map((item) => (
-              <span key={item} className="flex items-center gap-2">
-                <span className="h-1 w-1 rounded-full bg-white/20" />
-                {item}
-              </span>
-            ))}
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-4 text-sm font-semibold text-[var(--brand)] transition hover:bg-[#f2f5ff]"
+              >
+                Create my card
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href="#live-preview"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 px-7 py-4 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                View live preview
+              </a>
+            </div>
           </div>
         </ScrollReveal>
       </section>
