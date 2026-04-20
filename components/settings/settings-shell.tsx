@@ -491,7 +491,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
           <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5">
             <p className="text-sm font-semibold text-[var(--ink)]">Selected style</p>
             <div className="mt-4">
-              <CardPreview card={previewCard} compact />
+              <CardPreview card={previewCard} compact fullDetailsCompact />
             </div>
             <p className="mt-3 text-sm leading-5 text-[var(--muted)]">{selectedTemplate.description}</p>
           </div>

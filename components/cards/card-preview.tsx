@@ -9,11 +9,18 @@ import { cn } from "@/lib/utils";
 type CardPreviewProps = {
   card: DigiCard;
   compact?: boolean;
+  fullDetailsCompact?: boolean;
   imageUrl?: string;
   phoneHero?: boolean;
 };
 
-type TP = { card: DigiCard; imageUrl: string | undefined; qrValue: string; compact: boolean };
+type TP = {
+  card: DigiCard;
+  imageUrl: string | undefined;
+  qrValue: string;
+  compact: boolean;
+  fullDetailsCompact: boolean;
+};
 type ContactKey = "email" | "phone" | "linkedin" | "website";
 
 type ContactDef = {
@@ -355,11 +362,13 @@ function StudentNetworkCard({
   imageUrl,
   qrValue,
   compact,
+  fullDetailsCompact,
   theme,
 }: TP & { theme: StudentTheme }) {
-  const contacts = networkingContactDefs.filter((contact) => Boolean(card[contact.key]));
-  const visibleContacts = compact ? contacts.slice(0, 2) : contacts.slice(0, 4);
-  const qrSize = compact ? 36 : 108;
+  const useFullCompactLayout = compact && fullDetailsCompact;
+  const contacts = (useFullCompactLayout ? contactDefs : networkingContactDefs).filter((contact) => Boolean(card[contact.key]));
+  const visibleContacts = compact ? contacts.slice(0, useFullCompactLayout ? 4 : 2) : contacts.slice(0, 4);
+  const qrSize = compact ? (useFullCompactLayout ? 30 : 36) : 108;
   const dividerClassName = theme.name.includes("text-white") ? "border-white/10" : "border-black/8";
 
   return (
@@ -373,20 +382,21 @@ function StudentNetworkCard({
       {theme.overlay ? <div className={cn("pointer-events-none absolute inset-0", theme.overlay)} /> : null}
       <div className={cn("absolute inset-x-0 top-0 h-[3px]", theme.rail)} />
 
-      <div className={cn("relative flex h-full flex-col", compact ? "p-4" : "p-7")}>
+      <div className={cn("relative flex h-full flex-col", compact ? (useFullCompactLayout ? "p-3.5" : "p-4") : "p-7")}>
         <div className="flex items-start justify-between gap-4">
           <Av
             imageUrl={imageUrl}
             name={card.name}
-            size={compact ? "h-12 w-12 text-sm" : "h-14 w-14 text-base"}
-            rounded={compact ? "rounded-[18px]" : "rounded-[22px]"}
+            size={compact ? (useFullCompactLayout ? "h-10 w-10 text-[11px]" : "h-12 w-12 text-sm") : "h-14 w-14 text-base"}
+            rounded={compact ? (useFullCompactLayout ? "rounded-[16px]" : "rounded-[18px]") : "rounded-[22px]"}
             bg={theme.avatarBg}
             ring={compact ? undefined : "ring-1 ring-white/10"}
             textColor={theme.avatarText}
           />
           <span
             className={cn(
-              "rounded-full border px-3 py-1 text-[8px] font-semibold uppercase tracking-[0.22em]",
+              "rounded-full border font-semibold uppercase tracking-[0.22em]",
+              compact && useFullCompactLayout ? "px-2.5 py-0.5 text-[7px]" : "px-3 py-1 text-[8px]",
               theme.chipMuted,
             )}
           >
@@ -394,34 +404,35 @@ function StudentNetworkCard({
           </span>
         </div>
 
-        <div className={compact ? "mt-4" : "mt-6"}>
+        <div className={compact ? (useFullCompactLayout ? "mt-3.5" : "mt-4") : "mt-6"}>
           <p
             className={cn(
-              compact ? "text-[24px]" : "text-[40px]",
-              "font-bold leading-none tracking-[-0.05em]",
+              compact ? (useFullCompactLayout ? "max-w-full truncate whitespace-nowrap text-[18px] leading-[0.96]" : "text-[24px]") : "text-[40px]",
+              "font-bold tracking-[-0.05em]",
+              compact && !useFullCompactLayout ? "leading-none" : undefined,
               theme.name,
             )}
           >
             {card.name}
           </p>
           {card.title ? (
-            <p className={cn(compact ? "mt-2 text-[11px]" : "mt-3 text-[16px]", "font-medium", theme.role)}>
+            <p className={cn(compact ? (useFullCompactLayout ? "mt-1.5 text-[9px] leading-[1.2]" : "mt-2 text-[11px]") : "mt-3 text-[16px]", "font-medium", theme.role)}>
               {card.title}
             </p>
           ) : null}
           {card.company ? (
-            <p className={cn(compact ? "mt-1 text-[9px]" : "mt-1.5 text-[12px]", theme.school)}>
+            <p className={cn(compact ? (useFullCompactLayout ? "mt-0.5 text-[7px] leading-[1.2]" : "mt-1 text-[9px]") : "mt-1.5 text-[12px]", theme.school)}>
               {card.company}
             </p>
           ) : null}
         </div>
 
         {visibleContacts.length > 0 ? (
-          <div className={cn("flex flex-col", compact ? "mt-4" : "mt-7")}>
+          <div className={cn("flex flex-col", compact ? (useFullCompactLayout ? "mt-3" : "mt-4") : "mt-7")}>
             {visibleContacts.map((contact) => {
               const Icon = contact.icon;
               const valueClassName = compact
-                ? "mt-0.5 truncate text-[10px] font-medium"
+                ? (useFullCompactLayout ? "mt-0.5 truncate text-[8px] font-medium leading-[1.25]" : "mt-0.5 truncate text-[10px] font-medium")
                 : "mt-1 break-all text-[12px] leading-[1.35]";
 
               return (
@@ -429,15 +440,15 @@ function StudentNetworkCard({
                   key={contact.key}
                   className={cn(
                     "flex items-start gap-3 border-b",
-                    compact ? "py-2.5" : "py-3.5",
+                    compact ? (useFullCompactLayout ? "py-1.5" : "py-2.5") : "py-3.5",
                     dividerClassName,
                   )}
                 >
-                  <Icon className={cn(compact ? "mt-0.5 h-3.5 w-3.5" : "mt-0.5 h-[18px] w-[18px]", "shrink-0", theme.icon)} />
+                  <Icon className={cn(compact ? (useFullCompactLayout ? "mt-0.5 h-[13px] w-[13px]" : "mt-0.5 h-3.5 w-3.5") : "mt-0.5 h-[18px] w-[18px]", "shrink-0", theme.icon)} />
                   <div className="min-w-0">
                     <p
                       className={cn(
-                        compact ? "text-[7px]" : "text-[8px]",
+                        compact ? (useFullCompactLayout ? "text-[6px]" : "text-[7px]") : "text-[8px]",
                         "font-semibold uppercase tracking-[0.18em]",
                         theme.subtle,
                       )}
@@ -452,13 +463,13 @@ function StudentNetworkCard({
           </div>
         ) : null}
 
-        <div className={cn("mt-auto flex flex-col items-center", compact ? "pt-5" : "pt-8")}>
-          <div className={cn(compact ? "rounded-[20px] p-2.5" : "rounded-[28px] p-4", theme.qrWrap)}>
+        <div className={cn("mt-auto flex flex-col items-center", compact ? (useFullCompactLayout ? "pt-3.5" : "pt-5") : "pt-8")}>
+          <div className={cn(compact ? (useFullCompactLayout ? "rounded-[16px] p-2" : "rounded-[20px] p-2.5") : "rounded-[28px] p-4", theme.qrWrap)}>
             <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor={theme.qrFg} />
           </div>
           <p
             className={cn(
-              compact ? "mt-4 text-[8px]" : "mt-7 text-[10px]",
+              compact ? (useFullCompactLayout ? "mt-2.5 text-[6px]" : "mt-4 text-[8px]") : "mt-7 text-[10px]",
               "font-semibold uppercase tracking-[0.28em]",
               theme.subtle,
             )}
@@ -511,10 +522,11 @@ function Dawn(props: TP) {
   return <StudentNetworkCard {...props} theme={studentThemes.dawn} />;
 }
 
-function ClassicNight({ card, imageUrl, qrValue, compact }: TP) {
+function ClassicNight({ card, imageUrl, qrValue, compact, fullDetailsCompact }: TP) {
   const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
-  const p = compact ? "p-4" : "p-8";
-  const qrSize = compact ? 52 : 128;
+  const useFullCompactLayout = compact && fullDetailsCompact;
+  const p = compact ? (useFullCompactLayout ? "p-3.5" : "p-4") : "p-8";
+  const qrSize = compact ? (useFullCompactLayout ? 40 : 52) : 128;
 
   return (
     <div
@@ -530,30 +542,30 @@ function ClassicNight({ card, imageUrl, qrValue, compact }: TP) {
         <Av
           imageUrl={imageUrl}
           name={card.name}
-          size={compact ? "h-12 w-12 text-sm" : "h-14 w-14 text-base"}
+          size={compact ? (useFullCompactLayout ? "h-10 w-10 text-[11px]" : "h-12 w-12 text-sm") : "h-14 w-14 text-base"}
           rounded="rounded-2xl"
           bg="bg-white/10 border border-white/14"
           ring={compact ? undefined : "ring-1 ring-white/12"}
         />
 
-        <div className={compact ? "mt-5" : "mt-8"}>
-          <p className={cn(compact ? "text-[28px]" : "text-[42px]", "font-bold tracking-[-0.04em] leading-none text-white")}>
+        <div className={compact ? (useFullCompactLayout ? "mt-3.5" : "mt-5") : "mt-8"}>
+          <p className={cn(compact ? (useFullCompactLayout ? "max-w-full truncate whitespace-nowrap text-[18px] leading-[0.96]" : "text-[28px]") : "text-[42px]", "font-bold tracking-[-0.04em] text-white", compact && !useFullCompactLayout ? "leading-none" : undefined)}>
             {card.name}
           </p>
           {card.title ? (
-            <p className={cn(compact ? "mt-2 text-[10px]" : "mt-3 text-[16px]", "font-medium text-slate-300")}>
+            <p className={cn(compact ? (useFullCompactLayout ? "mt-1.5 text-[9px] leading-[1.2]" : "mt-2 text-[10px]") : "mt-3 text-[16px]", "font-medium text-slate-300")}>
               {card.title}
             </p>
           ) : null}
           {card.company ? (
-            <p className={cn(compact ? "mt-1 text-[9px]" : "mt-1.5 text-[12px]", "text-slate-500")}>
+            <p className={cn(compact ? (useFullCompactLayout ? "mt-0.5 text-[7px] leading-[1.2]" : "mt-1 text-[9px]") : "mt-1.5 text-[12px]", "text-slate-500")}>
               {card.company}
             </p>
           ) : null}
         </div>
 
         {contacts.length > 0 ? (
-          <div className={cn(compact ? "mt-5" : "mt-8", "flex flex-col")}>
+          <div className={cn(compact ? (useFullCompactLayout ? "mt-3.5" : "mt-5") : "mt-8", "flex flex-col")}>
             {contacts.map((contact, index) => {
               const Icon = contact.icon;
 
@@ -562,12 +574,12 @@ function ClassicNight({ card, imageUrl, qrValue, compact }: TP) {
                   key={contact.key}
                   className={cn(
                     "flex items-center gap-3 border-slate-800/95",
-                    compact ? "py-2.5" : "py-3.5",
+                    compact ? (useFullCompactLayout ? "py-1.5" : "py-2.5") : "py-3.5",
                     index > 0 && "border-t",
                   )}
                 >
-                  <Icon className={cn(compact ? "h-4 w-4" : "h-[18px] w-[18px]", "shrink-0 text-slate-500")} />
-                  <p className={cn(compact ? "text-[10px]" : "text-[12px]", "truncate text-slate-300")}>
+                  <Icon className={cn(compact ? (useFullCompactLayout ? "h-[13px] w-[13px]" : "h-4 w-4") : "h-[18px] w-[18px]", "shrink-0 text-slate-500")} />
+                  <p className={cn(compact ? (useFullCompactLayout ? "text-[8px] leading-[1.25]" : "text-[10px]") : "text-[12px]", "truncate text-slate-300")}>
                     {card[contact.key]}
                   </p>
                 </div>
@@ -576,11 +588,11 @@ function ClassicNight({ card, imageUrl, qrValue, compact }: TP) {
           </div>
         ) : null}
 
-        <div className={cn(compact ? "mt-6" : "mt-auto pt-8", "flex flex-col items-center")}>
-          <div className={cn("bg-white shadow-[0_12px_34px_rgba(0,0,0,0.35)]", compact ? "rounded-[20px] p-2.5" : "rounded-[28px] p-4")}>
+        <div className={cn(compact ? (useFullCompactLayout ? "mt-4" : "mt-6") : "mt-auto pt-8", "flex flex-col items-center")}>
+          <div className={cn("bg-white shadow-[0_12px_34px_rgba(0,0,0,0.35)]", compact ? (useFullCompactLayout ? "rounded-[16px] p-2" : "rounded-[20px] p-2.5") : "rounded-[28px] p-4")}>
             <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor="#111827" />
           </div>
-          <p className={cn(compact ? "mt-4 text-[8px]" : "mt-7 text-[10px]", "tracking-[0.28em] uppercase text-slate-600")}>
+          <p className={cn(compact ? (useFullCompactLayout ? "mt-2.5 text-[6px]" : "mt-4 text-[8px]") : "mt-7 text-[10px]", "tracking-[0.28em] uppercase text-slate-600")}>
             SCAN TO CONNECT | DIGICARD
           </p>
         </div>
@@ -589,10 +601,11 @@ function ClassicNight({ card, imageUrl, qrValue, compact }: TP) {
   );
 }
 
-function ArchitectColumn({ card, imageUrl, qrValue, compact }: TP) {
+function ArchitectColumn({ card, imageUrl, qrValue, compact, fullDetailsCompact }: TP) {
   const contacts = contactDefs.filter((c) => Boolean(card[c.key]));
-  const visibleContacts = compact ? contacts.slice(0, 3) : contacts;
-  const qrSize = compact ? 40 : 112;
+  const useFullCompactLayout = compact && fullDetailsCompact;
+  const visibleContacts = compact ? contacts.slice(0, useFullCompactLayout ? 4 : 3) : contacts;
+  const qrSize = compact ? (useFullCompactLayout ? 34 : 40) : 112;
 
   return (
     <div
@@ -605,34 +618,34 @@ function ArchitectColumn({ card, imageUrl, qrValue, compact }: TP) {
       <div className="absolute inset-y-0 left-[30%] w-px bg-[#182126]/10" />
       <div className="absolute inset-x-0 top-0 h-px bg-white/70" />
 
-      <div className={cn("relative flex h-full", compact ? "px-3 py-4" : "px-6 py-7")}>
+      <div className={cn("relative flex h-full", compact ? (useFullCompactLayout ? "px-2.5 py-3.5" : "px-3 py-4") : "px-6 py-7")}>
         <div className={cn("relative flex-shrink-0", compact ? "w-[29%]" : "w-[110px]")}>
-          <div className={cn("flex justify-center", compact ? "pt-3" : "pt-5")}>
+          <div className={cn("flex justify-center", compact ? (useFullCompactLayout ? "pt-2.5" : "pt-3") : "pt-5")}>
             <div
               className="max-h-full text-center text-white"
               style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
             >
-              <span className={cn(compact ? "text-[9px]" : "text-[11px]", "font-bold tracking-[-0.02em]")}>
+              <span className={cn(compact ? (useFullCompactLayout ? "text-[8px]" : "text-[9px]") : "text-[11px]", "font-bold tracking-[-0.02em]")}>
                 {card.name}
               </span>
-              <span className={cn(compact ? "mt-1 text-[8px]" : "mt-2 text-[10px]", "text-white/72")}>
+              <span className={cn(compact ? (useFullCompactLayout ? "mt-0.5 text-[6px]" : "mt-1 text-[8px]") : "mt-2 text-[10px]", "text-white/72")}>
                 {card.company || card.title || "DigiCard"}
               </span>
             </div>
           </div>
 
-          <div className={cn("absolute left-1/2 -translate-x-1/2", compact ? "bottom-20" : "bottom-36")}>
+          <div className={cn("absolute left-1/2 -translate-x-1/2", compact ? (useFullCompactLayout ? "bottom-[4.25rem]" : "bottom-20") : "bottom-36")}>
             <div
               className={cn(
                 "flex items-center justify-center rounded-full bg-[#182126] shadow-[0_18px_35px_rgba(15,23,42,0.24)]",
-                compact ? "h-12 w-12" : "h-20 w-20",
+                compact ? (useFullCompactLayout ? "h-10 w-10" : "h-12 w-12") : "h-20 w-20",
               )}
             >
               {imageUrl ? (
                 <Av
                   imageUrl={imageUrl}
                   name={card.name}
-                  size={compact ? "h-9 w-9 text-[10px]" : "h-14 w-14 text-sm"}
+                  size={compact ? (useFullCompactLayout ? "h-8 w-8 text-[9px]" : "h-9 w-9 text-[10px]") : "h-14 w-14 text-sm"}
                   rounded="rounded-full"
                   bg="bg-white/10"
                 />
@@ -642,47 +655,47 @@ function ArchitectColumn({ card, imageUrl, qrValue, compact }: TP) {
             </div>
           </div>
 
-          <div className={cn("absolute left-1/2 -translate-x-1/2", compact ? "bottom-6" : "bottom-8")}>
+          <div className={cn("absolute left-1/2 -translate-x-1/2", compact ? (useFullCompactLayout ? "bottom-4" : "bottom-6") : "bottom-8")}>
             <div className="flex flex-col items-center gap-2">
-              <div className={cn("rounded-full bg-white/92", compact ? "h-2.5 w-9" : "h-3 w-14")} />
-              <div className={cn("rounded-full bg-white/34", compact ? "h-2.5 w-12" : "h-3 w-16")} />
-              <div className={cn("rounded-full bg-white/55", compact ? "h-2.5 w-7" : "h-3 w-9")} />
+              <div className={cn("rounded-full bg-white/92", compact ? (useFullCompactLayout ? "h-2 w-8" : "h-2.5 w-9") : "h-3 w-14")} />
+              <div className={cn("rounded-full bg-white/34", compact ? (useFullCompactLayout ? "h-2 w-10" : "h-2.5 w-12") : "h-3 w-16")} />
+              <div className={cn("rounded-full bg-white/55", compact ? (useFullCompactLayout ? "h-2 w-6" : "h-2.5 w-7") : "h-3 w-9")} />
             </div>
           </div>
         </div>
 
-        <div className={cn("flex min-w-0 flex-1 flex-col", compact ? "pl-3.5" : "pl-6")}>
+        <div className={cn("flex min-w-0 flex-1 flex-col", compact ? (useFullCompactLayout ? "pl-3" : "pl-3.5") : "pl-6")}>
           <div className="flex justify-end">
-            <div className={cn("rounded-[18px] bg-white p-2 shadow-[0_16px_28px_rgba(15,23,42,0.12)]", compact && "rounded-[14px] p-1.5")}>
+            <div className={cn("rounded-[18px] bg-white p-2 shadow-[0_16px_28px_rgba(15,23,42,0.12)]", compact && (useFullCompactLayout ? "rounded-[12px] p-1.5" : "rounded-[14px] p-1.5"))}>
               <QRCodeSVG value={qrValue} size={qrSize} bgColor="#ffffff" fgColor="#11181d" />
             </div>
           </div>
 
-          <div className={compact ? "mt-4" : "mt-6"}>
-            <p className={cn(compact ? "text-base" : "text-[24px]", "font-bold tracking-[-0.03em] text-[#1b2328]")}>
+          <div className={compact ? (useFullCompactLayout ? "mt-3" : "mt-4") : "mt-6"}>
+            <p className={cn(compact ? (useFullCompactLayout ? "max-w-full truncate whitespace-nowrap text-[15px] leading-[1]" : "text-base") : "text-[24px]", "font-bold tracking-[-0.03em] text-[#1b2328]")}>
               {card.name}
             </p>
             {card.title ? (
-              <p className={cn(compact ? "mt-1 text-[10px]" : "mt-1.5 text-sm", "font-medium uppercase tracking-[0.08em] text-slate-500")}>
+              <p className={cn(compact ? (useFullCompactLayout ? "mt-0.5 text-[8px]" : "mt-1 text-[10px]") : "mt-1.5 text-sm", "font-medium uppercase tracking-[0.08em] text-slate-500")}>
                 {card.title}
               </p>
             ) : null}
             {card.company ? (
-              <p className={cn(compact ? "mt-1 text-[9px]" : "mt-2 text-[11px]", "text-slate-500")}>
+              <p className={cn(compact ? (useFullCompactLayout ? "mt-0.5 text-[7px] leading-[1.25]" : "mt-1 text-[9px]") : "mt-2 text-[11px]", "text-slate-500")}>
                 {card.company}
               </p>
             ) : null}
           </div>
 
           {visibleContacts.length > 0 ? (
-            <div className={cn(compact ? "mt-4 space-y-2.5" : "mt-7 space-y-3.5")}>
+            <div className={cn(compact ? (useFullCompactLayout ? "mt-3 space-y-1.5" : "mt-4 space-y-2.5") : "mt-7 space-y-3.5")}>
               {visibleContacts.map((contact) => (
                 <div key={contact.key}>
-                  <div className={cn("mb-2 h-px bg-[#182126]/22", compact && "mb-1.5")} />
-                  <p className={cn(compact ? "text-[7px]" : "text-[9px]", "uppercase tracking-[0.22em] text-slate-400")}>
+                  <div className={cn("mb-2 h-px bg-[#182126]/22", compact && (useFullCompactLayout ? "mb-1" : "mb-1.5"))} />
+                  <p className={cn(compact ? (useFullCompactLayout ? "text-[6px]" : "text-[7px]") : "text-[9px]", "uppercase tracking-[0.22em] text-slate-400")}>
                     {contact.label}
                   </p>
-                  <p className={cn(compact ? "mt-1 text-[9px]" : "mt-1.5 text-[12px]", "text-slate-700")}>
+                  <p className={cn(compact ? (useFullCompactLayout ? "mt-0.5 truncate text-[7px] leading-[1.2]" : "mt-1 text-[9px]") : "mt-1.5 text-[12px]", "text-slate-700")}>
                     {card[contact.key]}
                   </p>
                 </div>
@@ -690,10 +703,10 @@ function ArchitectColumn({ card, imageUrl, qrValue, compact }: TP) {
             </div>
           ) : null}
 
-          <div className={cn(compact ? "mt-auto pt-4" : "mt-auto pt-6")}>
+          <div className={cn(compact ? (useFullCompactLayout ? "mt-auto pt-3" : "mt-auto pt-4") : "mt-auto pt-6")}>
             <div className="flex items-center gap-2.5">
-              <div className={cn("h-px bg-[#182126]/35", compact ? "w-8" : "w-12")} />
-              <span className={cn(compact ? "text-[7px]" : "text-[9px]", "uppercase tracking-[0.2em] text-slate-400")}>
+              <div className={cn("h-px bg-[#182126]/35", compact ? (useFullCompactLayout ? "w-6" : "w-8") : "w-12")} />
+              <span className={cn(compact ? (useFullCompactLayout ? "text-[6px]" : "text-[7px]") : "text-[9px]", "uppercase tracking-[0.2em] text-slate-400")}>
                 Scan to connect
               </span>
             </div>
@@ -707,12 +720,13 @@ function ArchitectColumn({ card, imageUrl, qrValue, compact }: TP) {
 export function CardPreview({
   card,
   compact = false,
+  fullDetailsCompact = false,
   imageUrl,
   phoneHero: _phoneHero = false,
 }: CardPreviewProps) {
   const shareTarget = getCardShareTarget(card);
   const qrValue = shareTarget.url;
-  const tp: TP = { card, imageUrl, qrValue, compact };
+  const tp: TP = { card, imageUrl, qrValue, compact, fullDetailsCompact };
   let preview = <Blueprint {...tp} />;
 
   switch (card.template) {

@@ -9,8 +9,8 @@ function TemplateCardPreview({
   previewCard: DigiCard;
 }) {
   return (
-    <div className="mx-auto w-[148px] max-w-full">
-      <CardPreview card={previewCard} compact />
+    <div className="mx-auto w-[176px] max-w-full">
+      <CardPreview card={previewCard} compact fullDetailsCompact />
     </div>
   );
 }

@@ -485,8 +485,8 @@ export function CreateCardForm({
                           : "border-gray-200 bg-white hover:border-[#00C4CC]/40 hover:shadow-sm",
                       )}
                     >
-                      <div className="mx-auto w-[108px] sm:w-[118px]">
-                        <CardPreview card={buildTemplatePreviewCard(template)} compact />
+                      <div className="mx-auto w-[128px] sm:w-[140px]">
+                        <CardPreview card={buildTemplatePreviewCard(template)} compact fullDetailsCompact />
                       </div>
                       <div className="mt-2 flex items-center justify-between gap-2">
                         <p className="text-xs font-semibold text-[#0E1318]">{template.name}</p>
