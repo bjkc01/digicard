@@ -105,7 +105,7 @@ export function HomeAuthModal({
       {mounted && open
         ? createPortal(
             <div
-              className="fixed inset-0 z-[120] overflow-y-auto px-3 py-6 sm:px-4 sm:py-8"
+              className="fixed inset-0 z-[120] flex items-center justify-center px-4 py-8"
               onClick={(event) => {
                 if (event.target === event.currentTarget) {
                   handleClose();
@@ -114,7 +114,6 @@ export function HomeAuthModal({
             >
               <div className="auth-modal-backdrop absolute inset-0 bg-[rgba(12,18,31,0.42)] backdrop-blur-[12px]" />
 
-              <div className="relative z-10 flex min-h-full items-center justify-center">
               <div
                 role="dialog"
                 aria-modal="true"
@@ -124,14 +123,13 @@ export function HomeAuthModal({
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="absolute -right-3 -top-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-[#1a2540] text-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.4)] transition hover:bg-[#232f52] hover:text-white"
+                  className="absolute -right-3 -top-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-[var(--ink)] shadow-[0_4px_16px_rgba(15,23,42,0.18)] transition hover:bg-slate-50"
                   aria-label="Close sign in"
                 >
                   <X className="h-4 w-4" />
                 </button>
 
                 {children}
-              </div>
               </div>
             </div>,
             document.body,
