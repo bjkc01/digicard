@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { deleteWorkspaceCardAction } from "@/app/create-card/actions";
 import { deleteExtraCardAction } from "@/app/create-card/extra-card-actions";
@@ -20,14 +20,12 @@ export function DashboardCardSurface({ card }: DashboardCardSurfaceProps) {
     : `digicard-portrait-${card.id}`;
   const legacyPrimaryPortraitKey = `digicard-portrait-${card.email}`;
 
-  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+  const [imageUrl] = useState<string | undefined>(() => {
+    if (typeof window === "undefined") return undefined;
+    return localStorage.getItem(portraitKey) ?? (isPrimary ? localStorage.getItem(legacyPrimaryPortraitKey) : null) ?? undefined;
+  });
   const [isPending, startTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem(portraitKey) ?? (isPrimary ? localStorage.getItem(legacyPrimaryPortraitKey) : null);
-    if (stored) setImageUrl(stored);
-  }, [isPrimary, legacyPrimaryPortraitKey, portraitKey]);
 
   function handleDelete() {
     if (!confirmDelete) {
