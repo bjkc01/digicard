@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { authSecret } from "@/lib/auth-env";
 import {
   notificationSettingOptions,
+  validManualQrPreferences,
   validQrPreferences,
   type WorkspaceNotificationKey,
   type WorkspaceQrPreference,
@@ -197,6 +198,10 @@ function isValidPhone(value: string) {
 
 function isValidQrPreference(value: unknown): value is WorkspaceQrPreference {
   return typeof value === "string" && validQrPreferences.has(value as WorkspaceQrPreference);
+}
+
+function isValidManualQrPreference(value: unknown): value is WorkspaceQrPreference {
+  return typeof value === "string" && validManualQrPreferences.has(value as WorkspaceQrPreference);
 }
 
 function normalizeLinkedIn(value: string) {
@@ -781,6 +786,18 @@ function validateWorkspaceProfileInput(input: {
   };
 }
 
+function validateRequiredCardQrPreference(value: string) {
+  if (!isValidManualQrPreference(value)) {
+    throw new WorkspaceSettingsValidationError(
+      "qr-invalid",
+      "Choose a QR destination before saving.",
+      { qrPreference: "Choose Website, LinkedIn, or Phone." },
+    );
+  }
+
+  return value;
+}
+
 export async function saveWorkspaceProfile(
   user: WorkspaceUser,
   input: {
@@ -914,11 +931,13 @@ export async function saveWorkspaceCardSnapshot(
       { defaultTemplateId: "Choose one of the available templates." },
     );
   }
+  const qrPreference = validateRequiredCardQrPreference(input.qrPreference);
 
   const current = await getWorkspaceSettings(user);
   const validated = validateWorkspaceProfileInput({
     ...input,
     avatarUrl: input.avatarUrl ?? current.profile.avatarUrl,
+    qrPreference,
   });
   const result = await persistWorkspaceSettings(
     user,
@@ -971,8 +990,9 @@ export async function saveWorkspaceExtraCard(
       { defaultTemplateId: "Choose one of the available templates." },
     );
   }
+  const qrPreference = validateRequiredCardQrPreference(input.qrPreference);
 
-  const validated = validateWorkspaceProfileInput({ ...input, avatarUrl: "" });
+  const validated = validateWorkspaceProfileInput({ ...input, avatarUrl: "", qrPreference });
 
   if (!input.id || input.id === "new") {
     throw new WorkspaceSettingsValidationError(

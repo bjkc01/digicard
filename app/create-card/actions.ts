@@ -16,7 +16,7 @@ function getActionErrorMessage(error: unknown) {
       case "profile-invalid":
         return "Add a valid name, email, and professional title before saving.";
       case "qr-invalid":
-        return "Choose whether the QR should open your website, LinkedIn, or use auto mode.";
+        return "Choose whether the QR should open your website, LinkedIn, or phone.";
       case "template-invalid":
         return "Choose one of the available templates before saving.";
       case "website-invalid":

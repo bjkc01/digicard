@@ -27,7 +27,10 @@ import { CardPreview } from "@/components/cards/card-preview";
 import type { DigiCardTemplate } from "@/lib/data";
 import { defaultDigiCardTemplateId, templates } from "@/lib/data";
 import { cn } from "@/lib/utils";
-import { qrPreferenceOptions, type WorkspaceQrPreference } from "@/lib/workspace-settings-options";
+import {
+  manualQrPreferenceOptions,
+  type WorkspaceQrPreference,
+} from "@/lib/workspace-settings-options";
 
 export type CardFormValues = {
   company: string;
@@ -35,7 +38,7 @@ export type CardFormValues = {
   linkedin: string;
   name: string;
   phone: string;
-  qrPreference: WorkspaceQrPreference;
+  qrPreference: WorkspaceQrPreference | "";
   title: string;
   website: string;
 };
@@ -71,6 +74,10 @@ const contactFields: FieldConfig[] = [
   { key: "linkedin", label: "LinkedIn", placeholder: "yourname or linkedin.com/in/yourname", icon: AtSign, maxLength: 200 },
   { key: "website", label: "Website", placeholder: "yourwebsite.com", icon: Globe, span: "full", maxLength: 120 },
 ];
+
+function normalizeCreateCardQrPreference(value: CardFormValues["qrPreference"]): CardFormValues["qrPreference"] {
+  return value === "auto" ? "" : value;
+}
 
 function formatPhone(raw: string) {
   // Strip everything except digits and leading +
@@ -136,7 +143,10 @@ export function CreateCardForm({
     templates.find((t) => t.id === initialTemplateId) ??
     templates.find((t) => t.id === defaultDigiCardTemplateId) ??
     templates[0]!;
-  const [formData, setFormData] = useState<CardFormValues>(initialFormData);
+  const [formData, setFormData] = useState<CardFormValues>({
+    ...initialFormData,
+    qrPreference: normalizeCreateCardQrPreference(initialFormData.qrPreference),
+  });
   const [selectedTemplate, setSelectedTemplate] = useState<DigiCardTemplate>(initialTemplate);
 
   // Portrait key: primary card uses email, extra cards use their stable ID
@@ -158,8 +168,6 @@ export function CreateCardForm({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
-  const selectedQrPreference =
-    qrPreferenceOptions.find((o) => o.key === formData.qrPreference) ?? qrPreferenceOptions[0]!;
   const buildTemplatePreviewCard = (template: DigiCardTemplate) => ({
     color: template.accent,
     company: formData.company || "University or Company",
@@ -168,7 +176,7 @@ export function CreateCardForm({
     linkedin: formData.linkedin || "linkedin.com/in/yourname",
     name: formData.name || "Your Name",
     phone: formData.phone || "+1 (555) 000-0000",
-    qrPreference: formData.qrPreference,
+    qrPreference: formData.qrPreference || undefined,
     template: template.name,
     title: formData.title || "Student or Early Professional",
     website: formData.website || "yourportfolio.com",
@@ -396,10 +404,13 @@ export function CreateCardForm({
                     className="rounded-xl border border-gray-200 bg-white p-4"
                   >
                     <p id="qr-label" className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
-                      QR destination
+                      QR destination<span className="ml-0.5 text-[#00C4CC]" aria-hidden="true">*</span>
                     </p>
-                    <div className="grid gap-2 grid-cols-2 md:grid-cols-4">
-                      {qrPreferenceOptions.map((option) => {
+                    <p className="mb-3 text-[11px] leading-5 text-[#5d6772]">
+                      Choose exactly where the QR should send people.
+                    </p>
+                    <div className="grid gap-2 grid-cols-2 md:grid-cols-3">
+                      {manualQrPreferenceOptions.map((option, index) => {
                         const isSelected = formData.qrPreference === option.key;
                         return (
                           <label
@@ -417,6 +428,7 @@ export function CreateCardForm({
                               className="sr-only"
                               name="qrPreference"
                               onChange={handleChange("qrPreference")}
+                              required={index === 0}
                               type="radio"
                               value={option.key}
                             />
@@ -543,7 +555,7 @@ export function CreateCardForm({
                   linkedin: formData.linkedin,
                   name: formData.name || "Your name",
                   phone: formData.phone,
-                  qrPreference: formData.qrPreference,
+                  qrPreference: formData.qrPreference || undefined,
                   template: selectedTemplate.name,
                   title: formData.title || "Professional title",
                   website: formData.website,

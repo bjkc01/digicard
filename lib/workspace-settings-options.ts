@@ -50,6 +50,14 @@ export const qrPreferenceOptions = [
 
 export type WorkspaceQrPreference = (typeof qrPreferenceOptions)[number]["key"];
 
+export const manualQrPreferenceOptions = qrPreferenceOptions.filter(
+  (option) => option.key !== "auto",
+);
+
 export const validQrPreferences = new Set<CardQrPreference>(
   qrPreferenceOptions.map((option) => option.key),
+);
+
+export const validManualQrPreferences = new Set<CardQrPreference>(
+  manualQrPreferenceOptions.map((option) => option.key),
 );

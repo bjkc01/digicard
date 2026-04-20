@@ -24,8 +24,8 @@ import {
   workspaceAvatarStorageKey,
 } from "@/lib/workspace-avatar";
 import {
+  manualQrPreferenceOptions,
   notificationSettingOptions,
-  qrPreferenceOptions,
   type WorkspaceNotificationKey,
   type WorkspaceQrPreference,
 } from "@/lib/workspace-settings-options";
@@ -95,8 +95,6 @@ function buildPreviewCard(
     website: profile.website,
   };
 }
-
-const manualQrOptions = qrPreferenceOptions.filter((o) => o.key !== "auto");
 
 async function createAvatarDataUrl(file: File) {
   const objectUrl = URL.createObjectURL(file);
@@ -363,7 +361,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
                 <p className="mt-2.5 text-sm text-[#991b1b]">{profileState.fieldErrors.qrPreference}</p>
               ) : null}
               <div className="mt-3 grid gap-2.5 md:grid-cols-2">
-                {manualQrOptions.map((option) => {
+                {manualQrPreferenceOptions.map((option) => {
                   const isSelected = profileForm.qrPreference === option.key;
                   return (
                     <label key={option.key} className="cursor-pointer">
