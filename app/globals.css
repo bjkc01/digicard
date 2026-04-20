@@ -453,5 +453,36 @@ textarea:focus-visible {
   .subtle-panel {
     border-radius: 1.25rem;
   }
+
+  /* Disable GPU-heavy animations on mobile to prevent jank */
+  .orb-drift-1,
+  .orb-drift-2 {
+    animation: none;
+  }
+
+  .hero-device {
+    animation: none;
+    will-change: auto;
+    transform: perspective(1400px) rotateY(14deg) rotateX(8deg) rotateZ(-3deg);
+  }
+
+  .hero-device-glow {
+    animation: none;
+    will-change: auto;
+  }
+
+  .scroll-reveal {
+    will-change: auto;
+  }
+
+  body main {
+    transition: opacity 300ms var(--ease-snappy);
+  }
+
+  body[data-auth-modal-open="true"] main {
+    filter: none;
+    transform: none;
+    opacity: 0.6;
+  }
 }
 

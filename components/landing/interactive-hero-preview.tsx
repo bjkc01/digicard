@@ -89,9 +89,9 @@ export function InteractiveHeroPreview() {
     <div className="anim-card relative w-full" id="live-preview">
       <div className="relative mx-auto flex w-full max-w-[42rem] flex-col items-center gap-5 pb-6 pt-2 md:py-10 lg:items-end lg:pr-3">
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute left-[8%] top-[8%] h-56 w-56 rounded-full bg-[rgba(82,103,217,0.16)] blur-[95px] sm:h-72 sm:w-72" />
-          <div className="absolute right-[8%] top-[28%] h-48 w-48 rounded-full bg-[rgba(56,189,248,0.1)] blur-[88px] sm:h-64 sm:w-64" />
-          <div className="absolute bottom-[8%] left-[26%] h-40 w-40 rounded-full bg-[rgba(255,255,255,0.72)] blur-[64px] sm:h-56 sm:w-56" />
+          <div className="absolute left-[8%] top-[8%] h-56 w-56 rounded-full bg-[rgba(82,103,217,0.16)] blur-[48px] sm:h-72 sm:w-72 sm:blur-[95px]" />
+          <div className="absolute right-[8%] top-[28%] h-48 w-48 rounded-full bg-[rgba(56,189,248,0.1)] blur-[44px] sm:h-64 sm:w-64 sm:blur-[88px]" />
+          <div className="absolute bottom-[8%] left-[26%] h-40 w-40 rounded-full bg-[rgba(255,255,255,0.72)] blur-[32px] sm:h-56 sm:w-56 sm:blur-[64px]" />
         </div>
 
         <div className="relative z-20 flex w-full justify-center md:absolute md:right-0 md:top-0 md:w-auto">
@@ -99,7 +99,7 @@ export function InteractiveHeroPreview() {
             <input
               aria-label="Type your name to preview the card"
               autoComplete="off"
-              className="min-h-[48px] w-full rounded-full border border-[rgba(82,103,217,0.15)] bg-white/92 px-5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_28px_rgba(21,32,58,0.1)] backdrop-blur-xl transition-[border-color,box-shadow,background-color,transform] duration-300 ease-in-out focus:border-[rgba(82,103,217,0.3)] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] md:w-[13rem] lg:w-[14.5rem]"
+              className="min-h-[48px] w-full rounded-full border border-[rgba(82,103,217,0.15)] bg-white/92 px-5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_28px_rgba(21,32,58,0.1)] sm:backdrop-blur-xl transition-[border-color,box-shadow,background-color,transform] duration-300 ease-in-out focus:border-[rgba(82,103,217,0.3)] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] md:w-[13rem] lg:w-[14.5rem]"
               onChange={(event) => setName(event.target.value)}
               spellCheck={false}
               type="text"
@@ -117,9 +117,9 @@ export function InteractiveHeroPreview() {
         </div>
 
         <div className="phone-mockup-container relative mx-auto w-[min(100%,320px)] [perspective:1400px]">
-          <div className="hero-device-glow pointer-events-none absolute -left-6 top-[18%] -z-20 h-32 w-32 rounded-full bg-[rgba(255,255,255,0.9)] blur-[72px] sm:-left-12 sm:h-40 sm:w-40" />
-          <div className="hero-device-glow hero-device-glow--delay pointer-events-none absolute -right-6 top-[12%] -z-20 h-36 w-36 rounded-full bg-[rgba(150,218,255,0.26)] blur-[86px] sm:-right-10 sm:h-48 sm:w-48" />
-          <div className="hero-device-glow pointer-events-none absolute -bottom-8 right-[12%] -z-20 h-28 w-28 rounded-full bg-[rgba(82,103,217,0.22)] blur-[74px] sm:h-36 sm:w-36" />
+          <div className="hero-device-glow pointer-events-none absolute -left-6 top-[18%] -z-20 h-32 w-32 rounded-full bg-[rgba(255,255,255,0.9)] blur-[36px] sm:-left-12 sm:h-40 sm:w-40 sm:blur-[72px]" />
+          <div className="hero-device-glow hero-device-glow--delay pointer-events-none absolute -right-6 top-[12%] -z-20 h-36 w-36 rounded-full bg-[rgba(150,218,255,0.26)] blur-[40px] sm:-right-10 sm:h-48 sm:w-48 sm:blur-[86px]" />
+          <div className="hero-device-glow pointer-events-none absolute -bottom-8 right-[12%] -z-20 h-28 w-28 rounded-full bg-[rgba(82,103,217,0.22)] blur-[36px] sm:h-36 sm:w-36 sm:blur-[74px]" />
 
           <div className="hero-device relative aspect-[9/19.5] w-full" onWheelCapture={handlePhoneWheel}>
             <div className="absolute -left-[0.96%] top-[24.6%] z-10 h-[4.1%] w-[0.72%] rounded-full bg-[linear-gradient(180deg,#d8dde5_0%,#919bac_24%,#56606f_64%,#161d28_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.42),inset_0_-1px_0_rgba(0,0,0,0.28),0_2px_4px_rgba(15,23,42,0.12)]">

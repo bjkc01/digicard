@@ -130,8 +130,8 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
   return (
     <main className="min-h-screen overflow-x-clip bg-[var(--canvas)] text-[var(--ink)]">
       <div className="absolute inset-x-0 top-0 -z-10 h-[620px] overflow-hidden">
-        <div className="orb-drift-1 absolute -top-24 left-[6%] h-[520px] w-[520px] rounded-full bg-[rgba(82,103,217,0.13)] blur-[130px]" />
-        <div className="orb-drift-2 absolute -top-12 right-[4%] h-[400px] w-[400px] rounded-full bg-[rgba(255,141,87,0.08)] blur-[110px]" />
+        <div className="orb-drift-1 absolute -top-24 left-[6%] h-[260px] w-[260px] rounded-full bg-[rgba(82,103,217,0.13)] blur-[65px] sm:h-[520px] sm:w-[520px] sm:blur-[130px]" />
+        <div className="orb-drift-2 absolute -top-12 right-[4%] h-[200px] w-[200px] rounded-full bg-[rgba(255,141,87,0.08)] blur-[55px] sm:h-[400px] sm:w-[400px] sm:blur-[110px]" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,_#f8f9fd_0%,_#fbfbfd_58%,_#ffffff_100%)]" />
       </div>
 
