@@ -65,7 +65,7 @@ type CreateCardFormProps = {
 const profileFields: FieldConfig[] = [
   { key: "name", label: "Full name", placeholder: "Your name", required: true, maxLength: 60 },
   { key: "title", label: "Professional title", placeholder: "Student, founder, designer...", required: true, maxLength: 80 },
-  { key: "company", label: "School or company", placeholder: "University or company", maxLength: 80 },
+  { key: "company", label: "Organization", placeholder: "University or company", maxLength: 80 },
 ];
 
 const contactFields: FieldConfig[] = [
@@ -167,6 +167,7 @@ export function CreateCardForm({
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [mobileTab, setMobileTab] = useState<"profile" | "contact" | "design">("profile");
 
@@ -192,6 +193,9 @@ export function CreateCardForm({
   useEffect(() => {
     if (actionState.status !== "idle") {
       setStatusVisible(true);
+      if (actionState.status === "success") {
+        previewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
       const timer = setTimeout(() => setStatusVisible(false), 5000);
       return () => clearTimeout(timer);
     }
@@ -566,7 +570,7 @@ export function CreateCardForm({
       </div>
 
       {/* ── Preview column ── */}
-      <div className="relative order-1 xl:order-2">
+      <div ref={previewRef} className="relative order-1 xl:order-2">
         <div className="xl:sticky xl:top-6 flex flex-col gap-3">
           {/* Card preview */}
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-[#F8F9F9] p-3 shadow-sm xl:p-4">
