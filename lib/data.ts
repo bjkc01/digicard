@@ -32,6 +32,8 @@ export type DigiCard = {
   qrPreference?: CardQrPreference;
 };
 
+export const defaultDigiCardTemplateId = "classic";
+
 export const navigationItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "My Cards", href: "/cards" },

@@ -10,7 +10,7 @@ import {
   isSupportedWorkspaceAvatarUrl,
 } from "@/lib/workspace-avatar";
 import { normalizeEmail } from "@/lib/email-auth";
-import { templates } from "@/lib/data";
+import { defaultDigiCardTemplateId, templates } from "@/lib/data";
 import {
   getLatestWorkspaceTimestamp,
   isNewerWorkspaceTimestamp,
@@ -33,7 +33,7 @@ import type { WorkspaceUser } from "@/lib/workspace-auth";
 const SETTINGS_COOKIE_NAME = "digicard-workspace-settings";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
 const SETTINGS_VERSION = 2;
-const defaultTemplateId = "blueprint";
+const defaultTemplateId = defaultDigiCardTemplateId;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
@@ -270,7 +270,7 @@ function createDefaultWorkspaceSettings(user: WorkspaceUser): WorkspaceSettings 
     },
     defaultTemplateId: validTemplateIds.has(defaultTemplateId)
       ? defaultTemplateId
-      : templates[0]?.id ?? "blueprint",
+      : templates[0]?.id ?? defaultDigiCardTemplateId,
     extraCards: [],
     notifications: { ...defaultNotificationSettings },
     owner: getWorkspaceOwner(user),
@@ -409,7 +409,7 @@ function mergeExtraCard(raw: unknown): WorkspaceExtraCard | null {
   const templateId =
     typeof raw.templateId === "string" && validTemplateIds.has(raw.templateId)
       ? raw.templateId
-      : "blueprint";
+      : defaultDigiCardTemplateId;
   return {
     id,
     label: typeof raw.label === "string" ? raw.label : "",

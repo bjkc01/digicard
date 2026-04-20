@@ -25,7 +25,7 @@ import {
 import { saveExtraCardAction } from "@/app/create-card/extra-card-actions";
 import { CardPreview } from "@/components/cards/card-preview";
 import type { DigiCardTemplate } from "@/lib/data";
-import { templates } from "@/lib/data";
+import { defaultDigiCardTemplateId, templates } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { qrPreferenceOptions, type WorkspaceQrPreference } from "@/lib/workspace-settings-options";
 
@@ -133,7 +133,9 @@ export function CreateCardForm({
   const [labelValue, setLabelValue] = useState(cardLabel);
 
   const initialTemplate =
-    templates.find((t) => t.id === initialTemplateId) ?? templates[2]!;
+    templates.find((t) => t.id === initialTemplateId) ??
+    templates.find((t) => t.id === defaultDigiCardTemplateId) ??
+    templates[0]!;
   const [formData, setFormData] = useState<CardFormValues>(initialFormData);
   const [selectedTemplate, setSelectedTemplate] = useState<DigiCardTemplate>(initialTemplate);
 
