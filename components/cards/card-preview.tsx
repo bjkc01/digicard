@@ -770,9 +770,20 @@ export function CardPreview({
       break;
   }
 
+  // Compact (dashboard thumbnails): fixed aspect ratio so all cards are the same height.
+  // Non-compact (live preview): let the card grow with its content so the QR code is
+  // never clipped when optional fields like Website push the layout taller.
+  if (compact) {
+    return (
+      <div className="relative w-full aspect-[432/764]">
+        <div className="absolute inset-0 [&>*]:h-full [&>*]:w-full">{preview}</div>
+      </div>
+    );
+  }
+
   return (
-    <div className={cn("relative w-full aspect-[432/764]", compact ? undefined : "mx-auto max-w-[432px]")}>
-      <div className="absolute inset-0 [&>*]:h-full [&>*]:w-full">{preview}</div>
+    <div className="mx-auto w-full max-w-[432px] [&>*]:w-full">
+      {preview}
     </div>
   );
 }
