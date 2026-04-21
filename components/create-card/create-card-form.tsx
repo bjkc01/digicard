@@ -427,50 +427,6 @@ export function CreateCardForm({
                   />
                 ))}
 
-                {/* QR destination */}
-                <div className="sm:col-span-2 2xl:col-span-3">
-                  <div
-                    role="radiogroup"
-                    aria-labelledby="qr-label"
-                    className="rounded-xl border border-gray-200 bg-white p-4"
-                  >
-                    <p id="qr-label" className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
-                      QR destination<span className="ml-0.5 text-[#00C4CC]" aria-hidden="true">*</span>
-                    </p>
-                    <p className="mb-3 text-[11px] leading-5 text-[#5d6772]">
-                      Choose exactly where the QR should send people.
-                    </p>
-                    <div className="grid gap-2 grid-cols-2 md:grid-cols-3">
-                      {manualQrPreferenceOptions.map((option, index) => {
-                        const isSelected = formData.qrPreference === option.key;
-                        return (
-                          <label
-                            key={option.key}
-                            className={cn(
-                              "flex cursor-pointer items-center justify-between rounded-xl border px-4 py-3 transition-all duration-300",
-                              isSelected
-                                ? "border-[#00C4CC] bg-[#00C4CC]/5 ring-2 ring-[#00C4CC]/20"
-                                : "border-gray-200 bg-[#F8F9F9] hover:border-[#00C4CC]/40 hover:bg-white",
-                            )}
-                          >
-                            <input
-                              aria-label={option.label}
-                              checked={isSelected}
-                              className="sr-only"
-                              name="qrPreference"
-                              onChange={handleChange("qrPreference")}
-                              required={index === 0}
-                              type="radio"
-                              value={option.key}
-                            />
-                            <span className="text-sm font-medium text-[#0E1318]">{option.label}</span>
-                            {isSelected ? <Check className="h-4 w-4 text-[#00C4CC]" /> : null}
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -594,6 +550,49 @@ export function CreateCardForm({
                 }}
                 imageUrl={imagePreview ?? undefined}
               />
+            </div>
+          </div>
+
+          {/* QR destination */}
+          <div
+            role="radiogroup"
+            aria-labelledby="qr-label"
+            className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-4 shadow-sm"
+          >
+            <p id="qr-label" className="mb-1 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
+              QR destination<span className="ml-0.5 text-[#00C4CC]" aria-hidden="true">*</span>
+            </p>
+            <p className="mb-3 text-[11px] leading-5 text-[#5d6772]">
+              Choose exactly where the QR should send people.
+            </p>
+            <div className="grid gap-2 grid-cols-3">
+              {manualQrPreferenceOptions.map((option, index) => {
+                const isSelected = formData.qrPreference === option.key;
+                return (
+                  <label
+                    key={option.key}
+                    className={cn(
+                      "flex cursor-pointer items-center justify-between rounded-xl border px-3 py-2.5 transition-all duration-300",
+                      isSelected
+                        ? "border-[#00C4CC] bg-[#00C4CC]/5 ring-2 ring-[#00C4CC]/20"
+                        : "border-gray-200 bg-white hover:border-[#00C4CC]/40",
+                    )}
+                  >
+                    <input
+                      aria-label={option.label}
+                      checked={isSelected}
+                      className="sr-only"
+                      name="qrPreference"
+                      onChange={handleChange("qrPreference")}
+                      required={index === 0}
+                      type="radio"
+                      value={option.key}
+                    />
+                    <span className="text-sm font-medium text-[#0E1318]">{option.label}</span>
+                    {isSelected ? <Check className="h-4 w-4 text-[#00C4CC]" /> : null}
+                  </label>
+                );
+              })}
             </div>
           </div>
 
