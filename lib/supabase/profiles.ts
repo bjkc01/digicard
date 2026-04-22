@@ -39,6 +39,35 @@ export async function getSupabaseProfileByOwnerEmail(ownerEmail: string) {
   return data;
 }
 
+export async function createSupabaseProfileIfNew(userId: string, email: string, name: string) {
+  const normalizedEmail = normalizeOwnerEmail(email);
+  const existing =
+    (await getSupabaseProfileByUserId(userId)) ??
+    (await getSupabaseProfileByOwnerEmail(normalizedEmail));
+  if (existing) return existing;
+
+  const supabase = createSupabaseAdminClient();
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("profiles")
+    .insert({
+      user_id: userId,
+      owner_email: normalizedEmail,
+      email: email,
+      name: name,
+      created_at: now,
+      updated_at: now,
+    })
+    .select("*")
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to auto-create Supabase profile: ${error.message}`);
+  }
+
+  return data satisfies SupabaseProfile;
+}
+
 export async function upsertSupabaseProfile(profile: SupabaseProfileInsert) {
   const supabase = createSupabaseAdminClient();
   const now = new Date().toISOString();

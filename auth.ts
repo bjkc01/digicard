@@ -68,6 +68,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   trustHost: true,
   callbacks: {
+    async signIn({ user }) {
+      const userId = user.id;
+      const email = user.email;
+      const name = user.name;
+      if (!userId || !email) return true;
+      try {
+        const { createSupabaseProfileIfNew } = await import("@/lib/supabase/profiles");
+        await createSupabaseProfileIfNew(userId, email, name ?? email);
+      } catch (err) {
+        console.error("Failed to auto-create profile on sign-in:", err);
+      }
+      return true;
+    },
     jwt({ token, user, account }) {
       if (account?.provider) {
         token.authProvider = account.provider;
