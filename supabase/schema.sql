@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   linkedin                text,
   website                 text,
   avatar_url              text,
-  default_template_id     text NOT NULL DEFAULT 'blueprint',
+  default_template_id     text NOT NULL DEFAULT 'classic',
   qr_preference           text NOT NULL DEFAULT 'auto',
   notifications           jsonb NOT NULL DEFAULT '{"cardOpens":false,"newSaves":false,"qrScans":false,"weeklyDigest":false}'::jsonb,
   cards_updated_at        timestamptz,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS public.workspace_cards (
   linkedin      text,
   website       text,
   label         text NOT NULL DEFAULT 'Card',
-  template_id   text NOT NULL DEFAULT 'blueprint',
+  template_id   text NOT NULL DEFAULT 'classic',
   qr_preference text NOT NULL DEFAULT 'auto',
   created_at    timestamptz NOT NULL DEFAULT now(),
   updated_at    timestamptz NOT NULL DEFAULT now()

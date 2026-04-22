@@ -460,6 +460,19 @@ export function CreateCardForm({
               </div>
             </div>
 
+            {/* Save */}
+            <div className="flex items-center justify-between gap-4">
+              {isExtraCard ? (
+                <a
+                  href="/cards"
+                  className="text-sm text-[#6b7280] hover:text-[#0E1318] transition-colors"
+                >
+                  {"<-"} Back to cards
+                </a>
+              ) : <div />}
+              <CreateCardSubmitButton isExtraCard={isExtraCard} isNewCard={isNewCard} />
+            </div>
+
             {/* Visual direction */}
             <div className={cn("rounded-2xl border border-gray-200 bg-[#F8F9F9] p-5", mobileTab !== "design" ? "hidden xl:block" : "")}>
               <div className="mb-4 flex items-center justify-between">
@@ -509,19 +522,6 @@ export function CreateCardForm({
               </div>
             </div>
           </PendingWrapper>
-
-          {/* Save */}
-          <div className="flex items-center justify-between gap-4">
-            {isExtraCard ? (
-              <a
-                href="/cards"
-                className="text-sm text-[#6b7280] hover:text-[#0E1318] transition-colors"
-              >
-                {"<-"} Back to cards
-              </a>
-            ) : <div />}
-            <CreateCardSubmitButton isExtraCard={isExtraCard} isNewCard={isNewCard} />
-          </div>
         </form>
         </div>{/* end padding wrapper */}
       </div>

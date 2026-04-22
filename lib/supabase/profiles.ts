@@ -55,6 +55,7 @@ export async function createSupabaseProfileIfNew(userId: string, email: string, 
       owner_email: normalizedEmail,
       email: email,
       name: name,
+      default_template_id: "classic",
       created_at: now,
       updated_at: now,
     })
