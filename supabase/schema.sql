@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   template_updated_at     timestamptz
 );
 
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
 -- workspace_cards
 -- Extra cards (non-primary) linked to a profile.
 CREATE TABLE IF NOT EXISTS public.workspace_cards (
@@ -45,3 +47,5 @@ CREATE TABLE IF NOT EXISTS public.workspace_cards (
   created_at    timestamptz NOT NULL DEFAULT now(),
   updated_at    timestamptz NOT NULL DEFAULT now()
 );
+
+ALTER TABLE public.workspace_cards ENABLE ROW LEVEL SECURITY;
