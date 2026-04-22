@@ -23,36 +23,30 @@ export function InteractiveHeroPreview() {
   const [showPlaceholderText, setShowPlaceholderText] = useState(true);
 
   useEffect(() => {
-    let timeoutId: number | undefined;
-
     const intervalId = window.setInterval(() => {
       setShowPlaceholderText(false);
-      timeoutId = window.setTimeout(() => {
+      const timeoutId = window.setTimeout(() => {
         setPlaceholder((current) =>
           current === "Live preview" ? "Type your name..." : "Live preview",
         );
         setShowPlaceholderText(true);
       }, 250);
+
+      return () => window.clearTimeout(timeoutId);
     }, 3000);
 
-    return () => {
-      window.clearInterval(intervalId);
-      if (timeoutId !== undefined) {
-        window.clearTimeout(timeoutId);
-      }
-    };
+    return () => window.clearInterval(intervalId);
   }, []);
 
   const displayName = name.trim() || "Jordan Lin";
   const nameParts = displayName.split(/\s+/).filter(Boolean);
   const firstName = nameParts[0] ?? "Jordan";
   const lastName = nameParts[1] ?? nameParts[0] ?? "Lin";
-  const initials =
-    nameParts
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase() ?? "")
-      .join("")
-      .slice(0, 2) || "JL";
+  const initials = nameParts
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("")
+    .slice(0, 2) || "JL";
   const safeFirst = sanitizeFragment(firstName) || "j";
   const safeLast = sanitizeFragment(lastName) || "lin";
   const profileSlug = `${slugify(displayName) || "jordan-lin"}-cs`;
@@ -105,7 +99,7 @@ export function InteractiveHeroPreview() {
             <input
               aria-label="Type your name to preview the card"
               autoComplete="off"
-              className="min-h-[48px] w-full rounded-full border border-[rgba(82,103,217,0.15)] bg-white/92 px-5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_28px_rgba(21,32,58,0.1)] transition-[border-color,box-shadow,background-color,transform] duration-300 ease-in-out focus:border-[rgba(82,103,217,0.3)] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] sm:backdrop-blur-xl md:w-[13rem] lg:w-[14.5rem]"
+              className="min-h-[48px] w-full rounded-full border border-[rgba(82,103,217,0.15)] bg-white/92 px-5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_28px_rgba(21,32,58,0.1)] sm:backdrop-blur-xl transition-[border-color,box-shadow,background-color,transform] duration-300 ease-in-out focus:border-[rgba(82,103,217,0.3)] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] md:w-[13rem] lg:w-[14.5rem]"
               onChange={(event) => setName(event.target.value)}
               spellCheck={false}
               type="text"
@@ -182,7 +176,7 @@ export function InteractiveHeroPreview() {
                     </div>
 
                     <div className="shrink-0 pt-8">
-                      <div className="flex justify-center pb-2">
+                      <div className="shrink-0 pb-2 flex justify-center">
                         <div className="flex h-[clamp(5rem,27vw,6rem)] w-[clamp(5rem,27vw,6rem)] items-center justify-center rounded-xl bg-white p-2 shadow-[0_18px_40px_rgba(4,9,18,0.45)]">
                           <QRCode
                             bgColor="transparent"
@@ -195,8 +189,8 @@ export function InteractiveHeroPreview() {
                       </div>
 
                       <p className="mt-6 text-center text-[0.63rem] font-medium uppercase tracking-[0.34em] text-white/28">
-                        Scan to connect <span className="mx-0.5 text-white/35">&middot;</span>{" "}
-                        <span className="font-semibold tracking-[0.28em] text-white/78">DigiCard</span>
+                        Scan to connect <span className="mx-1 text-white/18">.</span>
+                        <span className="font-semibold tracking-[0.28em] text-white/78"> Digicard</span>
                       </p>
                     </div>
                   </div>
