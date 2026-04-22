@@ -300,6 +300,7 @@ export function CreateCardForm({
 
         <form action={formAction} className="space-y-5">
           <input name="defaultTemplateId" type="hidden" value={selectedTemplate.id} />
+          <input name="qrPreference" type="hidden" value={formData.qrPreference} />
           {isExtraCard ? (
             <input name="extraCardId" type="hidden" value={effectiveCardId} />
           ) : null}
@@ -582,9 +583,7 @@ export function CreateCardForm({
                       aria-label={option.label}
                       checked={isSelected}
                       className="sr-only"
-                      name="qrPreference"
                       onChange={handleChange("qrPreference")}
-                      required={index === 0}
                       type="radio"
                       value={option.key}
                     />
