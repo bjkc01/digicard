@@ -337,7 +337,7 @@ function Av({
   if (imageUrl) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={imageUrl} alt={name} className={cn(size, rounded, "object-cover flex-shrink-0", ring)} />
+      <img src={imageUrl} alt={name} className={cn(size, rounded, "object-cover object-top flex-shrink-0", ring)} />
     );
   }
 
