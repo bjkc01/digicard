@@ -97,7 +97,7 @@ export function InteractiveHeroPreview() {
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute left-[8%] top-[8%] h-56 w-56 rounded-full bg-[rgba(82,103,217,0.16)] blur-[48px] sm:h-72 sm:w-72 sm:blur-[95px]" />
           <div className="absolute right-[8%] top-[28%] h-48 w-48 rounded-full bg-[rgba(56,189,248,0.1)] blur-[44px] sm:h-64 sm:w-64 sm:blur-[88px]" />
-          <div className="absolute bottom-[8%] left-[26%] h-40 w-40 rounded-full bg-[rgba(82,103,217,0.22)] blur-[32px] sm:h-56 sm:w-56 sm:blur-[64px]" />
+          <div className="absolute bottom-[8%] left-[26%] h-40 w-40 rounded-full bg-[rgba(255,255,255,0.72)] blur-[32px] sm:h-56 sm:w-56 sm:blur-[64px]" />
         </div>
 
         <div className="relative z-20 flex w-full justify-center md:absolute md:right-0 md:top-0 md:w-auto">
@@ -105,7 +105,7 @@ export function InteractiveHeroPreview() {
             <input
               aria-label="Type your name to preview the card"
               autoComplete="off"
-              className="min-h-[48px] w-full rounded-full border border-white/[0.22] bg-white px-5 text-sm font-semibold text-[#0a0a0a] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_12px_36px_rgba(0,0,0,0.5)] transition-[border-color,box-shadow,transform] duration-300 ease-in-out focus:border-[rgba(82,103,217,0.4)] focus:outline-none focus:ring-4 focus:ring-[rgba(82,103,217,0.15)] sm:backdrop-blur-xl md:w-[13rem] lg:w-[14.5rem]"
+              className="min-h-[48px] w-full rounded-full border border-[rgba(82,103,217,0.15)] bg-white/92 px-5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_28px_rgba(21,32,58,0.1)] transition-[border-color,box-shadow,background-color,transform] duration-300 ease-in-out focus:border-[rgba(82,103,217,0.3)] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] sm:backdrop-blur-xl md:w-[13rem] lg:w-[14.5rem]"
               onChange={(event) => setName(event.target.value)}
               spellCheck={false}
               type="text"
