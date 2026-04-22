@@ -91,7 +91,7 @@ export function InteractiveHeroPreview() {
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute left-[8%] top-[8%] h-56 w-56 rounded-full bg-[rgba(82,103,217,0.16)] blur-[48px] sm:h-72 sm:w-72 sm:blur-[95px]" />
           <div className="absolute right-[8%] top-[28%] h-48 w-48 rounded-full bg-[rgba(56,189,248,0.1)] blur-[44px] sm:h-64 sm:w-64 sm:blur-[88px]" />
-          <div className="absolute bottom-[8%] left-[26%] h-40 w-40 rounded-full bg-[rgba(255,255,255,0.72)] blur-[32px] sm:h-56 sm:w-56 sm:blur-[64px]" />
+          <div className="absolute bottom-[8%] left-[26%] h-40 w-40 rounded-full bg-[rgba(82,103,217,0.22)] blur-[32px] sm:h-56 sm:w-56 sm:blur-[64px]" />
         </div>
 
         <div className="relative z-20 flex w-full justify-center md:absolute md:right-0 md:top-0 md:w-auto">
@@ -189,8 +189,9 @@ export function InteractiveHeroPreview() {
                       </div>
 
                       <p className="mt-6 text-center text-[0.63rem] font-medium uppercase tracking-[0.34em] text-white/28">
-                        Scan to connect <span className="mx-1 text-white/18">.</span>
-                        <span className="font-semibold tracking-[0.28em] text-white/78"> Digicard</span>
+                        Scan to connect{" "}
+                        <span className="mx-0.5 text-white/35">·</span>{" "}
+                        <span className="font-semibold tracking-[0.28em] text-white/78">DigiCard</span>
                       </p>
                     </div>
                   </div>

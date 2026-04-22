@@ -409,6 +409,14 @@ textarea:focus-visible {
   transform: translateY(-5px);
 }
 
+/* Landing page gradient headline */
+.landing-gradient-text {
+  background: linear-gradient(135deg, #fff 25%, #8da0ff 85%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 ::selection {
   background: rgba(75, 99, 211, 0.18);
   color: var(--ink);
