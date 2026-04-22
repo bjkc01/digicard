@@ -35,10 +35,13 @@ export function DashboardCardSurface({ card }: DashboardCardSurfaceProps) {
     startTransition(async () => {
       if (isPrimary) {
         await deleteWorkspaceCardAction();
+        localStorage.removeItem(portraitKey);
+        localStorage.removeItem(legacyPrimaryPortraitKey);
         return;
       }
 
       await deleteExtraCardAction(card.id);
+      localStorage.removeItem(portraitKey);
     });
   }
 
