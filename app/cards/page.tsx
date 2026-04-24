@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import { CreditCard, LayoutTemplate, ShieldCheck } from "lucide-react";
+import { ArrowRight, CreditCard, LayoutTemplate, Plus, ShieldCheck } from "lucide-react";
 import { CardsSection } from "@/components/cards/cards-section";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Button } from "@/components/ui/button";
@@ -14,16 +14,16 @@ export default async function CardsPage() {
   const avatarUrl = workspaceView.settings.profile.avatarUrl;
   const hasPrimaryCard = workspaceView.cards.some((card) => card.id === "primary");
   const hasCards = workspaceView.cards.length > 0;
-  const primaryActionLabel = hasPrimaryCard ? "Edit workspace card" : "Create workspace card";
+  const primaryActionLabel = hasPrimaryCard ? "Edit main card" : "Create first card";
 
   return (
-    <main className="mx-auto grid w-full max-w-7xl min-w-0 gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
+    <main className="workspace-shell">
       <Sidebar activePath="/cards" avatarUrl={avatarUrl} email={displayEmail} userName={displayName} />
 
-      <section className="min-w-0 space-y-4 sm:space-y-6">
+      <section className="workspace-content space-y-4 sm:space-y-6">
         <header className="panel flex flex-col gap-5 border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-5 sm:p-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="min-w-0">
-            <h1 className="text-[clamp(1.8rem,8vw,2.5rem)] font-semibold tracking-tight text-[var(--ink)]">
+            <h1 className="page-title">
               Your cards
             </h1>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -42,17 +42,20 @@ export default async function CardsPage() {
             <Button
               href="/create-card"
               className={hasPrimaryCard
-                ? "w-full whitespace-nowrap rounded-full border border-[rgba(82,103,217,0.22)] bg-white px-5 py-3 text-[var(--brand)] hover:bg-[var(--soft)] sm:w-auto"
-                : "w-full whitespace-nowrap rounded-full bg-slate-900 px-5 py-3 text-white shadow-[0_16px_34px_rgba(15,23,42,0.18)] hover:bg-slate-800 sm:w-auto"}
+                ? "w-full whitespace-nowrap sm:w-auto"
+                : "w-full whitespace-nowrap sm:w-auto"}
+              variant={hasPrimaryCard ? "secondary" : "primary"}
             >
               {primaryActionLabel}
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             {hasCards ? (
               <Button
                 href="/create-card?cardId=new"
-                className="w-full whitespace-nowrap rounded-full bg-[var(--brand)] px-5 py-3 text-white shadow-[0_16px_34px_rgba(82,103,217,0.22)] hover:bg-[#4459cb] sm:w-auto"
+                className="w-full whitespace-nowrap sm:w-auto"
               >
-                + Add card
+                <Plus className="mr-2 h-4 w-4" />
+                Add card
               </Button>
             ) : null}
           </div>
@@ -62,8 +65,7 @@ export default async function CardsPage() {
           <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div className="min-w-0">
-                <p className="eyebrow text-[var(--brand)]">All cards</p>
-                <h2 className="mt-2 max-w-[34rem] text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
+                <h2 className="content-title max-w-[34rem]">
                   All cards
                 </h2>
                 <p className="mt-2 max-w-xl text-[0.98rem] leading-6 text-[var(--muted)]">
@@ -77,9 +79,10 @@ export default async function CardsPage() {
             <CardsSection
               cards={workspaceView.cards}
               emptyDescription="Create your workspace card first. Add extra cards later when you need them."
+              emptyKicker={workspaceView.summary.cardStatusLabel}
               emptyTitle="No cards yet"
               showAddButton={false}
-              showEmptyButton={false}
+              showControls
             />
           </div>
 
@@ -128,7 +131,7 @@ function SummaryCard({
         </div>
         <p className="text-sm font-semibold text-[var(--ink)]">{title}</p>
       </div>
-      <p className="mt-4 break-words text-[clamp(1.8rem,7vw,2rem)] font-semibold leading-tight text-[var(--ink)]">{value}</p>
+      <p className="mt-4 break-words text-base font-semibold leading-6 text-[var(--ink)]">{value}</p>
       <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{description}</p>
     </div>
   );

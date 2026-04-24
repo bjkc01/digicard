@@ -31,6 +31,7 @@ import {
   manualQrPreferenceOptions,
   type WorkspaceQrPreference,
 } from "@/lib/workspace-settings-options";
+import { toast } from "sonner";
 
 export type CardFormValues = {
   company: string;
@@ -194,7 +195,12 @@ export function CreateCardForm({
     if (actionState.status !== "idle") {
       setStatusVisible(true);
       if (actionState.status === "success") {
+        toast.success(actionState.message || "Card saved.");
         previewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else if (actionState.status === "warning") {
+        toast.warning(actionState.message || "Card saved with a warning.");
+      } else if (actionState.status === "error") {
+        toast.error(actionState.message || "Could not save card.");
       }
       const timer = setTimeout(() => setStatusVisible(false), 5000);
       return () => clearTimeout(timer);
@@ -266,7 +272,7 @@ export function CreateCardForm({
               className={cn(
                 "flex-1 py-3 text-sm font-semibold transition-colors duration-150",
                 mobileTab === tab.id
-                  ? "border-b-2 border-[#00C4CC] text-[#00C4CC]"
+                  ? "border-b-2 border-[var(--brand)] text-[var(--brand)]"
                   : "text-[#6b7280] hover:text-[#0E1318]",
               )}
             >
@@ -277,7 +283,7 @@ export function CreateCardForm({
 
         <div className="p-4 md:p-6 xl:p-8">
         <div className="mb-8 hidden xl:block">
-          <h1 className="text-2xl font-bold tracking-tight text-[#0E1318]">
+          <h1 className="text-2xl font-bold tracking-normal text-[#0E1318]">
             {isNewCard ? "Create new card" : isExtraCard ? "Edit card" : "Your workspace card"}
           </h1>
           {isExtraCard ? (
@@ -321,12 +327,12 @@ export function CreateCardForm({
                     Label
                   </label>
                   <div className="group relative">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-150 group-focus-within:text-[#00C4CC]">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-150 group-focus-within:text-[var(--brand)]">
                       <Wallet className="h-4 w-4" />
                     </div>
                     <input
                       id="field-cardLabel"
-                      className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition-colors duration-150 focus:border-[#00C4CC] focus:ring-2 focus:ring-[#00C4CC]/20"
+                      className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition-colors duration-150 focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(82,103,217,0.16)]"
                       maxLength={60}
                       name="cardLabel"
                       onChange={(e) => setLabelValue(e.target.value)}
@@ -352,7 +358,7 @@ export function CreateCardForm({
                 type="button"
                 aria-label="Upload profile image"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex h-32 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 text-center transition-all duration-300 hover:border-[#00C4CC] hover:bg-[#00C4CC]/5"
+                className="flex h-32 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 text-center transition-all duration-300 hover:border-[var(--brand)] hover:bg-[rgba(82,103,217,0.05)]"
               >
                 {imagePreview ? (
                   <div className="animate-fade-in flex items-center gap-4">
@@ -496,8 +502,8 @@ export function CreateCardForm({
                       className={cn(
                         "group relative overflow-hidden rounded-xl border p-3 text-left transition-all duration-300",
                         isActive
-                          ? "border-[#00C4CC] bg-white shadow-sm ring-2 ring-[#00C4CC]/20"
-                          : "border-gray-200 bg-white hover:border-[#00C4CC]/40 hover:shadow-sm",
+                          ? "border-[var(--brand)] bg-white shadow-sm ring-2 ring-[rgba(82,103,217,0.16)]"
+                          : "border-gray-200 bg-white hover:border-[rgba(82,103,217,0.32)] hover:shadow-sm",
                       )}
                     >
                       <div className="mx-auto w-[128px] sm:w-[140px]">
@@ -506,12 +512,12 @@ export function CreateCardForm({
                       <div className="mt-2 flex items-center justify-between gap-2">
                         <p className="text-xs font-semibold text-[#0E1318]">{template.name}</p>
                         {isActive ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-[#00C4CC]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#00C4CC]">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[rgba(82,103,217,0.1)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--brand)]">
                             <Check className="h-3 w-3" />
                             Active
                           </span>
                         ) : (
-                          <span className="text-[11px] text-gray-400 transition-colors duration-300 group-hover:text-[#00C4CC]">
+                          <span className="text-[11px] text-gray-400 transition-colors duration-300 group-hover:text-[var(--brand)]">
                             Select {"->"}
                           </span>
                         )}
@@ -531,7 +537,7 @@ export function CreateCardForm({
         <div className="xl:sticky xl:top-6 flex flex-col gap-3">
           {/* Card preview */}
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-[#F8F9F9] p-3 shadow-sm xl:p-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#00C4CC]">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--brand)]">
               Live preview
             </p>
             <div ref={cardRef}>
@@ -561,7 +567,7 @@ export function CreateCardForm({
             className="rounded-2xl border border-gray-200 bg-[#F8F9F9] p-4 shadow-sm"
           >
             <p id="qr-label" className="mb-1 text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
-              QR destination<span className="ml-0.5 text-[#00C4CC]" aria-hidden="true">*</span>
+              QR destination<span className="ml-0.5 text-[var(--brand)]" aria-hidden="true">*</span>
             </p>
             <p className="mb-3 text-[11px] leading-5 text-[#5d6772]">
               Choose exactly where the QR should send people.
@@ -575,8 +581,8 @@ export function CreateCardForm({
                     className={cn(
                       "flex cursor-pointer items-center justify-between rounded-xl border px-3 py-2.5 transition-all duration-300",
                       isSelected
-                        ? "border-[#00C4CC] bg-[#00C4CC]/5 ring-2 ring-[#00C4CC]/20"
-                        : "border-gray-200 bg-white hover:border-[#00C4CC]/40",
+                        ? "border-[var(--brand)] bg-[rgba(82,103,217,0.05)] ring-2 ring-[rgba(82,103,217,0.16)]"
+                        : "border-gray-200 bg-white hover:border-[rgba(82,103,217,0.32)]",
                     )}
                   >
                     <input
@@ -588,7 +594,7 @@ export function CreateCardForm({
                       value={option.key}
                     />
                     <span className="text-sm font-medium text-[#0E1318]">{option.label}</span>
-                    {isSelected ? <Check className="h-4 w-4 text-[#00C4CC]" /> : null}
+                    {isSelected ? <Check className="h-4 w-4 text-[var(--brand)]" /> : null}
                   </label>
                 );
               })}
@@ -600,7 +606,7 @@ export function CreateCardForm({
             type="button"
             onClick={handleDownload}
             disabled={isDownloading}
-            className="hidden xl:flex w-full items-center justify-center gap-2.5 rounded-2xl bg-[#0F172A] px-5 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#1e293b] disabled:cursor-not-allowed disabled:opacity-60"
+            className="hidden w-full items-center justify-center gap-2.5 rounded-2xl bg-[var(--brand)] px-5 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-[var(--brand-dark)] disabled:cursor-not-allowed disabled:opacity-60 xl:flex"
           >
             {isDownloading ? (
               <>
@@ -686,7 +692,7 @@ function CreateCardSubmitButton({ isExtraCard, isNewCard }: { isExtraCard: boole
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex min-w-[200px] items-center justify-center gap-2 rounded-full bg-[#0F172A] px-6 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#111f3a] disabled:cursor-not-allowed disabled:scale-[0.98] disabled:opacity-50"
+      className="inline-flex min-w-[200px] items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(82,103,217,0.2)] transition-all duration-300 hover:bg-[var(--brand-dark)] disabled:cursor-not-allowed disabled:scale-[0.98] disabled:opacity-50"
     >
       {pending ? (
         <>
@@ -735,11 +741,11 @@ function Field({
     <div className={cn("flex flex-col gap-1.5", className)}>
       <label htmlFor={id} className="text-xs font-semibold text-[#293039]">
         {label}
-        {required ? <span className="ml-0.5 text-[#00C4CC]" aria-hidden="true">*</span> : null}
+        {required ? <span className="ml-0.5 text-[var(--brand)]" aria-hidden="true">*</span> : null}
       </label>
       <div className="group relative">
         {Icon ? (
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-300 group-focus-within:text-[#00C4CC]">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-300 group-focus-within:text-[var(--brand)]">
             <Icon className="h-4 w-4" />
           </div>
         ) : null}
@@ -747,7 +753,7 @@ function Field({
           id={id}
           aria-required={required}
           className={cn(
-            "h-11 w-full rounded-xl border border-gray-200 bg-white pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition-colors duration-300 focus:border-[#00C4CC] focus:ring-2 focus:ring-[#00C4CC]/20",
+            "h-11 w-full rounded-xl border border-gray-200 bg-white pr-4 text-sm text-[#0E1318] placeholder:text-gray-400 outline-none transition-colors duration-300 focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(82,103,217,0.16)]",
             Icon ? "pl-10" : "pl-4",
           )}
           maxLength={maxLength}

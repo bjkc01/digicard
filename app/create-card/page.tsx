@@ -93,17 +93,19 @@ export default async function CreateCardPage({ searchParams }: CreateCardPagePro
     : (workspaceView.settings.updatedAt ?? "workspace-card-unsaved");
 
   return (
-    <main className="mx-auto grid max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
+    <main className="workspace-shell">
       <Sidebar activePath="/create-card" avatarUrl={avatarUrl} email={displayEmail} userName={displayName} />
-      <Suspense fallback={<FormSkeleton />}>
-        <CreateCardForm
-          key={formKey}
-          cardId={cardId}
-          cardLabel={extraCard?.label ?? ""}
-          initialFormData={initialFormData}
-          initialTemplateId={initialTemplateId}
-        />
-      </Suspense>
+      <section className="workspace-content">
+        <Suspense fallback={<FormSkeleton />}>
+          <CreateCardForm
+            key={formKey}
+            cardId={cardId}
+            cardLabel={extraCard?.label ?? ""}
+            initialFormData={initialFormData}
+            initialTemplateId={initialTemplateId}
+          />
+        </Suspense>
+      </section>
     </main>
   );
 }

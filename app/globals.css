@@ -3,11 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --canvas: #fbfbfd;
-  --soft: #f5f7fb;
+  --canvas: #f8f9fb;
+  --soft: #f4f6fb;
   --ink: #19233d;
   --muted: #66738c;
   --brand: #5267d9;
+  --brand-dark: #4459cb;
+  --brand-soft: #eef2ff;
+  --danger: #dc2626;
   --accent: #ff8d57;
   --ease-snappy: cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -26,9 +29,7 @@ body {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
-  background:
-    radial-gradient(circle at top left, rgba(82, 103, 217, 0.06), transparent 24%),
-    linear-gradient(180deg, #f8f9fd 0%, #fbfbfd 22%, #ffffff 100%);
+  background: var(--canvas);
   color: var(--ink);
   font-family: var(--font-manrope), sans-serif;
 }
@@ -77,23 +78,40 @@ textarea:focus-visible {
 }
 
 .panel {
-  @apply w-full min-w-0 max-w-full rounded-[2rem] border border-slate-200/80 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)];
+  @apply w-full min-w-0 max-w-full rounded-[1.25rem] border border-slate-200/80 bg-white shadow-[0_14px_34px_rgba(15,23,42,0.05)];
 }
 
 .subtle-panel {
-  @apply w-full min-w-0 max-w-full rounded-[1.6rem] border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)];
+  @apply w-full min-w-0 max-w-full rounded-[1rem] border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.04)];
 }
 
 .section-title {
-  @apply text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl;
+  @apply text-2xl font-semibold tracking-normal text-slate-900 md:text-[2rem];
 }
 
 .section-copy {
-  @apply text-base leading-7 text-slate-600 md:text-lg;
+  @apply text-sm leading-6 text-slate-600 md:text-base;
 }
 
 .eyebrow {
   @apply text-xs font-semibold uppercase tracking-[0.22em] text-slate-500;
+}
+
+.workspace-shell {
+  @apply grid w-full min-w-0 gap-4 bg-[var(--canvas)] px-3 py-3 sm:px-4 sm:py-4 lg:h-dvh lg:grid-cols-[272px_minmax(0,1fr)] lg:gap-0 lg:overflow-hidden lg:px-0 lg:py-0;
+}
+
+.workspace-content {
+  @apply min-w-0 lg:h-dvh lg:overflow-y-auto lg:px-6 lg:py-6;
+  scrollbar-gutter: stable;
+}
+
+.page-title {
+  @apply text-[clamp(1.75rem,5vw,2.4rem)] font-semibold leading-tight tracking-normal text-[var(--ink)];
+}
+
+.content-title {
+  @apply text-2xl font-semibold tracking-normal text-[var(--ink)] md:text-[1.75rem];
 }
 
 @keyframes fadeIn {

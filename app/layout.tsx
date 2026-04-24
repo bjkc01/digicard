@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     title: "DigiCard - Digital Professional Cards",
   },
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230f172a'/><text x='16' y='22' text-anchor='middle' font-family='system-ui,sans-serif' font-size='13' font-weight='700' fill='white'>DC</text></svg>",
+    icon: "/favicon.svg",
   },
 };
 
@@ -55,9 +55,10 @@ export default function RootLayout({
         {children}
         <Toaster
           position="bottom-right"
+          richColors
           toastOptions={{
             style: {
-              borderRadius: "16px",
+              borderRadius: "14px",
               fontFamily: "var(--font-manrope)",
               fontSize: "14px",
             },

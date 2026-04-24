@@ -11,7 +11,7 @@ export default async function SettingsPage() {
   const avatarUrl = workspaceView.settings.profile.avatarUrl;
 
   return (
-    <main className="mx-auto grid w-full max-w-7xl min-w-0 gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
+    <main className="workspace-shell">
       <Sidebar activePath="/settings" avatarUrl={avatarUrl} email={displayEmail} userName={displayName} />
       <SettingsShell user={workspaceUser} workspaceView={workspaceView} />
     </main>

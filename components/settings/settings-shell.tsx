@@ -2,17 +2,22 @@
 
 import type { ChangeEvent } from "react";
 import { useActionState, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   AlertTriangle,
+  ArrowLeft,
   BellRing,
   Camera,
+  Check,
   CreditCard,
   QrCode,
   Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
+import { toast } from "sonner";
 import { CardPreview } from "@/components/cards/card-preview";
+import { Button } from "@/components/ui/button";
 import { ProfileAvatar } from "@/components/ui/profile-avatar";
 import type { WorkspaceView } from "@/lib/workspace-view";
 import type { WorkspaceUser } from "@/lib/workspace-auth";
@@ -160,6 +165,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
   });
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const [notificationState, setNotificationState] = useState(settings.notifications);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [profileState, profileAction] = useActionState(saveProfileSettings, initialSettingsActionState);
   const [notificationSaveState, notificationAction] = useActionState(
     saveNotificationSettings,
@@ -210,6 +216,34 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
       router.refresh();
     }
   }, [notificationSaveState.status, profileState.status, router]);
+
+  useEffect(() => {
+    if (!profileState.message || profileState.status === "idle") {
+      return;
+    }
+
+    if (profileState.status === "success") {
+      toast.success(profileState.message);
+    } else if (profileState.status === "warning") {
+      toast.warning(profileState.message);
+    } else {
+      toast.error(profileState.message);
+    }
+  }, [profileState.message, profileState.status]);
+
+  useEffect(() => {
+    if (!notificationSaveState.message || notificationSaveState.status === "idle") {
+      return;
+    }
+
+    if (notificationSaveState.status === "success") {
+      toast.success(notificationSaveState.message);
+    } else if (notificationSaveState.status === "warning") {
+      toast.warning(notificationSaveState.message);
+    } else {
+      toast.error(notificationSaveState.message);
+    }
+  }, [notificationSaveState.message, notificationSaveState.status]);
 
   const selectedTemplate =
     templates.find((t) => t.id === settings.defaultTemplateId) ?? templates[0]!;
@@ -263,9 +297,16 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
   };
 
   return (
-    <section className="min-w-0 space-y-4 sm:space-y-6">
+    <section className="workspace-content space-y-4 sm:space-y-6">
       <header className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-5 sm:p-6">
-        <h1 className="text-[clamp(1.7rem,7vw,2.15rem)] font-semibold leading-tight tracking-tight text-[var(--ink)]">
+        <Link
+          href="/dashboard"
+          className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--brand)]"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Dashboard
+        </Link>
+        <h1 className="page-title">
           Account settings
         </h1>
         <p className="mt-1.5 max-w-2xl text-[0.95rem] leading-6 text-[var(--muted)]">
@@ -283,18 +324,28 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
 
             <input name="avatarUrl" type="hidden" value={profileForm.avatarUrl} />
 
-            <div className="mt-4 rounded-[1.4rem] border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-4 sm:p-[1.125rem]">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <ProfileAvatar
-                  avatarUrl={profileForm.avatarUrl}
-                  className="h-16 w-16 rounded-full shadow-[0_16px_32px_rgba(82,103,217,0.16)]"
-                  name={profileForm.name || user.name}
-                  textClassName="text-base"
-                />
+            <div className="mt-4 rounded-2xl border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-4 sm:p-[1.125rem]">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  className="group relative h-20 w-20 shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(82,103,217,0.18)]"
+                  aria-label={profileForm.avatarUrl ? "Change profile photo" : "Upload profile photo"}
+                >
+                  <ProfileAvatar
+                    avatarUrl={profileForm.avatarUrl}
+                    className="h-20 w-20 rounded-full shadow-[0_16px_32px_rgba(82,103,217,0.16)]"
+                    name={profileForm.name || user.name}
+                    textClassName="text-lg"
+                  />
+                  <span className="absolute bottom-0 right-0 grid h-8 w-8 place-items-center rounded-full border-2 border-white bg-[var(--brand)] text-white shadow-[0_10px_20px_rgba(82,103,217,0.24)] transition group-hover:bg-[var(--brand-dark)]">
+                    <Camera className="h-4 w-4" />
+                  </span>
+                </button>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-[var(--ink)]">Photo</p>
                   <p className="mt-0.5 text-sm leading-5 text-[var(--muted)]">
-                    Appears in your account summary and dashboard.
+                    Click the avatar to upload a PNG, JPG, or WEBP image.
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2.5">
                     <button
@@ -303,7 +354,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
                       className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_22px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:bg-[rgba(82,103,217,0.04)]"
                     >
                       <Camera className="h-4 w-4" />
-                      {profileForm.avatarUrl ? "Change photo" : "Upload photo"}
+                      {profileForm.avatarUrl ? "Choose another" : "Choose image"}
                     </button>
                     {profileForm.avatarUrl ? (
                       <button
@@ -335,13 +386,13 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
             </div>
 
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <ProfileField label="Display name" name="name" value={profileForm.name} onChange={handleProfileChange("name")} error={profileState.fieldErrors.name} required />
-              <ProfileField label="Email" name="email" type="email" value={profileForm.email} onChange={handleProfileChange("email")} error={profileState.fieldErrors.email} required />
-              <ProfileField label="Professional title" name="title" value={profileForm.title} onChange={handleProfileChange("title")} error={profileState.fieldErrors.title} required />
-              <ProfileField label="School or company" name="company" value={profileForm.company} onChange={handleProfileChange("company")} error={profileState.fieldErrors.company} />
-              <ProfileField label="Website" name="website" value={profileForm.website} onChange={handleProfileChange("website")} error={profileState.fieldErrors.website} />
-              <ProfileField label="LinkedIn" name="linkedin" value={profileForm.linkedin} onChange={handleProfileChange("linkedin")} error={profileState.fieldErrors.linkedin} />
-              <ProfileField className="md:col-span-2" label="Phone" name="phone" value={profileForm.phone} onChange={handleProfileChange("phone")} error={profileState.fieldErrors.phone} />
+              <ProfileField label="Display name" name="name" placeholder="e.g. Alex Morgan" value={profileForm.name} onChange={handleProfileChange("name")} error={profileState.fieldErrors.name} required />
+              <ProfileField label="Email" name="email" placeholder="alex@example.com" type="email" value={profileForm.email} onChange={handleProfileChange("email")} error={profileState.fieldErrors.email} required />
+              <ProfileField label="Professional title" name="title" placeholder="Product Designer" value={profileForm.title} onChange={handleProfileChange("title")} error={profileState.fieldErrors.title} required />
+              <ProfileField label="School or company" name="company" placeholder="DigiCard Studio" value={profileForm.company} onChange={handleProfileChange("company")} error={profileState.fieldErrors.company} />
+              <ProfileField label="Website" name="website" placeholder="https://yourportfolio.com" value={profileForm.website} onChange={handleProfileChange("website")} error={profileState.fieldErrors.website} />
+              <ProfileField label="LinkedIn" name="linkedin" placeholder="linkedin.com/in/alex" value={profileForm.linkedin} onChange={handleProfileChange("linkedin")} error={profileState.fieldErrors.linkedin} />
+              <ProfileField className="md:col-span-2" label="Phone" name="phone" placeholder="+1 (555) 000-0000" value={profileForm.phone} onChange={handleProfileChange("phone")} error={profileState.fieldErrors.phone} />
             </div>
 
             {/* QR destination */}
@@ -360,7 +411,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               {profileState.fieldErrors.qrPreference ? (
                 <p className="mt-2.5 text-sm text-[#991b1b]">{profileState.fieldErrors.qrPreference}</p>
               ) : null}
-              <div className="mt-3 grid gap-2.5 md:grid-cols-2">
+              <div className="mt-3 grid gap-2.5 md:grid-cols-3">
                 {manualQrPreferenceOptions.map((option) => {
                   const isSelected = profileForm.qrPreference === option.key;
                   return (
@@ -373,10 +424,12 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
                         checked={isSelected}
                         onChange={() => setProfileForm((current) => ({ ...current, qrPreference: option.key }))}
                       />
-                      <div className={cn("rounded-[1.2rem] border bg-white p-3.5 transition", isSelected ? "border-[rgba(82,103,217,0.5)] bg-[rgba(82,103,217,0.03)] shadow-[0_10px_24px_rgba(15,23,42,0.04)]" : "border-[rgba(82,103,217,0.08)] hover:border-[rgba(82,103,217,0.18)]")}>
-                        <div className="flex items-center justify-between gap-3">
+                      <div className={cn("min-h-full rounded-2xl border bg-white p-3.5 transition", isSelected ? "border-[var(--brand)] bg-[var(--brand-soft)] shadow-[0_10px_24px_rgba(82,103,217,0.08)] ring-2 ring-[rgba(82,103,217,0.14)]" : "border-slate-200 hover:border-[rgba(82,103,217,0.28)] hover:bg-white")}>
+                        <div className="flex items-center gap-3">
+                          <span className={cn("grid h-5 w-5 shrink-0 place-items-center rounded-full border", isSelected ? "border-[var(--brand)] bg-[var(--brand)] text-white" : "border-slate-300 bg-white")}>
+                            {isSelected ? <Check className="h-3 w-3" /> : null}
+                          </span>
                           <p className="text-sm font-semibold text-[var(--ink)]">{option.label}</p>
-                          {isSelected ? <span className="rounded-full bg-[rgba(82,103,217,0.08)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">Selected</span> : null}
                         </div>
                         <p className="mt-1.5 text-xs leading-5 text-[var(--muted)]">{option.description}</p>
                       </div>
@@ -386,7 +439,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               </div>
             </div>
 
-            <div className="mt-4 flex justify-end">
+            <div className="sticky bottom-3 z-10 mt-5 flex justify-end rounded-2xl border border-slate-200/80 bg-white/92 p-3 shadow-[0_14px_30px_rgba(15,23,42,0.08)] backdrop-blur">
               <FormSubmitButton label="Save profile" />
             </div>
           </form>
@@ -431,7 +484,7 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               })}
             </div>
 
-            <div className="mt-4 flex justify-end">
+            <div className="sticky bottom-3 z-10 mt-5 flex justify-end rounded-2xl border border-slate-200/80 bg-white/92 p-3 shadow-[0_14px_30px_rgba(15,23,42,0.08)] backdrop-blur">
               <FormSubmitButton label="Save alerts" />
             </div>
           </form>
@@ -457,10 +510,10 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               </div>
               <button
                 type="button"
-                disabled
-                className="mt-4 rounded-full border border-[rgba(248,113,113,0.28)] px-4 py-2 text-sm font-semibold text-red-400 disabled:cursor-not-allowed"
+                onClick={() => setShowDeleteDialog(true)}
+                className="mt-4 rounded-full bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_14px_26px_rgba(220,38,38,0.18)] transition hover:bg-red-700"
               >
-                Contact support
+                Delete account
               </button>
             </div>
           </div>
@@ -492,9 +545,53 @@ export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
               <CardPreview card={previewCard} compact fullDetailsCompact />
             </div>
             <p className="mt-3 text-sm leading-5 text-[var(--muted)]">{selectedTemplate.description}</p>
+            <Button href="/templates" variant="secondary" className="mt-4 w-full">
+              Change template
+            </Button>
           </div>
         </aside>
       </div>
+
+      {showDeleteDialog ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 px-4 py-6 backdrop-blur-sm">
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+            aria-describedby="delete-account-description"
+            className="w-full max-w-md rounded-2xl border border-red-200 bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.22)]"
+          >
+            <div className="flex items-start gap-3">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 id="delete-account-title" className="text-lg font-semibold text-slate-950">
+                  Delete account?
+                </h2>
+                <p id="delete-account-description" className="mt-1 text-sm leading-6 text-slate-600">
+                  This action is permanent. Account deletion is handled by support so your data can be verified before removal.
+                </p>
+              </div>
+            </div>
+            <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setShowDeleteDialog(false)}
+                className="rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <a
+                href="mailto:support@digicard.app?subject=Delete%20my%20DigiCard%20account"
+                className="rounded-full bg-red-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-[0_14px_26px_rgba(220,38,38,0.18)] transition hover:bg-red-700"
+              >
+                Request deletion
+              </a>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -554,7 +651,7 @@ function SummaryCard({
         </div>
         <p className="text-sm font-semibold text-[var(--ink)]">{label}</p>
       </div>
-      <p className="mt-2.5 text-xl font-semibold leading-tight text-[var(--ink)]">{value}</p>
+      <p className="mt-2.5 text-base font-semibold leading-6 text-[var(--ink)]">{value}</p>
       <p className="mt-1 text-sm leading-5 text-[var(--muted)]">{detail}</p>
     </div>
   );
@@ -567,6 +664,7 @@ function ProfileField({
   label,
   name,
   onChange,
+  placeholder,
   required,
   type = "text",
   value,
@@ -577,6 +675,7 @@ function ProfileField({
   label: string;
   name: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
   required?: boolean;
   type?: string;
   value: string;
@@ -588,9 +687,10 @@ function ProfileField({
       {label}
       <input
         id={id}
-        className={cn("h-11 rounded-2xl border bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100", error ? "border-red-300 focus:border-red-500 focus:ring-red-100" : "border-slate-200")}
+        className={cn("h-11 rounded-2xl border bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[var(--brand)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)]", error ? "border-red-300 focus:border-red-500 focus:ring-red-100" : "border-slate-200")}
         name={name}
         onChange={onChange}
+        placeholder={placeholder}
         required={required}
         type={type}
         value={value}
@@ -612,7 +712,7 @@ function FormSubmitButton({ label, secondary = false }: { label: string; seconda
         "min-h-11 rounded-full px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60",
         secondary
           ? "border border-[rgba(82,103,217,0.14)] bg-white text-[var(--ink)] hover:bg-[var(--soft)]"
-          : "bg-slate-900 text-white shadow-[0_16px_34px_rgba(15,23,42,0.16)] hover:bg-slate-800",
+          : "bg-[var(--brand)] text-white shadow-[0_16px_34px_rgba(82,103,217,0.2)] hover:bg-[var(--brand-dark)]",
       )}
     >
       {pending ? "Saving..." : label}

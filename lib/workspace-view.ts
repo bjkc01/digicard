@@ -135,7 +135,7 @@ export async function getWorkspaceView(user: WorkspaceUser): Promise<WorkspaceVi
       profileChecksTotal: readinessChecks.length,
       profileCompletion,
       selectedTemplateName: selectedTemplate.name,
-      storageScopeLabel: supabaseEnabled ? "Cloud sync with browser fallback" : "Saved on this browser",
+      storageScopeLabel: supabaseEnabled ? "Cloud sync enabled" : "Saved on this browser",
     },
     user,
   };

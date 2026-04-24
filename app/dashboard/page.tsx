@@ -1,4 +1,4 @@
-import { UserRound } from "lucide-react";
+import { ArrowRight, UserRound } from "lucide-react";
 import { devAuthBypassEnabled } from "@/auth";
 import { CardsSection } from "@/components/cards/cards-section";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
@@ -30,7 +30,7 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <main className="mx-auto grid w-full max-w-7xl min-w-0 gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
+    <main className="workspace-shell">
       <Sidebar
         activePath="/dashboard"
         avatarUrl={avatarUrl}
@@ -38,7 +38,7 @@ export default async function DashboardPage() {
         userName={displayName}
       />
 
-      <section className="min-w-0 space-y-4 sm:space-y-6">
+      <section className="workspace-content space-y-4 sm:space-y-6">
         <DashboardHeader
           avatarUrl={avatarUrl}
           email={displayEmail}
@@ -52,37 +52,35 @@ export default async function DashboardPage() {
         ) : null}
 
         <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
-          <div className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.94),_rgba(244,247,255,0.92))] p-5 sm:p-6">
+          <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <h2 className="max-w-[34rem] text-[2rem] font-semibold tracking-tight text-[var(--ink)]">
+                <h2 className="content-title max-w-[34rem]">
                   Your saved cards
                 </h2>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="rounded-full border border-[rgba(82,103,217,0.14)] bg-white px-3 py-1 text-xs font-semibold text-[var(--brand)] shadow-[0_8px_20px_rgba(21,32,58,0.04)]">
-                    {workspaceView.summary.cardStatusLabel}
-                  </span>
-                  {hasActiveCard ? (
+                {hasActiveCard ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
                     <span className="rounded-full border border-[rgba(82,103,217,0.1)] bg-[var(--soft)] px-3 py-1 text-xs font-medium text-[var(--muted)]">
                       Last saved {workspaceView.summary.lastUpdatedLabel}
                     </span>
-                  ) : null}
-                </div>
+                  </div>
+                ) : null}
               </div>
               <Button
                 href={hasActiveCard ? "/create-card?cardId=new" : "/create-card"}
-                className="whitespace-nowrap rounded-full bg-[var(--brand)] px-5 py-3 text-white shadow-[0_16px_34px_rgba(82,103,217,0.22)] hover:bg-[#4459cb]"
+                className="whitespace-nowrap"
               >
-                {hasActiveCard ? "+ Add card" : "Create first card"}
+                {hasActiveCard ? "Add card" : "Create first card"}
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
 
             <CardsSection
               cards={workspaceView.cards}
               emptyDescription="Finish your details to create your first card."
+              emptyKicker={workspaceView.summary.cardStatusLabel}
               emptyTitle="No saved cards yet"
               showAddButton={false}
-              showEmptyButton={false}
             />
           </div>
 
@@ -92,38 +90,38 @@ export default async function DashboardPage() {
             <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
               <p className="text-sm font-semibold text-[var(--ink)]">Profile overview</p>
 
-              <div className="mt-6 space-y-3">
+              <div className="mt-4 space-y-3">
                 {metrics.map(({ value, label, helper, icon: Icon, progress }) => (
                   <div
                     key={label}
-                    className="rounded-[1.35rem] bg-[var(--soft)] p-4"
+                    className="rounded-2xl bg-[var(--soft)] p-4"
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-[0_10px_22px_rgba(21,32,58,0.05)]">
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-col gap-1">
-                          <p className="text-sm font-medium text-[var(--muted)]">{label}</p>
-                          <p className="text-sm font-semibold text-[var(--ink)]">{value}</p>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-[0_10px_22px_rgba(21,32,58,0.05)]">
+                          <Icon className="h-4 w-4" />
                         </div>
-                        <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{helper}</p>
+                        <p className="text-sm font-semibold text-[var(--ink)]">{label}</p>
                       </div>
+                      <p className="text-xl font-semibold text-[var(--ink)]">{value}</p>
                     </div>
-                    {progress !== undefined ? (
-                      <div className="mt-3 overflow-hidden rounded-full bg-white shadow-[inset_0_1px_3px_rgba(21,32,58,0.06)]" style={{ height: 6 }}>
-                        <div
-                          className="h-full rounded-full bg-[linear-gradient(90deg,_#5267d9,_#8da0ff)] transition-all duration-300"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                    ) : null}
+                    <div className="mt-3">
+                      {progress !== undefined ? (
+                        <div className="overflow-hidden rounded-full bg-white shadow-[inset_0_1px_3px_rgba(21,32,58,0.06)]" style={{ height: 10 }}>
+                          <div
+                            className="h-full rounded-full bg-[linear-gradient(90deg,_#5267d9,_#8da0ff)] transition-all duration-300"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      ) : null}
+                      <p className="mt-3 text-xs leading-5 text-[var(--muted)]">{helper}</p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,247,255,0.92))] p-5 sm:p-6">
+            <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold text-[var(--ink)]">Share readiness</p>
                 <span className="shrink-0 whitespace-nowrap rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold leading-none text-[var(--brand)]">
@@ -131,11 +129,20 @@ export default async function DashboardPage() {
                 </span>
               </div>
 
-              <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
-                {hasActiveCard
-                  ? `Last updated ${workspaceView.summary.lastUpdatedLabel}. Your saved cards are ready for your next event.`
-                  : "Create your first card to start sharing in person."}
-              </p>
+              <div className="mt-4 rounded-2xl bg-[var(--soft)] p-4">
+                <p className="text-sm leading-6 text-[var(--muted)]">
+                  {hasActiveCard
+                    ? `Last updated ${workspaceView.summary.lastUpdatedLabel}. Your saved cards are ready for your next event.`
+                    : "Create your first card to start sharing in person."}
+                </p>
+                <Button
+                  href={hasActiveCard ? "/cards" : "/create-card"}
+                  variant={hasActiveCard ? "secondary" : "primary"}
+                  className="mt-4 w-full"
+                >
+                  {hasActiveCard ? "Manage cards" : "Finish setup"}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { ArrowRight } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Button } from "@/components/ui/button";
 import { TemplateTile } from "@/components/cards/template-tile";
@@ -33,6 +34,7 @@ export default async function TemplatesPage({
   const displayName = workspaceView.settings.profile.name || workspaceUser.name;
   const displayEmail = workspaceView.settings.profile.email || workspaceUser.email;
   const avatarUrl = workspaceView.settings.profile.avatarUrl;
+  const hasCards = workspaceView.cards.length > 0;
   const { category } = await searchParams;
 
   const validCategories: TemplateCategory[] = ["corporate", "creative", "bold", "minimal"];
@@ -45,19 +47,25 @@ export default async function TemplatesPage({
     : templates;
 
   return (
-    <main className="mx-auto grid w-full max-w-7xl min-w-0 gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6 lg:py-6">
+    <main className="workspace-shell">
       <Sidebar activePath="/templates" avatarUrl={avatarUrl} email={displayEmail} userName={displayName} />
 
-      <section className="panel min-w-0 p-5 sm:p-6 md:p-8">
+      <section className="workspace-content">
+        <div className="panel min-w-0 p-5 sm:p-6 md:p-8">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="min-w-0 max-w-2xl">
             <h1 className="section-title">Pick a clean starting point</h1>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+              Templates are editable starting points. Choose one now and you can change the details or switch styles later.
+            </p>
           </div>
           <Button
             href="/create-card"
-            className="w-full whitespace-nowrap rounded-full bg-slate-900 px-5 py-3 text-white hover:bg-slate-800 sm:w-auto"
+            className="w-full whitespace-nowrap sm:w-auto"
+            variant={hasCards ? "secondary" : "primary"}
           >
-            Edit workspace card
+            {hasCards ? "Edit main card" : "Create first card"}
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
 
@@ -77,7 +85,7 @@ export default async function TemplatesPage({
         </div>
 
         {/* Grid */}
-        <div className="mt-6 grid min-w-0 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-6 grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-2 2xl:grid-cols-3">
           {visibleTemplates.map((template) => (
             <TemplateTile
               key={template.id}
@@ -93,6 +101,7 @@ export default async function TemplatesPage({
             No templates in this category yet.
           </p>
         )}
+        </div>
       </section>
     </main>
   );

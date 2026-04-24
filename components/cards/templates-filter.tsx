@@ -57,8 +57,8 @@ export function TemplatesFilter() {
           disabled={isPending && optimisticActive === f.value}
           className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-[background-color,color,transform,box-shadow] duration-200 ${
             optimisticActive === f.value
-              ? "bg-slate-900 text-white shadow-[0_10px_22px_rgba(15,23,42,0.16)]"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+              ? "bg-[var(--brand)] text-white shadow-[0_10px_22px_rgba(82,103,217,0.2)]"
+              : "border border-slate-200 bg-white text-slate-600 hover:border-[rgba(82,103,217,0.24)] hover:bg-[var(--brand-soft)] hover:text-[var(--ink)]"
           }`}
         >
           {f.label}

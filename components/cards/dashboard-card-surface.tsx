@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { deleteWorkspaceCardAction } from "@/app/create-card/actions";
 import { deleteExtraCardAction } from "@/app/create-card/extra-card-actions";
 import { CardPreview } from "@/components/cards/card-preview";
@@ -33,15 +34,23 @@ export function DashboardCardSurface({ card }: DashboardCardSurfaceProps) {
       return;
     }
     startTransition(async () => {
-      if (isPrimary) {
-        await deleteWorkspaceCardAction();
-        localStorage.removeItem(portraitKey);
-        localStorage.removeItem(legacyPrimaryPortraitKey);
-        return;
-      }
+      try {
+        if (isPrimary) {
+          await deleteWorkspaceCardAction();
+          localStorage.removeItem(portraitKey);
+          localStorage.removeItem(legacyPrimaryPortraitKey);
+          toast.success("Card deleted.");
+          return;
+        }
 
-      await deleteExtraCardAction(card.id);
-      localStorage.removeItem(portraitKey);
+        await deleteExtraCardAction(card.id);
+        localStorage.removeItem(portraitKey);
+        toast.success("Card deleted.");
+      } catch {
+        toast.error("Could not delete card. Please try again.");
+      } finally {
+        setConfirmDelete(false);
+      }
     });
   }
 

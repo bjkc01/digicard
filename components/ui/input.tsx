@@ -31,7 +31,7 @@ export function Input({
         name={name}
         placeholder={placeholder}
         {...(isControlled ? { value, onChange } : { defaultValue })}
-        className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+        className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[var(--brand)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)]"
       />
     </label>
   );
