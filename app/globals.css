@@ -130,6 +130,50 @@ textarea:focus-visible {
   animation: fadeIn 0.3s var(--ease-snappy) both;
 }
 
+@keyframes routeFade {
+  from {
+    opacity: 0.985;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.route-transition {
+  animation: routeFade 180ms var(--ease-snappy) both;
+}
+
+@keyframes mobileNavBackdropIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mobileNavPanelIn {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.mobile-nav-backdrop {
+  animation: mobileNavBackdropIn 180ms ease-out both;
+}
+
+.mobile-nav-panel {
+  animation: mobileNavPanelIn 220ms var(--ease-snappy) both;
+}
+
 @keyframes heroIn {
   from {
     opacity: 0;

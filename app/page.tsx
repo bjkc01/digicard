@@ -3,7 +3,6 @@ import { InteractiveHeroPreview } from "@/components/landing/interactive-hero-pr
 import { PremiumHeader } from "@/components/landing/premium-header";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import { UseCasesTicketGrid } from "@/components/landing/use-cases-ticket-grid";
-import { HomeAuthModalContent } from "@/components/login/home-auth-modal-content";
 import type { LoginSearchParams } from "@/lib/login-flow";
 import {
   ArrowRight,
@@ -126,6 +125,9 @@ function shouldOpenAuthModal(searchParams: LoginSearchParams) {
 export default async function LandingPage({ searchParams }: LandingPageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
   const showAuthModal = shouldOpenAuthModal(resolvedSearchParams);
+  const AuthModalContent = showAuthModal
+    ? (await import("@/components/login/home-auth-modal-content")).HomeAuthModalContent
+    : null;
 
   return (
     <main className="min-h-screen overflow-x-clip bg-[var(--canvas)] text-[var(--ink)]">
@@ -151,7 +153,9 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
       </div>
 
       <PremiumHeader showAuthModal={showAuthModal}>
-        <HomeAuthModalContent originPath="/" searchParams={resolvedSearchParams} />
+        {AuthModalContent ? (
+          <AuthModalContent originPath="/" searchParams={resolvedSearchParams} />
+        ) : null}
       </PremiumHeader>
 
       <section className="mx-auto max-w-7xl px-4 pb-12 pt-5 sm:px-6 lg:pt-6">

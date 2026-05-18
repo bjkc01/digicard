@@ -9,7 +9,7 @@ type HomeAuthModalProps = {
   buttonClassName?: string;
   buttonLabel?: string;
   callbackUrl?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   initiallyOpen?: boolean;
 };
 
@@ -129,7 +129,16 @@ export function HomeAuthModal({
                   <X className="h-4 w-4" />
                 </button>
 
-                {children}
+                {children ?? (
+                  <div className="w-[min(calc(100vw-2rem),27rem)] rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.22),0_4px_16px_rgba(15,23,42,0.08)]">
+                    <div className="h-5 w-28 animate-pulse rounded-full bg-slate-200" />
+                    <div className="mt-6 h-8 w-64 max-w-full animate-pulse rounded-2xl bg-slate-200" />
+                    <div className="mt-4 space-y-3">
+                      <div className="h-16 animate-pulse rounded-[1.3rem] bg-slate-100" />
+                      <div className="h-16 animate-pulse rounded-[1.3rem] bg-slate-100" />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>,
             document.body,

@@ -1,13 +1,10 @@
-"use client";
-
 import Link from "next/link";
-import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 import { CreditCard } from "lucide-react";
-import { useState } from "react";
 import { HomeAuthModal } from "@/components/login/home-auth-modal";
 
 type PremiumHeaderProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   showAuthModal: boolean;
 };
 
@@ -19,8 +16,6 @@ const navLinks = [
 ] as const;
 
 export function PremiumHeader({ children, showAuthModal }: PremiumHeaderProps) {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4">
@@ -34,26 +29,14 @@ export function PremiumHeader({ children, showAuthModal }: PremiumHeaderProps) {
           </div>
         </Link>
 
-        <nav
-          className="hidden items-center gap-2 lg:flex"
-          onMouseLeave={() => setHoveredIndex(null)}
-        >
-          {navLinks.map((link, index) => (
+        <nav className="hidden items-center gap-2 lg:flex">
+          {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="relative inline-flex min-h-[44px] items-center rounded-full px-4 py-2 text-sm font-medium text-gray-500 transition-colors duration-200 ease-in-out hover:text-gray-900"
-              onFocus={() => setHoveredIndex(index)}
-              onMouseEnter={() => setHoveredIndex(index)}
+              className="inline-flex min-h-[44px] items-center rounded-full px-4 py-2 text-sm font-medium text-gray-500 transition-[background-color,color] duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-900 focus-visible:bg-gray-100 focus-visible:text-gray-900"
             >
-              {hoveredIndex === index ? (
-                <motion.div
-                  layoutId="navHighlight"
-                  className="absolute inset-0 -z-10 rounded-full bg-gray-100"
-                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                />
-              ) : null}
-              <span className="relative z-10">{link.label}</span>
+              {link.label}
             </a>
           ))}
         </nav>

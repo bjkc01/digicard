@@ -23,19 +23,25 @@ export function InteractiveHeroPreview() {
   const [showPlaceholderText, setShowPlaceholderText] = useState(true);
 
   useEffect(() => {
+    let timeoutId: number | undefined;
+
     const intervalId = window.setInterval(() => {
       setShowPlaceholderText(false);
-      const timeoutId = window.setTimeout(() => {
+      timeoutId = window.setTimeout(() => {
         setPlaceholder((current) =>
           current === "Live preview" ? "Type your name..." : "Live preview",
         );
         setShowPlaceholderText(true);
       }, 250);
-
-      return () => window.clearTimeout(timeoutId);
     }, 3000);
 
-    return () => window.clearInterval(intervalId);
+    return () => {
+      window.clearInterval(intervalId);
+
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
   }, []);
 
   const displayName = name.trim() || "Jordan Lin";
