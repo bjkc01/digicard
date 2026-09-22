@@ -1,59 +1,184 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowUpRight, AtSign, Globe2, Mail } from "lucide-react";
+import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
+import { ArrowLeftRight, AtSign, BatteryFull, CreditCard, Globe, Mail, RotateCcw, Signal, Wifi } from "lucide-react";
 import QRCode from "react-qr-code";
 import { siteConfig } from "@/lib/site-config";
+import styles from "./interactive-hero-preview.module.css";
 
-function slugify(value: string) {
-  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
+const INITIAL_ROTATION = { x: 5, y: -18 };
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 export function InteractiveHeroPreview() {
   const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
+  const [email, setEmail] = useState("");
+  const [rotation, setRotation] = useState(INITIAL_ROTATION);
+  const [dragging, setDragging] = useState(false);
+  const drag = useRef<{ id: number; x: number; y: number; rotation: typeof INITIAL_ROTATION } | null>(null);
+
   const displayName = name.trim() || "Jordan Lin";
-  const firstName = displayName.split(/\s+/)[0] || "Jordan";
-  const initials = displayName.split(/\s+/).slice(0, 2).map(part => part[0]?.toUpperCase()).join("");
-  const handle = slugify(displayName) || "jordan-lin";
+  const displayTitle = title.trim() || "Computer Science Student";
+  const parts = displayName.split(/\s+/);
+  const initials = [parts[0], ...(parts.length > 1 ? [parts[parts.length - 1]] : [])]
+    .map((part) => Array.from(part)[0] ?? "")
+    .join("")
+    .toLocaleUpperCase();
+  const handle = displayName.toLowerCase().replace(/[^a-z0-9]+/g, "") || "yourname";
+  const displayEmail = email.trim() || `${handle}@example.com`;
+  const facingBack = Math.cos((rotation.y * Math.PI) / 180) < 0;
+  const nameSize = displayName.length > 36 ? "1.25rem" : displayName.length > 22 ? "1.55rem" : "1.95rem";
+
+  function startDrag(event: PointerEvent<HTMLDivElement>) {
+    if (!event.isPrimary || event.button !== 0) return;
+    drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, rotation };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragging(true);
+  }
+
+  function moveDrag(event: PointerEvent<HTMLDivElement>) {
+    const start = drag.current;
+    if (!start || start.id !== event.pointerId) return;
+    setRotation({
+      x: clamp(start.rotation.x - (event.clientY - start.y) * 0.16, -18, 18),
+      y: start.rotation.y + (event.clientX - start.x) * 0.65,
+    });
+  }
+
+  function endDrag(event: PointerEvent<HTMLDivElement>) {
+    if (drag.current?.id !== event.pointerId) return;
+    drag.current = null;
+    setDragging(false);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }
+
+  function showFront() {
+    setRotation(INITIAL_ROTATION);
+  }
 
   return (
-    <div id="live-preview" className="relative z-10 mx-auto w-full max-w-[580px]">
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <span className="landing-kicker text-[#697268]">THE CARD / A PREVIEW</span>
-        <span className="flex items-center gap-2 text-xs font-semibold text-[#697268]"><span className="h-2 w-2 rounded-full bg-[#bd6348]" /> INTERACTIVE</span>
+    <div className={`anim-card ${styles.preview}`} id="live-preview">
+      <div className={styles.editor}>
+        <div className={styles.editorHeading}>
+          <label htmlFor="preview-name">Try it with your name</label>
+          <span className={styles.live}><span /> Live preview</span>
+        </div>
+        <input
+          id="preview-name"
+          autoComplete="off"
+          className={styles.input}
+          maxLength={60}
+          onChange={(event) => setName(event.target.value)}
+          onFocus={showFront}
+          placeholder="Your name"
+          type="text"
+          value={name}
+        />
+        <details className={styles.details}>
+          <summary>Add your title &amp; email</summary>
+          <div className={styles.extraFields}>
+            <label htmlFor="preview-title">Title or major</label>
+            <input id="preview-title" className={styles.input} maxLength={70} onChange={(event) => setTitle(event.target.value)} onFocus={showFront} placeholder="Computer Science Student" value={title} />
+            <label htmlFor="preview-email">Email</label>
+            <input id="preview-email" autoComplete="off" className={styles.input} maxLength={100} onChange={(event) => setEmail(event.target.value)} onFocus={showFront} placeholder="you@example.com" type="email" value={email} />
+          </div>
+        </details>
       </div>
-      <div className="relative px-0 pb-5 pt-3 sm:px-5 sm:pb-7">
-        <div aria-hidden="true" className="absolute bottom-0 left-[7%] right-0 top-[10%] rotate-[5deg] rounded-[2rem] border border-[#c9c7b9] bg-[#d8d6c8] sm:left-[10%]" />
-        <div className="relative flex min-h-[490px] flex-col overflow-hidden rounded-[1.7rem] border border-[#365247] bg-[#253a32] p-6 text-[#f7f4e9] shadow-[0_28px_70px_rgba(36,51,42,0.24)] sm:min-h-[520px] sm:rounded-[2rem] sm:p-9">
-          <div className="flex items-start justify-between gap-4">
-            <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#e1b9a8]">DIGICARD / 001</span>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#779083] text-sm font-semibold text-white">{initials}</div>
-          </div>
-          <div className="mt-12 sm:mt-14">
-            <p className="text-xs uppercase tracking-[0.2em] text-[#b8c8bb]">Nice to meet you, I’m</p>
-            <p className="landing-display mt-3 break-words text-[clamp(2.6rem,7vw,4.6rem)] leading-[0.97] tracking-[-0.055em] text-[#f7f4e9]">{displayName}</p>
-            <p className="mt-4 text-sm text-[#c5d0c5]">Computer science student <span className="mx-1 text-[#e1b9a8]">·</span> State University</p>
-          </div>
-          <div className="mt-9 grid gap-2 border-t border-[#607567] pt-5 text-xs text-[#d9e1d7] sm:grid-cols-2 sm:gap-y-4">
-            <span className="flex min-w-0 items-center gap-2"><Mail className="h-4 w-4 shrink-0 text-[#e1b9a8]" /> {firstName.toLowerCase()}@example.edu</span>
-            <span className="flex min-w-0 items-center gap-2"><AtSign className="h-4 w-4 shrink-0 text-[#e1b9a8]" /> /in/{handle}</span>
-            <span className="flex min-w-0 items-center gap-2 sm:col-span-2"><Globe2 className="h-4 w-4 shrink-0 text-[#e1b9a8]" /> yoursite.example</span>
-          </div>
-          <div className="mt-auto flex items-end justify-between gap-4 pt-8">
-            <div>
-              <span className="landing-kicker text-[#e1b9a8]">MAKE IT MEMORABLE</span>
-              <p className="mt-2 max-w-[165px] text-xs leading-5 text-[#b8c8bb]">A sample card. Your real QR destination is yours to choose.</p>
+
+      <div className={styles.stage}>
+        <div className={styles.glow} aria-hidden="true" />
+        <div className={styles.shadow} aria-hidden="true" />
+        <div
+          aria-describedby="phone-instructions"
+          aria-label="Interactive 3D iPhone preview"
+          className={styles.dragArea}
+          data-dragging={dragging}
+          onLostPointerCapture={endDrag}
+          onPointerCancel={endDrag}
+          onPointerDown={startDrag}
+          onPointerMove={moveDrag}
+          onPointerUp={endDrag}
+          role="group"
+        >
+          <div
+            className={styles.phone}
+            style={{ "--rotate-x": `${rotation.x}deg`, "--rotate-y": `${rotation.y}deg` } as CSSProperties}
+          >
+            {/* Closely spaced rounded planes form a solid metal frame at every angle. */}
+            {Array.from({ length: 15 }, (_, index) => (
+              <div
+                aria-hidden="true"
+                className={styles.frameLayer}
+                key={index}
+                style={{ transform: `translateZ(${index - 7}px)` }}
+              />
+            ))}
+
+            <div className={styles.back} aria-hidden="true">
+              <div className={styles.cameraPlate}>
+                <span className={`${styles.lens} ${styles.lensOne}`} />
+                <span className={`${styles.lens} ${styles.lensTwo}`} />
+                <span className={`${styles.lens} ${styles.lensThree}`} />
+                <span className={styles.flash} />
+                <span className={styles.sensor} />
+              </div>
+              <CreditCard className={styles.backLogo} strokeWidth={1.2} />
+              <span className={styles.backWordmark}>DigiCard</span>
             </div>
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-[#f7f4e9] p-2.5 sm:h-28 sm:w-28">
-              <QRCode value={siteConfig.url} size={90} bgColor="transparent" fgColor="#253a32" style={{ width: "100%", height: "100%" }} aria-label="Sample QR code for the DigiCard website" />
+
+            <div className={`${styles.side} ${styles.leftSide}`} aria-hidden="true">
+              <span className={styles.muteButton} />
+              <span className={styles.volumeUp} />
+              <span className={styles.volumeDown} />
+            </div>
+            <div className={`${styles.side} ${styles.rightSide}`} aria-hidden="true"><span className={styles.powerButton} /></div>
+
+            <div className={styles.front}>
+              <div className={styles.screen}>
+                <div className={styles.statusBar} aria-hidden="true">
+                  <span>9:41</span>
+                  <div><Signal size={12} /><Wifi size={12} /><BatteryFull size={17} /></div>
+                </div>
+                <div className={styles.island} aria-hidden="true"><span /></div>
+                <div className={styles.card}>
+                  <div className={styles.cardBrand}><CreditCard size={14} /> DigiCard <span>Your digital introduction</span></div>
+                  <div className={styles.avatar} aria-hidden="true">{initials}</div>
+                  <div className={styles.identity}>
+                    <p className={styles.name} style={{ fontSize: nameSize }}>{displayName}</p>
+                    <p className={styles.title}>{displayTitle}</p>
+                    <p className={styles.university}>State University</p>
+                  </div>
+                  <div className={styles.contactRows}>
+                    <div><Mail size={14} /><span title={displayEmail}>{displayEmail}</span></div>
+                    <div><AtSign size={14} /><span title={`linkedin.com/in/${handle}`}>linkedin.com/in/{handle}</span></div>
+                    <div><Globe size={14} /><span title={`${handle}.example.com`}>{handle}.example.com</span></div>
+                  </div>
+                  <div className={styles.qrRow}>
+                    <div className={styles.qr} aria-label="Sample QR code linking to the DigiCard homepage" role="img">
+                      <QRCode aria-hidden="true" bgColor="#ffffff" fgColor="#19233d" size={72} value={siteConfig.url} />
+                    </div>
+                    <div><p>One scan.<br />A new connection.</p><span>Sample QR · DigiCard home</span></div>
+                  </div>
+                </div>
+                <div className={styles.homeIndicator} aria-hidden="true" />
+                <div className={styles.glass} aria-hidden="true" />
+              </div>
             </div>
           </div>
-          <div className="pointer-events-none absolute -right-16 top-1/4 h-52 w-52 rounded-full border border-[#c7d2bc]/15 sm:h-64 sm:w-64" aria-hidden="true" />
         </div>
       </div>
-      <label htmlFor="preview-name" className="mt-4 block text-xs font-semibold uppercase tracking-[0.18em] text-[#536256]">Try your name in the card <ArrowUpRight className="inline h-3.5 w-3.5" /></label>
-      <input id="preview-name" type="text" value={name} maxLength={46} onChange={(event) => setName(event.target.value)} placeholder="Type your name" autoComplete="off" className="mt-2 min-h-12 w-full rounded-xl border border-[#c6c9bc] bg-[#f8f7f1] px-4 text-sm text-[#253a32] placeholder:text-[#7d8378] focus:border-[#253a32] focus:outline-none focus:ring-2 focus:ring-[#253a32]/15" />
-      <p className="mt-2 text-xs text-[#697268]">Preview only · Scanning the sample QR opens DigiCard.</p>
+
+      <p className={styles.instructions} id="phone-instructions"><ArrowLeftRight size={14} /> Drag the phone to look around</p>
+      <div className={styles.controls} role="group" aria-label="Phone rotation controls">
+        <button aria-label="Rotate phone left" onClick={() => setRotation((current) => ({ ...current, y: current.y - 35 }))} type="button">↶</button>
+        <button aria-label={facingBack ? "Show phone front" : "Show phone back"} onClick={() => setRotation({ x: 0, y: facingBack ? 0 : 180 })} type="button">{facingBack ? "View front" : "View back"}</button>
+        <button aria-label="Reset phone rotation" onClick={showFront} type="button"><RotateCcw size={13} /> Reset</button>
+        <button aria-label="Rotate phone right" onClick={() => setRotation((current) => ({ ...current, y: current.y + 35 }))} type="button">↷</button>
+      </div>
+      <p className={styles.note}>Try it out. Your preview details aren&apos;t saved.</p>
+      <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">Card preview: {displayName}, {displayTitle}, {displayEmail}.</p>
     </div>
   );
 }
