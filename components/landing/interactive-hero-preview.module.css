@@ -96,7 +96,7 @@
 .frameLayer {
   position: absolute;
   inset: 0;
-  border: 1px solid #8c919a;
+  border: 0.5px solid #858b95;
   border-radius: 43px;
   background: linear-gradient(120deg, #aab0b9, #555b66 30%, #303541 60%, #7d838e);
 }
@@ -139,34 +139,121 @@
 
 .back {
   transform: rotateY(180deg) translateZ(8px);
+  transform-style: preserve-3d;
   background: radial-gradient(ellipse at 20% 0%, #7c818a, #4f5560 36%, #333a45 95%);
   box-shadow: inset 0 0 0 3px #323844, inset 0 0 0 4px #9298a1;
 }
 
-.cameraPlate { position: absolute; left: 15px; top: 17px; width: 120px; height: 126px; border: 1px solid #a2a6ad; border-radius: 28px; background: linear-gradient(145deg, #666d78, #474e5a); box-shadow: 3px 4px 4px #262c3680, inset 0 0 0 3px #717781; }
-.lens { position: absolute; width: 44px; height: 44px; border: 3px solid #9399a3; border-radius: 50%; background: radial-gradient(circle at 42% 39%, #476895 0%, #162841 12%, #050912 28%, #182236 30%, #050810 40%, #202738 44%, #050810 65%); box-shadow: 1px 3px 2px #1a1e28, inset 0 0 0 2px #151b28; }
-.lens::after { content: ""; position: absolute; top: 8px; left: 10px; width: 9px; height: 5px; border-radius: 50%; background: #7e98c344; transform: rotate(-35deg); }
-.lensOne { left: 9px; top: 9px; }
-.lensTwo { left: 9px; bottom: 9px; }
-.lensThree { right: 7px; top: 39px; }
-.flash { position: absolute; top: 13px; right: 20px; width: 16px; height: 16px; border: 3px solid #adafac; border-radius: 50%; background: #e8e4d4; }
-.sensor { position: absolute; bottom: 13px; right: 22px; width: 13px; height: 13px; border-radius: 50%; background: #161d27; }
+.cameraPlate {
+  position: absolute;
+  left: 15px;
+  top: 17px;
+  width: 123px;
+  height: 130px;
+  border-radius: 29px;
+  transform: translateZ(1px);
+  transform-style: preserve-3d;
+}
+
+.cameraBumpLayer {
+  position: absolute;
+  inset: 0;
+  border: 0.5px solid #9299a3;
+  border-radius: inherit;
+  background: linear-gradient(140deg, #9299a4, #3d4551 55%, #252d39);
+  box-shadow: 2px 3px 5px #141a2340;
+}
+
+.cameraDeck {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #a6adb6;
+  border-radius: inherit;
+  background: linear-gradient(145deg, #7c8490, #515b6a 45%, #414b5b);
+  box-shadow: inset 1px 1px 1px #d1d7df5c, inset -1px -1px 1px #222b38;
+  transform: translateZ(4px);
+}
+
+.lens {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  transform: translateZ(4.5px);
+  transform-style: preserve-3d;
+}
+
+.lensBarrel {
+  position: absolute;
+  inset: 0;
+  border: 0.5px solid #727b89;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #a0a7b2, #414954 30%, #151c27 70%, #7a8492);
+  box-shadow: 2px 3px 3px #141a2352;
+}
+
+.lensRim {
+  position: absolute;
+  inset: 0;
+  border: 0.75px solid #b5bdc9;
+  border-radius: inherit;
+  background: conic-gradient(from 30deg, #b8c1cf, #36404d 19%, #131c28 40%, #7b8798 60%, #d8dfe8 78%, #4d5969 92%, #b8c1cf);
+  box-shadow: inset 0 0 0 1px #364353;
+  transform: translateZ(4px);
+}
+
+.lensGlass {
+  position: absolute;
+  inset: 3px;
+  overflow: hidden;
+  border: 2px solid #0c111b;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 35% 25%, #283b57, #0e192b 27%, #03070f 57%, #182333 78%, #060b13);
+  box-shadow: inset 0 0 0 1px #6676915c, inset -2px -3px 5px #000b;
+}
+
+.lensOptics {
+  position: absolute;
+  inset: 8px;
+  border: 1px solid #4c69907a;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 37%, #244768, #040b18 42%, #121e39 64%, #5f659652 68%, #030814 75%);
+  box-shadow: 0 0 0 2px #070d1c, 0 0 0 3px #24365080, 0 0 5px #5174b54d;
+}
+
+.lensReflection {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(130deg, #d9eaff75 0%, #6e98dd26 24%, transparent 33%, transparent 70%, #7893d626 87%, transparent);
+}
+
+.lensReflection::before { content: ""; position: absolute; left: 7px; top: 3px; width: 13px; height: 4px; border-radius: 50%; background: #cde4ff9c; transform: rotate(-32deg); filter: blur(0.6px); }
+.lensReflection::after { content: ""; position: absolute; right: 5px; bottom: 5px; width: 5px; height: 4px; border-radius: 50%; background: #678bd750; }
+.lensOne { left: 8px; top: 8px; }
+.lensTwo { left: 8px; bottom: 8px; }
+.lensThree { right: 7px; top: 42px; }
+.flash { position: absolute; top: 14px; right: 20px; width: 17px; height: 17px; border: 2px solid #bec2c4; border-radius: 50%; background: repeating-radial-gradient(circle, #eee8d7 0 1px, #d7d5cc 1px 2px); box-shadow: 0 1px 2px #12192388, inset 0 0 2px #fff; transform: translateZ(4.6px); }
+.sensor { position: absolute; bottom: 14px; right: 22px; width: 14px; height: 14px; border: 1px solid #88909b; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #2f3946, #0b121d 60%); box-shadow: 0 1px 2px #11182780; transform: translateZ(4.6px); }
+.microphone { position: absolute; right: 12px; bottom: 36px; width: 3px; height: 3px; border-radius: 50%; background: #0b1019; box-shadow: 0 0 0 0.5px #818c9b; transform: translateZ(4.5px); }
 .backLogo { position: absolute; left: 50%; top: 48%; transform: translate(-50%, -50%); width: 42px; height: 42px; color: #242d3b; }
 .backWordmark { position: absolute; bottom: 52px; width: 100%; color: #c0c5cf; text-align: center; letter-spacing: 0.16em; font-size: 10px; }
-.side { position: absolute; top: 43px; bottom: 43px; width: 14px; background: linear-gradient(90deg, #757c87, #c6cad0 45%, #575f6c); transform-style: preserve-3d; }
+.side { position: absolute; top: 43px; bottom: 43px; width: 14px; background: linear-gradient(90deg, #59616e, #a8b0ba 15%, #929ca8 45%, #7c8796 80%, #434c5b); transform-style: preserve-3d; }
+.side::before, .side::after { content: ""; position: absolute; left: 0; right: 0; height: 2px; background: #3e4653; box-shadow: 0 0.5px 0 #bcc3cb73; transform: translateZ(0.3px); }
+.side::before { top: 3px; }
+.side::after { bottom: 3px; }
 .leftSide { left: -7px; transform: rotateY(-90deg); }
 .rightSide { right: -7px; transform: rotateY(90deg); }
-.side > span { position: absolute; left: 4px; width: 6px; border: 1px solid #8c94a2; border-radius: 4px; background: #3d4554; box-shadow: 0 1px 2px #111827; transform: translateZ(1px); }
-.muteButton { top: 45px; height: 20px; }
-.volumeUp { top: 87px; height: 36px; }
-.volumeDown { top: 139px; height: 36px; }
-.powerButton { top: 105px; height: 58px; }
+.sideButton { position: absolute; left: 2.5px; width: 9px; border-radius: 5px; transform: translateZ(0.4px); transform-style: preserve-3d; }
+.buttonWell { position: absolute; inset: -0.5px; border: 0.5px solid #d5dbe44f; border-radius: inherit; background: #252d38; box-shadow: 0 0.5px 1px #b2bac280; }
+.buttonEdge { position: absolute; inset: 0.5px; border-radius: 4px; background: linear-gradient(90deg, #272f3b, #8d99a9 40%, #323e4e); box-shadow: 0 1px 1px #242d3b, 0 1.5px 1px #242d3b; transform: translateZ(0.9px); }
+.buttonCap { position: absolute; inset: 1px; border: 0.5px solid #c0c7d1; border-radius: 4px; background: linear-gradient(90deg, #596779, #b3becb 27%, #96a2b3 52%, #627083 85%, #3e4a5c); box-shadow: inset 0 1px 0 #e6edf6c7, inset 0 -1px 0 #303b4c, 1px 2px 2px #11182770; transform: translateZ(1.8px); }
+.actionButton { top: 45px; height: 20px; }
+.volumeUp { top: 88px; height: 38px; }
+.volumeDown { top: 140px; height: 38px; }
+.powerButton { top: 105px; height: 62px; }
 
 .instructions { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 8px; color: var(--muted); font-size: 11px; }
-.controls { display: flex; width: fit-content; max-width: 100%; align-items: center; justify-content: center; gap: 3px; margin: 10px auto 0; padding: 3px; border: 1px solid #e1e5ef; border-radius: 30px; background: #fff; box-shadow: 0 4px 12px rgba(21, 32, 58, 0.03); }
-.controls button { display: inline-flex; min-width: 44px; min-height: 40px; align-items: center; justify-content: center; gap: 5px; padding: 7px 11px; border-radius: 22px; font-size: 11px; font-weight: 600; color: var(--muted); transition: background 150ms, color 150ms; }
-.controls button:first-child, .controls button:last-child { font-size: 21px; }
-.controls button:hover { background: var(--brand-soft); color: var(--brand); }
 .note { margin-top: 10px; text-align: center; color: var(--muted); font-size: 10px; }
 
 @media (max-width: 639px) {

@@ -1,13 +1,39 @@
 "use client";
 
 import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
-import { ArrowLeftRight, AtSign, BatteryFull, CreditCard, Globe, Mail, RotateCcw, Signal, Wifi } from "lucide-react";
+import { ArrowLeftRight, AtSign, BatteryFull, CreditCard, Globe, Mail, Signal, Wifi } from "lucide-react";
 import QRCode from "react-qr-code";
 import { siteConfig } from "@/lib/site-config";
 import styles from "./interactive-hero-preview.module.css";
 
 const INITIAL_ROTATION = { x: 5, y: -18 };
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+function CameraLens({ className }: { className: string }) {
+  return (
+    <span className={`${styles.lens} ${className}`}>
+      {Array.from({ length: 8 }, (_, index) => (
+        <span className={styles.lensBarrel} key={index} style={{ transform: `translateZ(${index * 0.5}px)` }} />
+      ))}
+      <span className={styles.lensRim}>
+        <span className={styles.lensGlass}>
+          <span className={styles.lensOptics} />
+          <span className={styles.lensReflection} />
+        </span>
+      </span>
+    </span>
+  );
+}
+
+function SideButton({ className }: { className: string }) {
+  return (
+    <span className={`${styles.sideButton} ${className}`}>
+      <span className={styles.buttonWell} />
+      <span className={styles.buttonEdge} />
+      <span className={styles.buttonCap} />
+    </span>
+  );
+}
 
 export function InteractiveHeroPreview() {
   const [name, setName] = useState("");
@@ -26,7 +52,6 @@ export function InteractiveHeroPreview() {
     .toLocaleUpperCase();
   const handle = displayName.toLowerCase().replace(/[^a-z0-9]+/g, "") || "yourname";
   const displayEmail = email.trim() || `${handle}@example.com`;
-  const facingBack = Math.cos((rotation.y * Math.PI) / 180) < 0;
   const nameSize = displayName.length > 36 ? "1.25rem" : displayName.length > 22 ? "1.55rem" : "1.95rem";
 
   function startDrag(event: PointerEvent<HTMLDivElement>) {
@@ -54,10 +79,6 @@ export function InteractiveHeroPreview() {
     }
   }
 
-  function showFront() {
-    setRotation(INITIAL_ROTATION);
-  }
-
   return (
     <div className={`anim-card ${styles.preview}`} id="live-preview">
       <div className={styles.editor}>
@@ -71,7 +92,6 @@ export function InteractiveHeroPreview() {
           className={styles.input}
           maxLength={60}
           onChange={(event) => setName(event.target.value)}
-          onFocus={showFront}
           placeholder="Your name"
           type="text"
           value={name}
@@ -80,9 +100,9 @@ export function InteractiveHeroPreview() {
           <summary>Add your title &amp; email</summary>
           <div className={styles.extraFields}>
             <label htmlFor="preview-title">Title or major</label>
-            <input id="preview-title" className={styles.input} maxLength={70} onChange={(event) => setTitle(event.target.value)} onFocus={showFront} placeholder="Computer Science Student" value={title} />
+            <input id="preview-title" className={styles.input} maxLength={70} onChange={(event) => setTitle(event.target.value)} placeholder="Computer Science Student" value={title} />
             <label htmlFor="preview-email">Email</label>
-            <input id="preview-email" autoComplete="off" className={styles.input} maxLength={100} onChange={(event) => setEmail(event.target.value)} onFocus={showFront} placeholder="you@example.com" type="email" value={email} />
+            <input id="preview-email" autoComplete="off" className={styles.input} maxLength={100} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" type="email" value={email} />
           </div>
         </details>
       </div>
@@ -107,33 +127,38 @@ export function InteractiveHeroPreview() {
             style={{ "--rotate-x": `${rotation.x}deg`, "--rotate-y": `${rotation.y}deg` } as CSSProperties}
           >
             {/* Closely spaced rounded planes form a solid metal frame at every angle. */}
-            {Array.from({ length: 15 }, (_, index) => (
+            {Array.from({ length: 29 }, (_, index) => (
               <div
                 aria-hidden="true"
                 className={styles.frameLayer}
                 key={index}
-                style={{ transform: `translateZ(${index - 7}px)` }}
+                style={{ transform: `translateZ(${index * 0.5 - 7}px)` }}
               />
             ))}
 
             <div className={styles.back} aria-hidden="true">
               <div className={styles.cameraPlate}>
-                <span className={`${styles.lens} ${styles.lensOne}`} />
-                <span className={`${styles.lens} ${styles.lensTwo}`} />
-                <span className={`${styles.lens} ${styles.lensThree}`} />
+                {Array.from({ length: 8 }, (_, index) => (
+                  <span className={styles.cameraBumpLayer} key={index} style={{ transform: `translateZ(${index * 0.5}px)` }} />
+                ))}
+                <span className={styles.cameraDeck} />
+                <CameraLens className={styles.lensOne} />
+                <CameraLens className={styles.lensTwo} />
+                <CameraLens className={styles.lensThree} />
                 <span className={styles.flash} />
                 <span className={styles.sensor} />
+                <span className={styles.microphone} />
               </div>
               <CreditCard className={styles.backLogo} strokeWidth={1.2} />
               <span className={styles.backWordmark}>DigiCard</span>
             </div>
 
             <div className={`${styles.side} ${styles.leftSide}`} aria-hidden="true">
-              <span className={styles.muteButton} />
-              <span className={styles.volumeUp} />
-              <span className={styles.volumeDown} />
+              <SideButton className={styles.actionButton} />
+              <SideButton className={styles.volumeUp} />
+              <SideButton className={styles.volumeDown} />
             </div>
-            <div className={`${styles.side} ${styles.rightSide}`} aria-hidden="true"><span className={styles.powerButton} /></div>
+            <div className={`${styles.side} ${styles.rightSide}`} aria-hidden="true"><SideButton className={styles.powerButton} /></div>
 
             <div className={styles.front}>
               <div className={styles.screen}>
@@ -171,12 +196,6 @@ export function InteractiveHeroPreview() {
       </div>
 
       <p className={styles.instructions} id="phone-instructions"><ArrowLeftRight size={14} /> Drag the phone to look around</p>
-      <div className={styles.controls} role="group" aria-label="Phone rotation controls">
-        <button aria-label="Rotate phone left" onClick={() => setRotation((current) => ({ ...current, y: current.y - 35 }))} type="button">↶</button>
-        <button aria-label={facingBack ? "Show phone front" : "Show phone back"} onClick={() => setRotation({ x: 0, y: facingBack ? 0 : 180 })} type="button">{facingBack ? "View front" : "View back"}</button>
-        <button aria-label="Reset phone rotation" onClick={showFront} type="button"><RotateCcw size={13} /> Reset</button>
-        <button aria-label="Rotate phone right" onClick={() => setRotation((current) => ({ ...current, y: current.y + 35 }))} type="button">↷</button>
-      </div>
       <p className={styles.note}>Try it out. Your preview details aren&apos;t saved.</p>
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">Card preview: {displayName}, {displayTitle}, {displayEmail}.</p>
     </div>
