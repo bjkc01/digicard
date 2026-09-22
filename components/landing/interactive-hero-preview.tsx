@@ -1,214 +1,59 @@
 "use client";
 
-import { useEffect, useRef, useState, type WheelEvent } from "react";
-import { AtSign, Globe, Mail, Phone } from "lucide-react";
+import { useState } from "react";
+import { ArrowUpRight, AtSign, Globe2, Mail } from "lucide-react";
 import QRCode from "react-qr-code";
 import { siteConfig } from "@/lib/site-config";
 
-function sanitizeFragment(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
-}
-
 function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
 export function InteractiveHeroPreview() {
   const [name, setName] = useState("");
-  const [placeholder, setPlaceholder] = useState("Live preview");
-  const screenScrollRef = useRef<HTMLDivElement>(null);
-  const [showPlaceholderText, setShowPlaceholderText] = useState(true);
-
-  useEffect(() => {
-    let timeoutId: number | undefined;
-
-    const intervalId = window.setInterval(() => {
-      setShowPlaceholderText(false);
-      timeoutId = window.setTimeout(() => {
-        setPlaceholder((current) =>
-          current === "Live preview" ? "Type your name..." : "Live preview",
-        );
-        setShowPlaceholderText(true);
-      }, 250);
-    }, 3000);
-
-    return () => {
-      window.clearInterval(intervalId);
-
-      if (timeoutId) {
-        window.clearTimeout(timeoutId);
-      }
-    };
-  }, []);
-
   const displayName = name.trim() || "Jordan Lin";
-  const nameParts = displayName.split(/\s+/).filter(Boolean);
-  const firstName = nameParts[0] ?? "Jordan";
-  const lastName = nameParts[1] ?? nameParts[0] ?? "Lin";
-  const initials = nameParts
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("")
-    .slice(0, 2) || "JL";
-  const safeFirst = sanitizeFragment(firstName) || "j";
-  const safeLast = sanitizeFragment(lastName) || "lin";
-  const profileSlug = `${slugify(displayName) || "jordan-lin"}-cs`;
-  const qrValue = siteConfig.url;
-
-  const detailRows = [
-    {
-      icon: Mail,
-      value: `${safeFirst.charAt(0)}.${safeLast}@example.edu`,
-    },
-    {
-      icon: Phone,
-      value: "+1 (555) 019-3847",
-    },
-    {
-      icon: AtSign,
-      value: `linkedin.com/in/${profileSlug}`,
-    },
-    {
-      icon: Globe,
-      value: `digicard.me/${slugify(displayName) || "jordan-lin"}`,
-    },
-  ];
-
-  const handlePhoneWheel = (event: WheelEvent<HTMLDivElement>) => {
-    const screenElement = screenScrollRef.current;
-    if (!screenElement) {
-      return;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-    screenElement.scrollBy({
-      top: event.deltaY,
-      behavior: "auto",
-    });
-  };
+  const firstName = displayName.split(/\s+/)[0] || "Jordan";
+  const initials = displayName.split(/\s+/).slice(0, 2).map(part => part[0]?.toUpperCase()).join("");
+  const handle = slugify(displayName) || "jordan-lin";
 
   return (
-    <div className="anim-card relative w-full" id="live-preview">
-      <div className="relative mx-auto flex w-full max-w-[42rem] flex-col items-center gap-5 pb-6 pt-2 md:py-10 lg:items-end lg:pr-3">
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute left-[8%] top-[8%] h-56 w-56 rounded-full bg-[rgba(82,103,217,0.16)] blur-[48px] sm:h-72 sm:w-72 sm:blur-[95px]" />
-          <div className="absolute right-[8%] top-[28%] h-48 w-48 rounded-full bg-[rgba(56,189,248,0.1)] blur-[44px] sm:h-64 sm:w-64 sm:blur-[88px]" />
-          <div className="absolute bottom-[8%] left-[26%] h-40 w-40 rounded-full bg-[rgba(255,255,255,0.72)] blur-[32px] sm:h-56 sm:w-56 sm:blur-[64px]" />
-        </div>
-
-        <div className="relative z-20 flex w-full justify-center md:absolute md:right-0 md:top-0 md:w-auto">
-          <div className="relative w-full max-w-[20rem] md:w-auto">
-            <input
-              aria-label="Type your name to preview the card"
-              autoComplete="off"
-              className="min-h-[48px] w-full rounded-full border border-[rgba(82,103,217,0.15)] bg-white/92 px-5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_28px_rgba(21,32,58,0.1)] sm:backdrop-blur-xl transition-[border-color,box-shadow,background-color,transform] duration-300 ease-in-out focus:border-[rgba(82,103,217,0.3)] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[rgba(82,103,217,0.12)] md:w-[13rem] lg:w-[14.5rem]"
-              onChange={(event) => setName(event.target.value)}
-              spellCheck={false}
-              type="text"
-              value={name}
-            />
-            <span
-              aria-hidden="true"
-              className={`pointer-events-none absolute inset-y-0 left-5 flex items-center whitespace-nowrap text-sm font-semibold text-[var(--muted)] transition-opacity duration-500 ease-in-out ${
-                name.length > 0 || !showPlaceholderText ? "opacity-0" : "opacity-100"
-              }`}
-            >
-              {placeholder}
-            </span>
+    <div id="live-preview" className="relative z-10 mx-auto w-full max-w-[580px]">
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <span className="landing-kicker text-[#697268]">THE CARD / A PREVIEW</span>
+        <span className="flex items-center gap-2 text-xs font-semibold text-[#697268]"><span className="h-2 w-2 rounded-full bg-[#bd6348]" /> INTERACTIVE</span>
+      </div>
+      <div className="relative px-0 pb-5 pt-3 sm:px-5 sm:pb-7">
+        <div aria-hidden="true" className="absolute bottom-0 left-[7%] right-0 top-[10%] rotate-[5deg] rounded-[2rem] border border-[#c9c7b9] bg-[#d8d6c8] sm:left-[10%]" />
+        <div className="relative flex min-h-[490px] flex-col overflow-hidden rounded-[1.7rem] border border-[#365247] bg-[#253a32] p-6 text-[#f7f4e9] shadow-[0_28px_70px_rgba(36,51,42,0.24)] sm:min-h-[520px] sm:rounded-[2rem] sm:p-9">
+          <div className="flex items-start justify-between gap-4">
+            <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#e1b9a8]">DIGICARD / 001</span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#779083] text-sm font-semibold text-white">{initials}</div>
           </div>
-        </div>
-
-        <div className="phone-mockup-container relative mx-auto w-[min(100%,320px)] [perspective:1400px]">
-          <div className="hero-device-glow pointer-events-none absolute -left-6 top-[18%] -z-20 h-32 w-32 rounded-full bg-[rgba(255,255,255,0.9)] blur-[36px] sm:-left-12 sm:h-40 sm:w-40 sm:blur-[72px]" />
-          <div className="hero-device-glow hero-device-glow--delay pointer-events-none absolute -right-6 top-[12%] -z-20 h-36 w-36 rounded-full bg-[rgba(150,218,255,0.26)] blur-[40px] sm:-right-10 sm:h-48 sm:w-48 sm:blur-[86px]" />
-          <div className="hero-device-glow pointer-events-none absolute -bottom-8 right-[12%] -z-20 h-28 w-28 rounded-full bg-[rgba(82,103,217,0.22)] blur-[36px] sm:h-36 sm:w-36 sm:blur-[74px]" />
-
-          <div className="hero-device relative aspect-[9/19.5] w-full" onWheelCapture={handlePhoneWheel}>
-            <div className="absolute -left-[0.96%] top-[24.6%] z-10 h-[4.1%] w-[0.72%] rounded-full bg-[linear-gradient(180deg,#d8dde5_0%,#919bac_24%,#56606f_64%,#161d28_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.42),inset_0_-1px_0_rgba(0,0,0,0.28),0_2px_4px_rgba(15,23,42,0.12)]">
-              <div className="absolute inset-x-[22%] top-[12%] h-[18%] rounded-full bg-[rgba(255,255,255,0.32)]" />
+          <div className="mt-12 sm:mt-14">
+            <p className="text-xs uppercase tracking-[0.2em] text-[#b8c8bb]">Nice to meet you, I’m</p>
+            <p className="landing-display mt-3 break-words text-[clamp(2.6rem,7vw,4.6rem)] leading-[0.97] tracking-[-0.055em] text-[#f7f4e9]">{displayName}</p>
+            <p className="mt-4 text-sm text-[#c5d0c5]">Computer science student <span className="mx-1 text-[#e1b9a8]">·</span> State University</p>
+          </div>
+          <div className="mt-9 grid gap-2 border-t border-[#607567] pt-5 text-xs text-[#d9e1d7] sm:grid-cols-2 sm:gap-y-4">
+            <span className="flex min-w-0 items-center gap-2"><Mail className="h-4 w-4 shrink-0 text-[#e1b9a8]" /> {firstName.toLowerCase()}@example.edu</span>
+            <span className="flex min-w-0 items-center gap-2"><AtSign className="h-4 w-4 shrink-0 text-[#e1b9a8]" /> /in/{handle}</span>
+            <span className="flex min-w-0 items-center gap-2 sm:col-span-2"><Globe2 className="h-4 w-4 shrink-0 text-[#e1b9a8]" /> yoursite.example</span>
+          </div>
+          <div className="mt-auto flex items-end justify-between gap-4 pt-8">
+            <div>
+              <span className="landing-kicker text-[#e1b9a8]">MAKE IT MEMORABLE</span>
+              <p className="mt-2 max-w-[165px] text-xs leading-5 text-[#b8c8bb]">A sample card. Your real QR destination is yours to choose.</p>
             </div>
-            <div className="absolute -left-[0.96%] top-[37.3%] z-10 h-[2.9%] w-[0.72%] rounded-full bg-[linear-gradient(180deg,#d8dde5_0%,#919bac_24%,#56606f_64%,#161d28_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.42),inset_0_-1px_0_rgba(0,0,0,0.28),0_2px_4px_rgba(15,23,42,0.12)]">
-              <div className="absolute inset-x-[22%] top-[12%] h-[18%] rounded-full bg-[rgba(255,255,255,0.32)]" />
-            </div>
-            <div className="absolute -left-[0.96%] top-[47.4%] z-10 h-[4.1%] w-[0.72%] rounded-full bg-[linear-gradient(180deg,#d8dde5_0%,#919bac_24%,#56606f_64%,#161d28_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.42),inset_0_-1px_0_rgba(0,0,0,0.28),0_2px_4px_rgba(15,23,42,0.12)]">
-              <div className="absolute inset-x-[22%] top-[12%] h-[18%] rounded-full bg-[rgba(255,255,255,0.32)]" />
-            </div>
-
-            <div className="hero-device-shell relative h-full rounded-[3.1rem] border border-white/32 bg-[linear-gradient(160deg,#eef2f8_0%,#b2bccb_9%,#707a8b_18%,#303847_31%,#121824_67%,#090d16_100%)] p-[0.42rem] sm:rounded-[3.35rem]">
-              <div className="pointer-events-none absolute bottom-[5%] left-[0.18rem] top-[5%] w-[0.34rem] rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.72),rgba(255,255,255,0.18)_22%,rgba(255,255,255,0.02)_62%,rgba(0,0,0,0.3))]" />
-              <div className="pointer-events-none absolute bottom-[6%] right-[0.22rem] top-[6%] w-[0.22rem] rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.2),rgba(255,255,255,0.02)_28%,rgba(0,0,0,0.36))]" />
-              <div className="pointer-events-none absolute inset-[0.38rem] rounded-[2.85rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.07)_11%,rgba(255,255,255,0)_24%)] sm:rounded-[3rem]" />
-              <div className="pointer-events-none absolute left-1/2 top-[0.78rem] z-20 h-[0.95rem] w-[5.7rem] -translate-x-1/2 rounded-full bg-[#05070d] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]" />
-
-              <div className="relative h-full overflow-hidden rounded-[2.85rem] border border-white/8 bg-[#070b14] sm:rounded-[3rem]">
-                <div className="pointer-events-none absolute inset-x-[13%] top-0 z-10 h-[2px] bg-[linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.92)_22%,rgba(114,224,255,0.9)_76%,rgba(255,255,255,0))]" />
-
-                <div className="relative h-full bg-[radial-gradient(circle_at_18%_0%,rgba(82,103,217,0.24),rgba(82,103,217,0)_32%),linear-gradient(165deg,#151b2d_0%,#0d1220_46%,#070b14_100%)] px-[9.5%] pb-[8.6%] pt-[17.5%] text-white">
-                  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_24%,rgba(114,224,255,0.04)_58%,rgba(0,0,0,0.18)_100%)]" />
-                  <div
-                    ref={screenScrollRef}
-                    className="relative z-10 flex h-full w-full flex-col justify-between overflow-y-auto overscroll-contain pointer-events-auto [scrollbar-width:'none'] [-ms-overflow-style:'none'] [&::-webkit-scrollbar]:hidden"
-                  >
-                    <div className="shrink-0">
-                      <div className="flex h-[clamp(2.85rem,16vw,3.5rem)] w-[clamp(2.85rem,16vw,3.5rem)] items-center justify-center rounded-[1.15rem] border border-white/10 bg-white/8 text-[clamp(1rem,5vw,1.125rem)] font-semibold tracking-tight text-white/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-sm">
-                        {initials}
-                      </div>
-
-                      <div className="mt-7">
-                        <p className="max-w-[92%] break-words text-[clamp(2rem,10vw,2.35rem)] font-semibold leading-[0.92] tracking-[-0.065em] text-white">
-                          {displayName}
-                        </p>
-                        <p className="mt-3 line-clamp-3 text-[clamp(0.9rem,4vw,1rem)] text-white/66">
-                          Undergrad Student, Computer Science
-                        </p>
-                        <p className="mt-1 text-[clamp(0.82rem,3.4vw,0.95rem)] text-white/28">State University</p>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 flex-1 space-y-2">
-                      {detailRows.map((row) => (
-                        <div
-                          key={row.value}
-                          className="flex items-center gap-3 border-b border-white/8 pb-3.5 text-[clamp(0.75rem,3.2vw,0.84rem)] text-white/72"
-                        >
-                          <row.icon className="h-4 w-4 flex-none text-white/35" />
-                          <span className="min-w-0 truncate">{row.value}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="shrink-0 pt-8">
-                      <div className="shrink-0 pb-2 flex justify-center">
-                        <div className="flex h-[clamp(5rem,27vw,6rem)] w-[clamp(5rem,27vw,6rem)] items-center justify-center rounded-xl bg-white p-2 shadow-[0_18px_40px_rgba(4,9,18,0.45)]">
-                          <QRCode
-                            bgColor="transparent"
-                            fgColor="#151a29"
-                            size={80}
-                            style={{ height: "100%", width: "100%" }}
-                            value={qrValue}
-                          />
-                        </div>
-                      </div>
-
-                      <p className="mt-6 text-center text-[0.63rem] font-medium uppercase tracking-[0.34em] text-white/28">
-                        Scan to connect <span className="mx-1 text-white/18">.</span>
-                        <span className="font-semibold tracking-[0.28em] text-white/78"> Digicard</span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(128deg,rgba(255,255,255,0.13),rgba(255,255,255,0)_24%,rgba(255,255,255,0)_64%,rgba(255,255,255,0.05)_100%)] mix-blend-screen" />
-              </div>
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-[#f7f4e9] p-2.5 sm:h-28 sm:w-28">
+              <QRCode value={siteConfig.url} size={90} bgColor="transparent" fgColor="#253a32" style={{ width: "100%", height: "100%" }} aria-label="Sample QR code for the DigiCard website" />
             </div>
           </div>
+          <div className="pointer-events-none absolute -right-16 top-1/4 h-52 w-52 rounded-full border border-[#c7d2bc]/15 sm:h-64 sm:w-64" aria-hidden="true" />
         </div>
       </div>
+      <label htmlFor="preview-name" className="mt-4 block text-xs font-semibold uppercase tracking-[0.18em] text-[#536256]">Try your name in the card <ArrowUpRight className="inline h-3.5 w-3.5" /></label>
+      <input id="preview-name" type="text" value={name} maxLength={46} onChange={(event) => setName(event.target.value)} placeholder="Type your name" autoComplete="off" className="mt-2 min-h-12 w-full rounded-xl border border-[#c6c9bc] bg-[#f8f7f1] px-4 text-sm text-[#253a32] placeholder:text-[#7d8378] focus:border-[#253a32] focus:outline-none focus:ring-2 focus:ring-[#253a32]/15" />
+      <p className="mt-2 text-xs text-[#697268]">Preview only · Scanning the sample QR opens DigiCard.</p>
     </div>
   );
 }

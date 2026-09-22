@@ -2,6 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Landing page visual language; workspace styles remain independent. */
+.landing-editorial .landing-display {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+
+.landing-editorial .landing-kicker {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  line-height: 1.4;
+}
+
+.landing-editorial .landing-grid {
+  background-image: linear-gradient(to right, rgba(76, 91, 71, 0.085) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(76, 91, 71, 0.085) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.landing-editorial .landing-button:hover svg {
+  transform: translate(2px, -2px);
+}
+
+.landing-editorial .landing-button svg {
+  transition: transform 180ms ease;
+}
+
 :root {
   --canvas: #f8f9fb;
   --soft: #f4f6fb;
@@ -560,4 +587,3 @@ textarea:focus-visible {
     opacity: 0.6;
   }
 }
-
