@@ -143,9 +143,9 @@ export function HomeAuthModalCard({
   const showVerifyNotice = isVerifyPanel && Boolean(noticeMessage) && noticeCode === "EmailCodeSent";
 
   return (
-    <div className="w-[min(calc(100vw-2rem),27rem)] sm:w-[min(calc(100vw-3rem),29rem)] lg:w-[min(calc(100vw-5rem),54rem)]">
-      <div className="flex max-h-[min(88vh,42rem)] overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.22),0_4px_16px_rgba(15,23,42,0.08)]">
-        <div className="min-w-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6 sm:py-6 lg:basis-[29rem] lg:shrink-0">
+    <div className="w-[min(calc(100vw-2rem),29rem)]">
+      <div className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.22),0_4px_16px_rgba(15,23,42,0.08)]">
+        <div className="min-w-0 px-5 py-5 sm:px-6 sm:py-6">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-[var(--soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
               <Sparkles className="h-3 w-3" />

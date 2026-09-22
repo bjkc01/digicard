@@ -1,93 +1,49 @@
 "use client";
 
-import { GraduationCap, QrCode, ScanLine, UserRound } from "lucide-react";
-
-const previewItems = ["LinkedIn", "Portfolio", "Resume", "Email"];
+import { AtSign, Globe, Mail, Phone } from "lucide-react";
+import QRCode from "react-qr-code";
+import { siteConfig } from "@/lib/site-config";
 
 export function AuthBenefitsShowcase() {
   return (
-    <div className="relative hidden w-[24rem] flex-shrink-0 border-l border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_#f8faff_0%,_#eef2ff_100%)] lg:flex">
-      <div className="absolute left-4 top-6 h-28 w-28 rounded-full bg-[rgba(82,103,217,0.18)] blur-3xl" />
-      <div className="absolute bottom-6 right-5 h-32 w-32 rounded-full bg-[rgba(255,141,87,0.14)] blur-3xl" />
+    <section aria-label="Sample card template" className="border-t border-slate-100 bg-[linear-gradient(160deg,#f7f9ff,#eef2fc)] px-5 py-5 sm:px-6">
+      <div className="relative isolate overflow-hidden rounded-[1.3rem] border border-white/20 bg-[linear-gradient(120deg,#121c30_0%,#24365b_65%,#405aa0_100%)] p-4 text-white shadow-[0_12px_28px_rgba(28,43,82,0.16)] sm:p-5">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-28 -z-10 h-64 w-64 rounded-full border border-white/10" />
+        <div aria-hidden="true" className="pointer-events-none absolute -right-14 -top-20 -z-10 h-48 w-48 rounded-full border border-white/10" />
 
-      <div className="relative flex h-full w-full flex-col gap-3 overflow-y-auto p-4">
-        <div className="rounded-[1.8rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.9),_rgba(246,248,255,0.96))] p-3 shadow-[0_22px_54px_rgba(18,31,66,0.12)]">
-          <div className="rounded-[1.65rem] bg-gradient-to-br from-slate-800 to-slate-950 p-4 text-white shadow-[0_18px_36px_rgba(15,23,42,0.38)]">
-            <div className="flex items-center justify-between">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">
-                <UserRound className="h-3.5 w-3.5" />
-                Active card
-              </div>
-              <ScanLine className="h-4 w-4 text-white/72" />
-            </div>
-
-            <div className="mt-7">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/14">
-                <GraduationCap className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="mt-4 text-3xl font-bold tracking-tight text-white">
-                Jordan Lin
-              </h3>
-              <p className="mt-1.5 text-sm font-medium text-slate-300">
-                Undergrad Student, Computer Science
-              </p>
-              <p className="mt-1 text-sm font-medium text-slate-300">State University</p>
-            </div>
-
-            <div className="mt-6 rounded-[1.35rem] border border-white/20 bg-white/10 p-3.5 text-white">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/80">
-                Quick scan
-              </p>
-              <div className="mt-3 flex items-center gap-3">
-                <div className="rounded-[1rem] bg-white p-2.5 shadow-[0_10px_24px_rgba(12,18,31,0.16)]">
-                  <QrCode className="h-14 w-14 text-[#172340]" />
-                </div>
-                <p className="max-w-[8rem] text-sm leading-6 text-white">
-                  Ready for career fairs and campus events.
-                </p>
-              </div>
-            </div>
+        <div className="flex items-center gap-3">
+          <div aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-white/10 text-base font-semibold text-indigo-100">JL</div>
+          <div>
+            <h3 className="text-[1.65rem] font-semibold leading-none tracking-[-0.045em] text-white">Jordan Lin</h3>
+            <p className="mt-2 text-[11px] leading-4 text-slate-200">Computer Science Student</p>
+            <p className="mt-0.5 text-[10px] leading-4 text-slate-300">State University</p>
           </div>
         </div>
 
-        <div className="rounded-[1.45rem] border border-[rgba(25,35,61,0.08)] bg-[rgba(246,248,255,0.94)] p-4 shadow-[0_12px_30px_rgba(21,32,58,0.05)]">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-            Signed-in benefits
-          </p>
-          <h3 className="mt-2.5 text-xl font-bold leading-snug text-gray-900">
-            Keep your profile polished and event-ready.
-          </h3>
-          <p className="mt-2.5 text-sm leading-relaxed text-gray-600">
-            Update your resume, refresh your links, and open your DigiCard quickly whenever a new
-            opportunity shows up.
-          </p>
-        </div>
+        <p className="mt-4 text-xs leading-5 text-slate-200">Aspiring software developer building thoughtful, practical web experiences. Open to internships and collaborative projects.</p>
 
-        <div className="grid grid-cols-2 gap-3">
-          {previewItems.map((item) => (
-            <div
-              key={item}
-              className="rounded-[1.2rem] border border-[rgba(25,35,61,0.08)] bg-white/95 px-4 py-3.5 shadow-[0_12px_28px_rgba(21,32,58,0.04)]"
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                Included
+        <div className="mt-4 flex items-end justify-between gap-3 border-t border-white/15 pt-4">
+          <div className="min-w-0 space-y-2 text-[10px] leading-4 text-slate-200">
+            {[
+              { Icon: Mail, value: "jordan@example.com" },
+              { Icon: Phone, value: "+1 (555) 010-0123" },
+              { Icon: AtSign, value: "linkedin.com/in/jordan-lin" },
+              { Icon: Globe, value: "jordan.example.com" },
+            ].map(({ Icon, value }) => (
+              <p key={value} className="flex items-center gap-2">
+                <Icon aria-hidden="true" className="h-3 w-3 shrink-0 text-indigo-200" />
+                <span className="min-w-0 break-words [overflow-wrap:anywhere]">{value}</span>
               </p>
-              <p className="mt-2 text-lg font-bold tracking-tight text-gray-900">
-                {item}
-              </p>
+            ))}
+          </div>
+          <div className="shrink-0 text-center">
+            <div role="img" aria-label="Sample QR code for the DigiCard homepage" className="h-16 w-16 rounded-xl bg-white p-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.15)] sm:h-[4.5rem] sm:w-[4.5rem]">
+              <QRCode aria-hidden="true" bgColor="#ffffff" fgColor="#19233d" size={72} style={{ height: "100%", width: "100%" }} value={siteConfig.url} />
             </div>
-          ))}
-        </div>
-
-        <div className="rounded-[1.45rem] border border-[rgba(25,35,61,0.08)] bg-white/95 p-4 shadow-[0_12px_28px_rgba(21,32,58,0.04)]">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Student-first use
-          </p>
-          <p className="mt-2.5 text-lg font-bold leading-relaxed tracking-tight text-gray-900">
-            Better for recruiters, alumni, mentors, and speakers who want your profile right away.
-          </p>
+            <p className="mt-1.5 text-[8px] tracking-wide text-indigo-100/80">DigiCard preview</p>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
