@@ -22,12 +22,24 @@ function mergeParamsIntoPath(pathname: string, params: URLSearchParams) {
   return query ? `${basePath}?${query}` : basePath;
 }
 
+function safeLocalPath(value: unknown, fallback: string) {
+  if (typeof value !== "string" || !value.startsWith("/") || /[\\\u0000-\u0020]/.test(value)) return fallback;
+  try {
+    const base = "https://digicard.invalid";
+    const url = new URL(value, base);
+    if (url.origin !== base || value.startsWith("//")) return fallback;
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return fallback;
+  }
+}
+
 export function getSafeCallbackUrl(value?: FormDataEntryValue | string | null) {
-  return typeof value === "string" && value.startsWith("/") ? value : "/dashboard";
+  return safeLocalPath(value, "/dashboard");
 }
 
 export function getSafeOriginPath(value?: FormDataEntryValue | string | null) {
-  return typeof value === "string" && value.startsWith("/") ? value : "/";
+  return safeLocalPath(value, "/");
 }
 
 export function getAuthView(value?: FormDataEntryValue | string | null): AuthView {
@@ -48,11 +60,13 @@ export function getLoginErrorMessage(error?: string) {
     case "AccessDenied":
       return "Google sign-in was canceled before it finished. Please try again.";
     case "Configuration":
-      return "Google sign-in is misconfigured for this deployment. Check AUTH_SECRET, AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET, and the callback URL in Google Cloud.";
+      return "Sign-in is temporarily unavailable. Please try again later.";
     case "GoogleOAuthNotConfigured":
       return "Google sign-in is not configured for this deployment yet.";
     case "EmailInvalid":
       return "Enter a valid email address to continue.";
+    case "EmailRateLimited":
+      return "Too many code requests. Wait a few minutes before requesting another code.";
     case "EmailSigninUnavailable":
       return "Email sign-in is not configured for this deployment yet.";
     case "EmailSendFailed":

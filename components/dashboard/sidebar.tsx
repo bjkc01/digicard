@@ -46,6 +46,7 @@ export function Sidebar({ activePath, avatarUrl, email, userName }: SidebarProps
               <Link
                 key={item.label}
                 href={item.href}
+                  aria-current={isActive ? "page" : undefined}
                 prefetch
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition",

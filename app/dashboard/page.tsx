@@ -1,9 +1,9 @@
-import { ArrowRight, UserRound } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Check, LayoutTemplate, QrCode, UserRound, WalletCards } from "lucide-react";
 import { devAuthBypassEnabled } from "@/auth";
 import { CardsSection } from "@/components/cards/cards-section";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { Sidebar } from "@/components/dashboard/sidebar";
-import { WalletComingSoon } from "@/components/dashboard/wallet-coming-soon";
 import { Button } from "@/components/ui/button";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import { getWorkspaceView } from "@/lib/workspace-view";
@@ -24,7 +24,7 @@ export default async function DashboardPage() {
       icon: UserRound,
       label: "Setup progress",
       value: `${profileCompletion}%`,
-      helper: `${profileChecksCompleted} of ${profileChecksTotal} setup checks done: name, email, title, company, link, phone, QR target, template, and one saved card.`,
+      helper: `${profileChecksCompleted} of ${profileChecksTotal} details complete. Add the details you want to share before your next event.`,
       progress: profileCompletion,
     },
   ];
@@ -43,6 +43,7 @@ export default async function DashboardPage() {
           avatarUrl={avatarUrl}
           email={displayEmail}
           userName={displayName}
+          subtitle="Everything you need for your next introduction."
         />
 
         {devAuthBypassEnabled ? (
@@ -50,6 +51,20 @@ export default async function DashboardPage() {
             Preview mode is enabled in local development, so this dashboard is temporarily visible without sign-in.
           </div>
         ) : null}
+
+        <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
+          {[
+            { icon: WalletCards, label: "Saved cards", value: String(activeCardCount), detail: hasActiveCard ? "Ready to take with you" : "Your first card starts here", href: "/cards" },
+            { icon: UserRound, label: "Profile setup", value: `${profileCompletion}%`, detail: "Review your contact details", href: "/settings" },
+            { icon: LayoutTemplate, label: "Your template", value: workspaceView.summary.selectedTemplateName, detail: "Explore a different look", href: "/templates" },
+          ].map(({ icon: Icon, label, value, detail, href }) => (
+            <Link key={label} href={href} className="group rounded-2xl border border-slate-200/80 bg-white p-5 transition hover:border-indigo-200 hover:shadow-sm">
+              <div className="flex items-center justify-between text-[var(--muted)]"><span className="text-xs font-semibold uppercase tracking-wider">{label}</span><Icon className="h-4 w-4 text-[var(--brand)]" /></div>
+              <p className="mt-3 truncate text-2xl font-semibold tracking-tight text-[var(--ink)]">{value}</p>
+              <p className="mt-2 flex items-center justify-between gap-2 text-xs text-[var(--muted)]">{detail}<ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" /></p>
+            </Link>
+          ))}
+        </div>
 
         <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
           <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
@@ -81,11 +96,18 @@ export default async function DashboardPage() {
               emptyKicker={workspaceView.summary.cardStatusLabel}
               emptyTitle="No saved cards yet"
               showAddButton={false}
+              showEmptyButton={false}
+              showControls={activeCardCount > 3}
             />
           </div>
 
           <div className="min-w-0 space-y-4 sm:space-y-6">
-            <WalletComingSoon />
+            <div className="rounded-2xl bg-[#19233d] p-5 text-white sm:p-6">
+              <QrCode className="h-6 w-6 text-indigo-200" />
+              <h2 className="mt-4 text-lg font-semibold">{hasActiveCard ? "Ready for your next hello?" : "Make your first introduction"}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-300">{hasActiveCard ? "Open a saved card and check its QR destination before heading to your event." : "Add your details, choose a style, and give people a simple way to reach you."}</p>
+              <Link href={hasActiveCard ? "/cards" : "/create-card"} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#19233d]">{hasActiveCard ? "Open my cards" : "Create my card"}<ArrowRight className="h-4 w-4" /></Link>
+            </div>
 
             <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
               <p className="text-sm font-semibold text-[var(--ink)]">Profile overview</p>
@@ -107,7 +129,7 @@ export default async function DashboardPage() {
                     </div>
                     <div className="mt-3">
                       {progress !== undefined ? (
-                        <div className="overflow-hidden rounded-full bg-white shadow-[inset_0_1px_3px_rgba(21,32,58,0.06)]" style={{ height: 10 }}>
+                        <div role="progressbar" aria-label="Profile completion" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} className="overflow-hidden rounded-full bg-white shadow-[inset_0_1px_3px_rgba(21,32,58,0.06)]" style={{ height: 10 }}>
                           <div
                             className="h-full rounded-full bg-[linear-gradient(90deg,_#5267d9,_#8da0ff)] transition-all duration-300"
                             style={{ width: `${progress}%` }}
@@ -119,13 +141,20 @@ export default async function DashboardPage() {
                   </div>
                 ))}
               </div>
+              <div className="mt-4 space-y-3">
+                {[
+                  { label: "Add your professional title", done: Boolean(workspaceView.settings.profile.title), href: "/settings" },
+                  { label: "Add a website or LinkedIn", done: Boolean(workspaceView.settings.profile.website || workspaceView.settings.card.linkedin), href: "/settings" },
+                  { label: "Save your first card", done: hasActiveCard, href: "/create-card" },
+                ].map(({ label, done, href }) => <Link key={label} href={href} className="flex items-center gap-2.5 text-xs leading-5 text-[var(--muted)] hover:text-[var(--brand)]"><span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${done ? "bg-emerald-50 text-emerald-700" : "border border-slate-300"}`}>{done ? <Check className="h-3 w-3" /> : null}</span><span>{label}</span><span className="sr-only">{done ? "Complete" : "Incomplete"}</span></Link>)}
+              </div>
             </div>
 
             <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold text-[var(--ink)]">Share readiness</p>
                 <span className="shrink-0 whitespace-nowrap rounded-full bg-[rgba(82,103,217,0.1)] px-3 py-1 text-xs font-semibold leading-none text-[var(--brand)]">
-                  {activeCardCount === 1 ? "1 live card" : `${activeCardCount} live cards`}
+                  {activeCardCount === 1 ? "1 saved card" : `${activeCardCount} saved cards`}
                 </span>
               </div>
 

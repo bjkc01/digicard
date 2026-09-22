@@ -1,4 +1,6 @@
 import { authSecret } from "@/lib/auth-env";
+import { consumeAuthLimit } from "@/lib/auth-limits";
+import { supabaseEnabled } from "@/lib/supabase-env";
 
 const EMAIL_CODE_TTL_SECONDS = 10 * 60;
 const EMAIL_LOGIN_TOKEN_TTL_SECONDS = 5 * 60;
@@ -75,17 +77,16 @@ async function encodeSignedPayload(payload: PendingEmailCodePayload | EmailLogin
 }
 
 async function decodeSignedPayload<T>(value: string | undefined) {
-  if (!value) {
+  if (!value || value.length > 4096) {
     return null;
   }
 
-  const [encodedPayload, signature] = value.split(".");
-
-  if (!encodedPayload || !signature || (await signValue(encodedPayload)) !== signature) {
-    return null;
-  }
+  const [encodedPayload, signature, extra] = value.split(".");
 
   try {
+    if (!encodedPayload || !signature || extra !== undefined) return null;
+    const key = await crypto.subtle.importKey("raw", encoder.encode(getAuthSecret()), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
+    if (!(await crypto.subtle.verify("HMAC", key, fromBase64Url(signature), encoder.encode(encodedPayload)))) return null;
     return JSON.parse(decoder.decode(fromBase64Url(encodedPayload))) as T;
   } catch {
     return null;
@@ -117,7 +118,7 @@ export const emailDeliveryConfigured = Boolean(
 export const emailAuthUsesConsoleFallback =
   process.env.NODE_ENV !== "production" && !emailDeliveryConfigured;
 
-export const emailAuthEnabled = Boolean(authSecret) && (
+export const emailAuthEnabled = Boolean(authSecret) && (process.env.NODE_ENV !== "production" || supabaseEnabled) && (
   emailDeliveryConfigured || emailAuthUsesConsoleFallback
 );
 
@@ -128,7 +129,7 @@ export function normalizeEmail(value: FormDataEntryValue | string | null | undef
 
   const normalized = value.trim().toLowerCase();
 
-  if (!emailPattern.test(normalized)) {
+  if (normalized.length > 254 || !emailPattern.test(normalized)) {
     return null;
   }
 
@@ -189,18 +190,25 @@ export async function verifyPendingEmailCode(
 ) {
   const payload = await decodeSignedPayload<PendingEmailCodePayload>(value);
 
-  if (!payload || payload.email !== email) {
+  if (!payload || payload.email !== email || typeof payload.nonce !== "string" || !Number.isFinite(payload.expiresAt)) {
     return { ok: false as const, reason: "EmailCodeExpired" };
   }
 
-  if (payload.expiresAt < Date.now()) {
+  if (payload.expiresAt <= Date.now()) {
     return { ok: false as const, reason: "EmailCodeExpired" };
   }
 
-  if (payload.codeHash !== (await hashEmailCode(email, code, payload.nonce))) {
+  if (!(await consumeAuthLimit(`verify:${payload.nonce}`, 5, EMAIL_CODE_TTL_SECONDS))) {
+    return { ok: false as const, reason: "EmailCodeExpired" };
+  }
+
+  if (!/^\d{6}$/.test(code) || payload.codeHash !== (await hashEmailCode(email, code, payload.nonce))) {
     return { ok: false as const, reason: "EmailCodeInvalid" };
   }
 
+  if (!(await consumeAuthLimit(`used-code:${payload.nonce}`, 1, EMAIL_CODE_TTL_SECONDS))) {
+    return { ok: false as const, reason: "EmailCodeExpired" };
+  }
   return { ok: true as const };
 }
 
@@ -217,13 +225,15 @@ export async function createEmailLoginToken(email: string) {
 export async function verifyEmailLoginToken(token: string | undefined, email: string | undefined) {
   const payload = await decodeSignedPayload<EmailLoginTokenPayload>(token);
 
-  if (!payload || payload.expiresAt < Date.now()) {
+  if (!payload || !Number.isFinite(payload.expiresAt) || payload.expiresAt <= Date.now() || typeof payload.nonce !== "string" || typeof payload.userId !== "string") {
     return null;
   }
 
   if (!email || payload.email !== email) {
     return null;
   }
+
+  if (!(await consumeAuthLimit(`used-token:${payload.nonce}`, 1, EMAIL_LOGIN_TOKEN_TTL_SECONDS))) return null;
 
   return {
     email: payload.email,
@@ -243,6 +253,7 @@ export async function sendEmailSignInCode({
 }) {
   if (emailDeliveryConfigured) {
     const response = await fetch("https://api.resend.com/emails", {
+      signal: AbortSignal.timeout(10000),
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.AUTH_RESEND_API_KEY}`,

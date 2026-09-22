@@ -39,6 +39,8 @@ function canResolveQrTarget(settings: Awaited<ReturnType<typeof getWorkspaceSett
     return Boolean(settings.card.linkedin);
   }
 
+  if (settings.card.qrPreference === "phone") return Boolean(settings.card.phone);
+
   return Boolean(settings.profile.website || settings.card.linkedin || settings.profile.email);
 }
 
@@ -135,7 +137,7 @@ export async function getWorkspaceView(user: WorkspaceUser): Promise<WorkspaceVi
       profileChecksTotal: readinessChecks.length,
       profileCompletion,
       selectedTemplateName: selectedTemplate.name,
-      storageScopeLabel: supabaseEnabled ? "Cloud sync enabled" : "Saved on this browser",
+      storageScopeLabel: supabaseEnabled && !user.isPreview ? "Cloud sync enabled" : "Saved on this browser",
     },
     user,
   };

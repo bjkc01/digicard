@@ -102,7 +102,7 @@ textarea:focus-visible {
 }
 
 .workspace-content {
-  @apply min-w-0 lg:h-dvh lg:overflow-y-auto lg:px-6 lg:py-6;
+  @apply min-w-0 pb-6 lg:h-dvh lg:overflow-y-auto lg:px-8 lg:py-8;
   scrollbar-gutter: stable;
 }
 
@@ -500,6 +500,11 @@ textarea:focus-visible {
   }
 
   .scroll-reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .scroll-reveal.stagger-children > * {
     opacity: 1;
     transform: none;
   }

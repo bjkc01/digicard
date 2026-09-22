@@ -1,6 +1,8 @@
 "use server";
 
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
+import { consumeAuthLimit } from "@/lib/auth-limits";
+import { siteConfig } from "@/lib/site-config";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 import { emailAuthEnabled, googleAuthEnabled, signIn } from "@/auth";
@@ -58,6 +60,15 @@ export async function requestEmailSignIn(formData: FormData) {
     );
   }
 
+  let allowed = false;
+  try {
+    allowed = await consumeAuthLimit(`send:${email}`, 3, 15 * 60)
+      && await consumeAuthLimit(`cooldown:${email}`, 1, 60);
+  } catch {
+    redirect(getLoginUrl({ authView, callbackUrl, email, error: "EmailSigninUnavailable", originPath }));
+  }
+  if (!allowed) redirect(getLoginUrl({ authView, callbackUrl, email, error: "EmailRateLimited", originPath }));
+
   const pendingCode = await createPendingEmailCode(email);
   const cookieStore = await cookies();
 
@@ -68,8 +79,7 @@ export async function requestEmailSignIn(formData: FormData) {
   );
 
   try {
-    const headerStore = await headers();
-    const host = headerStore.get("host") ?? "your DigiCard workspace";
+    const host = new URL(siteConfig.url).hostname;
 
     await sendEmailSignInCode({
       code: pendingCode.code,
@@ -119,11 +129,12 @@ export async function verifyEmailSignIn(formData: FormData) {
   }
 
   const cookieStore = await cookies();
-  const verification = await verifyPendingEmailCode(
-    cookieStore.get(emailAuthCookieName)?.value,
-    email,
-    code,
-  );
+  let verification;
+  try {
+    verification = await verifyPendingEmailCode(cookieStore.get(emailAuthCookieName)?.value, email, code);
+  } catch {
+    redirect(getLoginUrl({ authView, callbackUrl, email, error: "EmailSigninUnavailable", originPath, step: "verify" }));
+  }
 
   if (!verification.ok) {
     if (verification.reason === "EmailCodeExpired") {

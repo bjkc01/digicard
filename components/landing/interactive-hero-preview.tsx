@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type WheelEvent } from "react";
 import { AtSign, Globe, Mail, Phone } from "lucide-react";
 import QRCode from "react-qr-code";
+import { siteConfig } from "@/lib/site-config";
 
 function sanitizeFragment(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
@@ -56,7 +57,7 @@ export function InteractiveHeroPreview() {
   const safeFirst = sanitizeFragment(firstName) || "j";
   const safeLast = sanitizeFragment(lastName) || "lin";
   const profileSlug = `${slugify(displayName) || "jordan-lin"}-cs`;
-  const qrValue = `https://digicard.me/${slugify(name) || "jordan-lin"}`;
+  const qrValue = siteConfig.url;
 
   const detailRows = [
     {

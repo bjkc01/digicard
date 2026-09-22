@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { NextResponse } from "next/server";
 import { authSecret, googleClientId, googleClientSecret } from "@/lib/auth-env";
-import { getLoginUrl } from "@/lib/login-flow";
+import { getLoginUrl, getSafeCallbackUrl } from "@/lib/login-flow";
 import {
   emailAuthEnabled,
   emailAuthUsesConsoleFallback,
@@ -24,11 +24,8 @@ function isProtectedRoute(pathname: string) {
   return protectedRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }
 
-function getSafeCallbackUrl(callbackUrl: string | null) {
-  return callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : "/dashboard";
-}
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: authSecret,
   providers: [
     ...(googleAuthEnabled
       ? [
@@ -68,7 +65,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   trustHost: true,
   callbacks: {
-    async signIn({ user }) {
+    async signIn({ user, account, profile }) {
+      // Email-based workspace linking requires a verified provider email.
+      if (account?.provider === "google" && profile?.email_verified !== true) return false;
       const userId = user.id;
       const email = user.email;
       const name = user.name;

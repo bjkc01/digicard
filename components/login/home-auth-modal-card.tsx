@@ -10,6 +10,7 @@ import {
 } from "@/app/login/actions";
 import { AuthBenefitsShowcase } from "@/components/login/auth-benefits-showcase";
 import { cn } from "@/lib/utils";
+import { PendingSubmit } from "@/components/ui/pending-submit";
 
 export type AuthModalPanel = "choices" | "email" | "verify";
 
@@ -55,6 +56,7 @@ function StatusMessage({
 }) {
   return (
     <div
+      role={tone === "error" ? "alert" : "status"}
       className={cn(
         "rounded-2xl border px-4 py-3 text-sm leading-6",
         tone === "error" &&
@@ -135,7 +137,7 @@ export function HomeAuthModalCard({
   const showChoiceError =
     isChoicesPanel &&
     Boolean(errorMessage) &&
-    !errorCode?.startsWith("Email");
+    Boolean(errorCode);
   const showEmailError =
     (isEmailPanel || isVerifyPanel) && Boolean(errorMessage) && errorCode?.startsWith("Email");
   const showVerifyNotice = isVerifyPanel && Boolean(noticeMessage) && noticeCode === "EmailCodeSent";
@@ -213,14 +215,14 @@ export function HomeAuthModalCard({
                 {googleConfigured ? (
                   <form action={signInWithGoogle}>
                     <ModalAuthContextFields callbackUrl={callbackUrl} originPath={originPath} />
-                    <button type="submit" className="w-full text-left">
+                    <PendingSubmit className="w-full text-left">
                       <ActionSurface
                         title="Continue with Google"
-                        description="Secure handoff only when Google takes over."
+                        description="Sign in securely with your Google account."
                         icon={<span className="text-xl font-bold leading-none text-[#4285F4]">G</span>}
                         trailing={<ArrowRight className="h-4 w-4" />}
                       />
-                    </button>
+                    </PendingSubmit>
                   </form>
                 ) : (
                   <ActionSurface
@@ -235,7 +237,7 @@ export function HomeAuthModalCard({
                   <button type="button" className="w-full text-left" onClick={() => setPanel("email")}>
                     <ActionSurface
                       title="Continue with email"
-                      description="Get a one-time code and finish inside this modal."
+                      description="We'll send you a one-time sign-in code."
                       icon={<Mail className="h-5 w-5 text-[var(--brand)]" />}
                       trailing={<ArrowRight className="h-4 w-4" />}
                     />
@@ -269,6 +271,8 @@ export function HomeAuthModalCard({
                     <input
                       name="email"
                       type="email"
+                      required
+                      maxLength={254}
                       defaultValue={emailAddress}
                       autoComplete="email"
                       autoFocus
@@ -278,7 +282,7 @@ export function HomeAuthModalCard({
                     />
                   </label>
 
-                  <button
+                  <PendingSubmit
                     type="submit"
                     disabled={!isEmailConfigured}
                     className="flex w-full items-center justify-between rounded-2xl bg-[var(--brand)] px-5 py-4 text-left text-white shadow-[0_16px_34px_rgba(82,103,217,0.18)] transition hover:bg-[#4459cb] disabled:cursor-not-allowed disabled:bg-[rgba(82,103,217,0.55)]"
@@ -292,7 +296,7 @@ export function HomeAuthModalCard({
                       </span>
                     </span>
                     <ArrowRight className="h-4 w-4 text-white/80" />
-                  </button>
+                  </PendingSubmit>
                 </form>
 
                 {emailAuthUsesConsoleFallback ? (
@@ -319,12 +323,15 @@ export function HomeAuthModalCard({
                       autoComplete="one-time-code"
                       autoFocus
                       maxLength={6}
+                      minLength={6}
+                      pattern="[0-9]{6}"
+                      required
                       placeholder="123456"
                       className="h-12 w-full rounded-2xl border border-[rgba(25,35,61,0.1)] px-4 text-base tracking-[0.28em] text-[var(--ink)] outline-none transition focus:border-[rgba(82,103,217,0.4)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)]"
                     />
                   </label>
 
-                  <button
+                  <PendingSubmit
                     type="submit"
                     className="flex w-full items-center justify-between rounded-2xl bg-[var(--brand)] px-5 py-4 text-left text-white shadow-[0_16px_34px_rgba(82,103,217,0.18)] transition hover:bg-[#4459cb]"
                   >
@@ -335,19 +342,19 @@ export function HomeAuthModalCard({
                       </span>
                     </span>
                     <ArrowRight className="h-4 w-4 text-white/80" />
-                  </button>
+                  </PendingSubmit>
                 </form>
 
                 <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
                   <form action={requestEmailSignIn}>
                     <ModalAuthContextFields callbackUrl={callbackUrl} originPath={originPath} />
                     <input type="hidden" name="email" value={emailAddress} />
-                    <button
+                    <PendingSubmit
                       type="submit"
                       className="rounded-full border border-[rgba(25,35,61,0.12)] px-4 py-2 font-medium text-[var(--ink)] transition hover:border-[rgba(82,103,217,0.22)] hover:bg-[var(--soft)]"
                     >
                       Resend code
-                    </button>
+                    </PendingSubmit>
                   </form>
                   <button
                     type="button"
@@ -369,7 +376,7 @@ export function HomeAuthModalCard({
 
           <div className="mt-5 flex flex-col gap-2.5 border-t border-[rgba(25,35,61,0.08)] pt-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs leading-6 text-[var(--muted)] sm:text-sm">
-              By continuing, you agree to DigiCard&apos;s Terms of Use and Privacy Policy.
+              By continuing, you agree to DigiCard&apos;s <Link href="/terms" className="underline underline-offset-2">Terms of Use</Link> and <Link href="/privacy" className="underline underline-offset-2">Privacy Policy</Link>.
             </p>
 
             {devAuthBypassEnabled ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
@@ -27,6 +27,8 @@ export function HomeAuthModal({
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(initiallyOpen);
   const [mounted, setMounted] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -44,9 +46,14 @@ export function HomeAuthModal({
       document.body.dataset.authModalOpen = "true";
     }
 
+    const main = document.querySelector("main");
+    const wasInert = main?.inert ?? false;
+    if (open && main) main.inert = true;
+
     return () => {
       document.body.style.overflow = previousOverflow;
       delete document.body.dataset.authModalOpen;
+      if (main) main.inert = wasInert;
     };
   }, [open]);
 
@@ -75,16 +82,32 @@ export function HomeAuthModal({
       return;
     }
 
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const trigger = triggerRef.current;
+    dialogRef.current?.focus();
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setOpen(false);
         router.replace(closedHref, { scroll: false });
       }
+      if (event.key === "Tab") {
+        const items = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), [tabindex="0"]') ?? []).filter(item => item.getClientRects().length > 0);
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (!first) { event.preventDefault(); return; }
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === dialogRef.current)) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialogRef.current)) { event.preventDefault(); first.focus(); }
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [closedHref, open, router]);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      const target = previousFocus?.isConnected && previousFocus !== document.body ? previousFocus : trigger;
+      target?.focus();
+    };
+  }, [closedHref, open, router, mounted]);
 
   function handleOpen() {
     setOpen(true);
@@ -98,7 +121,7 @@ export function HomeAuthModal({
 
   return (
     <>
-      <button type="button" className={buttonClassName} onClick={handleOpen}>
+      <button ref={triggerRef} type="button" aria-haspopup="dialog" aria-expanded={open} className={buttonClassName} onClick={handleOpen}>
         {buttonLabel}
       </button>
 
@@ -112,10 +135,12 @@ export function HomeAuthModal({
                 }
               }}
             >
-              <div className="auth-modal-backdrop absolute inset-0 bg-[rgba(12,18,31,0.42)] backdrop-blur-[12px]" />
+              <div aria-hidden="true" onClick={handleClose} className="auth-modal-backdrop absolute inset-0 bg-[rgba(12,18,31,0.42)] backdrop-blur-[12px]" />
 
               <div
                 role="dialog"
+                ref={dialogRef}
+                tabIndex={-1}
                 aria-modal="true"
                 aria-label="Sign in to DigiCard"
                 className="auth-modal-panel relative"

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { auth } from "@/auth";
 import { InteractiveHeroPreview } from "@/components/landing/interactive-hero-preview";
 import { PremiumHeader } from "@/components/landing/premium-header";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
@@ -8,7 +9,6 @@ import {
   ArrowRight,
   BriefcaseBusiness,
   Check,
-  CheckCircle2,
   GraduationCap,
   QrCode,
   Sparkles,
@@ -25,60 +25,33 @@ const steps = [
   {
     id: "02",
     title: "Add your links and details",
-    body: "Include LinkedIn, portfolio, resume, email, and the contact information you want people to see first.",
+    body: "Add your website, LinkedIn, email, and the contact information you want people to see first.",
   },
   {
     id: "03",
     title: "Share it instantly with QR",
-    body: "Open your card at an event, let someone scan it, and give them everything they need in one tap.",
+    body: "Let someone scan your QR to open your website, LinkedIn, or phone number.",
   },
 ];
 
 const quickPoints = [
-  "Share LinkedIn, resume, and portfolio with one scan",
+  "Choose a QR code for your website, LinkedIn, or phone",
   "Make a better first impression in short conversations",
   "Give recruiters and professionals an easy way to remember you",
 ];
 
-const networkingQuote = {
-  line: "If you're not networking, you're not working.",
-  source: "A reminder students hear for a reason",
-  body: "DigiCard helps you turn that idea into something practical by making it easier to share your profile in the moment, not after the opportunity has passed.",
-};
-
-const comparisonColumns = [
-  {
-    label: "Without DigiCard",
-    points: [
-      "You spell your name out loud while someone opens LinkedIn.",
-      "Your resume, portfolio, and contact info live in different places.",
-      "The conversation ends before the follow-up feels easy.",
-    ],
-    tone: "muted",
-  },
-  {
-    label: "With DigiCard",
-    points: [
-      "One scan opens your intro, links, and professional identity instantly.",
-      "Recruiters can review your profile while the conversation is still fresh.",
-      "You leave the moment looking prepared, organized, and memorable.",
-    ],
-    tone: "brand",
-  },
-] as const;
-
 const includedFeatures = [
   {
     description: "Keep your full name and the version of your professional identity you want people to remember.",
-    title: "Identity-first intro",
+    title: "Your introduction",
   },
   {
     description: "Show the school, program, and focus area that give your story immediate context.",
     title: "Academic context",
   },
   {
-    description: "Put LinkedIn, portfolio, and resume in one clean place instead of scattering them across apps.",
-    title: "One-tap proof of work",
+    description: "Keep your website and LinkedIn details together, ready for your next introduction.",
+    title: "Your work, within reach",
   },
   {
     description: "Share instantly through a phone-friendly card and QR flow that feels ready for real events.",
@@ -124,7 +97,8 @@ function shouldOpenAuthModal(searchParams: LoginSearchParams) {
 
 export default async function LandingPage({ searchParams }: LandingPageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
-  const showAuthModal = shouldOpenAuthModal(resolvedSearchParams);
+  const signedIn = Boolean((await auth())?.user);
+  const showAuthModal = !signedIn && shouldOpenAuthModal(resolvedSearchParams);
   const AuthModalContent = showAuthModal
     ? (await import("@/components/login/home-auth-modal-content")).HomeAuthModalContent
     : null;
@@ -137,43 +111,28 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
         <div className="absolute inset-0 bg-[linear-gradient(180deg,_#f8f9fd_0%,_#fbfbfd_58%,_#ffffff_100%)]" />
       </div>
 
-      <div className="border-b border-[rgba(25,35,61,0.08)] bg-[#5267d9] text-white">
-        <div className="mx-auto flex max-w-7xl flex-row flex-wrap items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium sm:gap-4 sm:px-6">
-          <span className="hidden sm:inline">
-            Built for students and early professionals meeting people in real-world events.
-          </span>
-          <span className="sm:hidden">Built for real-world events.</span>
-          <a
-            href="#how-it-works"
-            className="inline-flex items-center whitespace-nowrap rounded-full border border-white/35 px-3 py-1.5 text-xs font-semibold transition hover:bg-white/10 sm:min-h-[44px] sm:px-4 sm:py-2"
-          >
-            See how it works
-          </a>
-        </div>
-      </div>
-
-      <PremiumHeader showAuthModal={showAuthModal}>
+      <PremiumHeader showAuthModal={showAuthModal} signedIn={signedIn}>
         {AuthModalContent ? (
           <AuthModalContent originPath="/" searchParams={resolvedSearchParams} />
         ) : null}
       </PremiumHeader>
 
-      <section className="mx-auto max-w-7xl px-4 pb-12 pt-5 sm:px-6 lg:pt-6">
-        <div className="grid gap-10 lg:grid-cols-[1fr_0.96fr] lg:items-start">
+      <section className="mx-auto max-w-7xl px-5 pb-16 pt-10 sm:px-8 lg:py-16">
+        <div className="grid gap-10 lg:grid-cols-[1fr_0.96fr] lg:items-center">
           <div>
             <div className="anim-1 inline-flex min-h-[44px] max-w-full items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white/90 px-4 py-2 text-left text-sm font-semibold text-[var(--ink)] shadow-[0_10px_24px_rgba(21,32,58,0.05)]">
               <Sparkles className="h-4 w-4 text-[var(--brand)]" />
-              Made for career fairs, campus events, and networking meetups
+              A small card. A lasting connection.
             </div>
 
-            <h1 className="anim-2 mt-5 max-w-[34rem] text-[2.35rem] font-semibold leading-[0.98] tracking-[-0.06em] text-[var(--ink)] sm:text-[3.25rem] lg:text-[4.2rem]">
-              Share your profile
+            <h1 className="anim-2 mt-5 max-w-[34rem] text-[2.35rem] font-semibold leading-[1.08] tracking-[-0.06em] text-[var(--ink)] sm:text-[3.25rem] lg:text-[4rem]">
+              Your next opportunity
               <br />
-              <span className="text-[var(--brand)]">in one scan.</span>
+              <span className="text-[var(--brand)]">starts with hello.</span>
             </h1>
 
             <p className="anim-3 mt-5 max-w-[32rem] text-[0.98rem] leading-7 text-[var(--muted)] sm:text-[1.02rem]">
-              Your digital networking card - LinkedIn, portfolio, resume, and contact details in one place.
+              Your name, work, and contact details in one digital networking card.
               Perfect for career fairs, campus events, and meetups.
             </p>
 
@@ -194,9 +153,9 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
             <div className="anim-5 mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/dashboard"
-                className="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-8 py-4 text-base font-semibold text-[var(--ink)] shadow-[0_20px_40px_rgba(255,141,87,0.32)] transition hover:scale-[1.03] hover:bg-[#ff9a67] hover:shadow-[0_24px_48px_rgba(255,141,87,0.4)] active:scale-[0.98] sm:w-auto"
+                className="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200/50 transition hover:bg-[var(--brand-dark)] sm:w-auto"
               >
-                Create my card - it&apos;s free
+                {signedIn ? "Open my workspace" : "Create your free card"}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <a
@@ -217,72 +176,10 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
         </div>
       </section>
 
-      <section id="why-it-matters" className="border-y border-[rgba(25,35,61,0.06)] bg-white/88">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
-          <ScrollReveal className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end stagger-children">
-            <div className="max-w-3xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">Why this matters</p>
-              <h2 className="mt-4 text-[2.2rem] font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-4xl lg:text-5xl">
-                Great networking opportunities are often lost in small, awkward moments.
-              </h2>
-            </div>
-
-            <div className="rounded-[1.9rem] border border-[rgba(82,103,217,0.12)] bg-[linear-gradient(135deg,_rgba(82,103,217,0.1),_rgba(255,255,255,0.96))] p-7 shadow-[0_18px_40px_rgba(21,32,58,0.05)] sm:p-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--brand)]">
-                {networkingQuote.source}
-              </p>
-              <blockquote className="mt-3 max-w-3xl text-2xl font-semibold leading-tight tracking-[-0.04em] text-[var(--ink)] sm:text-[2rem]">
-                &ldquo;{networkingQuote.line}&rdquo;
-              </blockquote>
-              <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--muted)]">{networkingQuote.body}</p>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal className="mt-12 rounded-[2rem] border border-[rgba(25,35,61,0.08)] bg-[linear-gradient(180deg,_#ffffff_0%,_#f8faff_100%)] p-5 shadow-[0_22px_50px_rgba(21,32,58,0.06)] sm:p-7" delayMs={120}>
-            <div className="grid gap-4 lg:grid-cols-2 stagger-children">
-              {comparisonColumns.map((column) => (
-                <div
-                  key={column.label}
-                  className={`rounded-[1.2rem] border px-3 py-3 sm:rounded-[1.6rem] sm:px-5 sm:py-5 ${
-                    column.tone === "brand"
-                      ? "border-[rgba(82,103,217,0.16)] bg-[linear-gradient(160deg,_rgba(82,103,217,0.12),_rgba(255,255,255,0.96))]"
-                      : "border-[rgba(25,35,61,0.08)] bg-white"
-                  }`}
-                >
-                  <p
-                    className={`text-[0.6rem] font-semibold uppercase tracking-[0.18em] sm:text-xs sm:tracking-[0.24em] ${
-                      column.tone === "brand" ? "text-[var(--brand)]" : "text-[var(--muted)]"
-                    }`}
-                  >
-                    {column.label}
-                  </p>
-                  <div className="mt-4 space-y-3">
-                    {column.points.map((point) => (
-                      <div key={point} className="flex items-start gap-1.5 sm:gap-3">
-                        <div
-                          className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full sm:h-7 sm:w-7 ${
-                            column.tone === "brand"
-                              ? "bg-[rgba(82,103,217,0.12)] text-[var(--brand)]"
-                              : "bg-[var(--soft)] text-[var(--muted)]"
-                          }`}
-                        >
-                          <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </div>
-                        <p className="text-[0.72rem] leading-5 text-[var(--ink)] sm:text-sm sm:leading-7">{point}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
       <section id="how-it-works" className="scroll-mt-24 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24 sm:scroll-mt-28">
         <ScrollReveal className="max-w-3xl">
           <h2 className="text-[2.2rem] font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-4xl lg:text-5xl">
-            A simple flow built for the way networking actually happens.
+            Ready for your next hello.
           </h2>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
             Set up your card once, open it in seconds, and share it when the conversation matters most.
@@ -399,6 +296,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
           </div>
         </ScrollReveal>
       </section>
+      <footer className="border-t border-slate-200 bg-white"><div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-sm sm:px-6"><Link href="/" className="font-semibold">DigiCard</Link><nav aria-label="Legal" className="flex gap-6 text-[var(--muted)]"><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></nav></div></footer>
     </main>
   );
 }

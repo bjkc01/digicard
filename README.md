@@ -6,8 +6,8 @@ Production URL: `https://getmycard.vercel.app/`
 
 ## Current behavior
 
-- The signed-in workspace lets you create and manage one saved card experience across Dashboard, My Cards, Templates, and Settings.
-- QR codes resolve to the best public destination already present on the card: website first, then LinkedIn, then email.
+- The signed-in workspace lets you create and manage multiple cards across Dashboard, My Cards, Templates, and Settings.
+- New cards require a populated QR destination: website, LinkedIn, or phone. Older cards can still use the automatic destination.
 - Per-user public card hosting is not wired up yet. The current card data lives inside the authenticated workspace state, so it is not yet available as a public profile page from another device.
 
 ## Run locally
@@ -23,9 +23,9 @@ Create `.env.local` from `.env.example` and make sure this value is set:
 NEXT_PUBLIC_APP_URL=https://getmycard.vercel.app
 ```
 
-## Supabase foundation
+## Workspace storage
 
-The repo now includes a minimal Supabase setup so we can move the workspace profile out of signed browser cookies and into a real database.
+When Supabase is configured, profiles and cards are read from the database. Database errors are surfaced instead of returning an empty workspace or reporting an unsuccessful write as saved. Card updates and deletes are scoped to the signed-in workspace profile.
 
 Files added for the integration:
 
@@ -46,7 +46,7 @@ To connect your own Supabase project:
 
 `SUPABASE_SERVICE_ROLE_KEY` is server-only. In this repo it is meant for server actions, route handlers, and server utilities such as `lib/supabase/profiles.ts`. The first `profiles` table is also locked behind Row Level Security, so browser-side writes are not expected until you later switch to Supabase Auth or add explicit policies.
 
-The current UI still reads workspace data from the signed cookie flow in `lib/workspace-settings.ts`. The new Supabase files are the foundation for the next step, which is swapping the profile save/load path over to the `profiles` table.
+Without Supabase, small workspaces use a signed, HTTP-only browser cookie. Oversized saves are rejected before replacing existing data. Profile photo storage requires Supabase. Local preview users always use browser storage and never write to Supabase. Cloud data is authoritative: older browser snapshots cannot restore deleted cloud cards.
 
 ## Google login setup
 
@@ -73,31 +73,18 @@ The app already uses Auth.js with a Google provider. To turn login on locally or
 
 Protected routes are handled through `middleware.ts`, and unauthenticated visitors are redirected to `/login` before they can open the dashboard, templates, create-card flow, or settings.
 
-## Temporary ID and password setup
-
-If you need a short-term fallback while the main sign-in methods are still being fixed, DigiCard also supports a temporary ID and password.
-
-1. Add these environment variables in Vercel and in your local `.env.local`:
-   - `NEXT_PUBLIC_APP_URL`
-   - `AUTH_SECRET`
-   - `AUTH_TEMP_LOGIN_ID`
-   - `AUTH_TEMP_LOGIN_PASSWORD`
-   - `AUTH_TEMP_LOGIN_NAME` (optional)
-   - `AUTH_TEMP_LOGIN_EMAIL` (optional)
-2. Redeploy after adding the production variables.
-3. Open `/login` and use the temporary credentials form.
-
 ## Email code login setup
 
 The login page also supports a one-time email code flow.
 
-1. Add these environment variables in Vercel and in your local `.env.local`:
+1. Configure Supabase and apply all migrations, including `20260921_auth_limits.sql`. Production email login requires the shared protection store; failures block sign-in safely.
+2. Add these environment variables in Vercel and in your local `.env.local`:
    - `NEXT_PUBLIC_APP_URL`
    - `AUTH_SECRET`
    - `AUTH_EMAIL_FROM`
    - `AUTH_RESEND_API_KEY`
-2. Verify the sender domain in Resend and use that address in `AUTH_EMAIL_FROM`.
-3. Redeploy after adding the production variables.
+3. Verify the sender domain in Resend and use that address in `AUTH_EMAIL_FROM`.
+4. Redeploy after adding the production variables.
 
 During local development, if `AUTH_SECRET` is set but the Resend values are missing, DigiCard falls back to printing the 6-digit email sign-in code to the server console so you can still test the flow end to end.
 
@@ -114,3 +101,11 @@ This bypass only works outside production and is meant for short-term local prev
 ## GitHub repo website link
 
 The website shown in the GitHub repo sidebar is not controlled by the README or app code. If GitHub still shows `digicard-gamma.vercel.app`, update the repo `Website` field in the GitHub sidebar or repository settings to `https://getmycard.vercel.app/`.
+
+## Validation and deployment
+
+Run `npm test`, `npm run lint`, `npm run typecheck`, and `npm run build`. Tests isolate external services and never send email or write production data.
+
+Before deploying this update, apply `supabase/migrations/20260921_auth_limits.sql` to the configured Supabase project. It adds a private, service-role-only atomic counter for email send limits (3 per 15 minutes, with a 60-second cooldown), five verification attempts per code, and single-use codes and login tokens. Without a database, counters are in-memory for local development only.
+
+The migration and real OAuth/email delivery still need verification against your deployment. No public card hosting or scan analytics are implemented. Multi-record workspace mutations are sequential, not a database transaction; a database failure can update profile metadata before a card mutation fails, but the app reports failure and does not replace the browser snapshot.

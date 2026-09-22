@@ -14,7 +14,6 @@ import { normalizeEmail } from "@/lib/email-auth";
 import { defaultDigiCardTemplateId, templates } from "@/lib/data";
 import {
   getLatestWorkspaceTimestamp,
-  isNewerWorkspaceTimestamp,
 } from "@/lib/workspace-format";
 import { supabaseEnabled } from "@/lib/supabase-env";
 import {
@@ -93,6 +92,7 @@ type WorkspaceSettingsCookiePayload = {
 
 type PersistWorkspaceOptions = {
   touchedSections?: WorkspaceSectionKey[];
+  cardMutation?: { save: WorkspaceExtraCard } | { delete: string } | { clear: true };
 };
 
 type PersistWorkspaceResult = WorkspaceSaveResult & {
@@ -463,27 +463,6 @@ function mapSupabaseWorkspaceCardToExtraCard(card: SupabaseWorkspaceCard): Works
   };
 }
 
-function mergeExtraCards(
-  primaryCards: WorkspaceExtraCard[],
-  secondaryCards: WorkspaceExtraCard[],
-) {
-  const cardsById = new Map<string, WorkspaceExtraCard>();
-
-  for (const card of [...secondaryCards, ...primaryCards]) {
-    const existing = cardsById.get(card.id);
-
-    if (!existing || isNewerWorkspaceTimestamp(card.updatedAt, existing.updatedAt)) {
-      cardsById.set(card.id, card);
-    }
-  }
-
-  return [...cardsById.values()].sort((left, right) => {
-    const leftTime = new Date(left.updatedAt).getTime();
-    const rightTime = new Date(right.updatedAt).getTime();
-    return rightTime - leftTime;
-  });
-}
-
 function mergeWorkspaceSettings(
   user: WorkspaceUser,
   candidate: Partial<WorkspaceSettings> | null | undefined,
@@ -552,143 +531,81 @@ async function persistWorkspaceSettings(
   settings: WorkspaceSettings,
   options: PersistWorkspaceOptions = {},
 ): Promise<PersistWorkspaceResult> {
-  const baseSettings = mergeWorkspaceSettings(user, settings);
+  const base = mergeWorkspaceSettings(user, settings);
   const timestamp = new Date().toISOString();
-  const touchedSections = options.touchedSections ?? [];
-  let updatedAt = touchedSections.length > 0 ? timestamp : baseSettings.updatedAt ?? timestamp;
-  let sectionUpdatedAt = touchSectionTimestamps(
-    baseSettings.sectionUpdatedAt,
-    touchedSections,
-    timestamp,
-  );
-  let storageStatus: WorkspacePersistenceStatus = supabaseEnabled ? "cloud" : "browser";
+  const useCloud = supabaseEnabled && !user.isPreview;
+  const normalized = mergeWorkspaceSettings(user, {
+    ...base,
+    updatedAt: timestamp,
+    sectionUpdatedAt: touchSectionTimestamps(base.sectionUpdatedAt, options.touchedSections ?? [], timestamp),
+  });
+  // Cloud data is authoritative; keep only a small primary-card browser snapshot.
+  const cookieValue = await encodePayload({
+    owner: normalized.owner,
+    value: buildCookieSafeSettings(useCloud ? { ...normalized, extraCards: [] } : normalized),
+    version: SETTINGS_VERSION,
+  });
+  if (encoder.encode(cookieValue).length > 3800) {
+    throw new WorkspaceSettingsValidationError("storage-full", "This browser's card storage is full. Shorten your details or connect cloud storage before adding more cards.");
+  }
+  if (!useCloud && normalized.profile.avatarUrl) {
+    throw new WorkspaceSettingsValidationError("avatar-unavailable", "Photo storage requires cloud storage. Remove the photo and try again.");
+  }
   let profileId: string | null = null;
-
-  if (supabaseEnabled) {
-    try {
-      const profile = await upsertSupabaseProfile({
-        cards_updated_at: sectionUpdatedAt.cards,
-        company: baseSettings.card.company,
-        default_template_id: baseSettings.defaultTemplateId,
-        email: baseSettings.profile.email,
-        avatar_url: baseSettings.profile.avatarUrl || null,
-        linkedin: baseSettings.card.linkedin,
-        name: baseSettings.profile.name,
-        notifications: baseSettings.notifications,
-        notifications_updated_at: sectionUpdatedAt.notifications,
-        owner_email: baseSettings.owner,
-        phone: baseSettings.card.phone,
-        profile_updated_at: sectionUpdatedAt.profile,
-        qr_preference: baseSettings.card.qrPreference,
-        template_updated_at: sectionUpdatedAt.template,
-        title: baseSettings.profile.title,
-        user_id: user.id,
-        website: baseSettings.profile.website,
+  if (useCloud) {
+    const profile = await upsertSupabaseProfile({
+      cards_updated_at: normalized.sectionUpdatedAt.cards,
+      company: normalized.card.company,
+      default_template_id: normalized.defaultTemplateId,
+      email: normalized.profile.email,
+      avatar_url: normalized.profile.avatarUrl || null,
+      linkedin: normalized.card.linkedin,
+      name: normalized.profile.name,
+      notifications: normalized.notifications,
+      notifications_updated_at: normalized.sectionUpdatedAt.notifications,
+      owner_email: normalized.owner,
+      phone: normalized.card.phone,
+      profile_updated_at: normalized.sectionUpdatedAt.profile,
+      qr_preference: normalized.card.qrPreference,
+      template_updated_at: normalized.sectionUpdatedAt.template,
+      title: normalized.profile.title,
+      user_id: user.id,
+      website: normalized.profile.website,
+    });
+    profileId = profile.id;
+    const mutation = options.cardMutation;
+    if (mutation && "save" in mutation) {
+      const card = mutation.save;
+      await upsertSupabaseWorkspaceCard({
+        id: card.id, profile_id: profile.id, user_id: user.id,
+        company: card.card.company, created_at: card.createdAt, updated_at: card.updatedAt,
+        email: card.profile.email, label: card.label, linkedin: card.card.linkedin,
+        name: card.profile.name, phone: card.card.phone, qr_preference: card.card.qrPreference,
+        template_id: card.templateId, title: card.profile.title, website: card.profile.website,
       });
-      updatedAt = profile.updated_at;
-      profileId = profile.id;
-      sectionUpdatedAt = {
-        cards: profile.cards_updated_at,
-        notifications: profile.notifications_updated_at,
-        profile: profile.profile_updated_at,
-        template: profile.template_updated_at,
-      };
-    } catch (error) {
-      storageStatus = "degraded";
-      // Restore the pre-save timestamp so the local cookie doesn't appear newer than
-      // Supabase on other devices. A fresh local timestamp would incorrectly "win" the
-      // next sync comparison and hide cloud data (e.g. a card saved on another device).
-      updatedAt = baseSettings.updatedAt ?? updatedAt;
-      console.error("Failed to persist workspace settings to Supabase. Falling back to cookie-only.", error);
+    } else if (mutation && "delete" in mutation) {
+      await deleteSupabaseWorkspaceCard(mutation.delete, profile.id);
+    } else if (mutation && "clear" in mutation) {
+      await deleteSupabaseWorkspaceCardsByProfileId(profile.id);
     }
   }
-
-  const normalized = mergeWorkspaceSettings(user, {
-    ...baseSettings,
-    sectionUpdatedAt,
-    updatedAt,
-  });
-
   const cookieStore = await cookies();
-
-  cookieStore.set(
-    SETTINGS_COOKIE_NAME,
-    await encodePayload({
-      owner: normalized.owner,
-      value: buildCookieSafeSettings(normalized),
-      version: SETTINGS_VERSION,
-    }),
-    {
-      httpOnly: true,
-      maxAge: SETTINGS_COOKIE_MAX_AGE,
-      path: "/",
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    },
-  );
-
-  return {
-    profileId,
-    settings: normalized,
-    storageStatus,
-  };
+  cookieStore.set(SETTINGS_COOKIE_NAME, cookieValue, {
+    httpOnly: true, maxAge: SETTINGS_COOKIE_MAX_AGE, path: "/",
+    sameSite: "lax", secure: process.env.NODE_ENV === "production",
+  });
+  return { profileId, settings: normalized, storageStatus: useCloud ? "cloud" : "browser" };
 }
 
 export async function getWorkspaceSettings(user: WorkspaceUser) {
   const cookieSettings = await getCookieWorkspaceSettings(user);
-
-  if (!supabaseEnabled) {
-    return cookieSettings;
-  }
-
-  try {
-    const profile =
-      (await getSupabaseProfileByUserId(user.id)) ??
-      (await getSupabaseProfileByOwnerEmail(getWorkspaceOwner(user)));
-
-    if (!profile) {
-      return cookieSettings;
-    }
-
-    const supabaseCards = await getSupabaseWorkspaceCardsByProfileId(profile.id);
-    const mergedExtraCards = mergeExtraCards(
-      supabaseCards.map(mapSupabaseWorkspaceCardToExtraCard),
-      cookieSettings.extraCards,
-    );
-    const supabaseSettings = mapSupabaseProfileToWorkspaceSettings(user, profile, mergedExtraCards);
-
-    if (isNewerWorkspaceTimestamp(cookieSettings.updatedAt, supabaseSettings.updatedAt)) {
-      // Cookie is newer (local edits not yet reflected in Supabase). Use cookie data but fall back
-      // to Supabase for any fields that are empty — empty values indicate a degraded/default cookie
-      // state (e.g. from a failed save), not an intentional edit.
-      return mergeWorkspaceSettings(user, {
-        ...supabaseSettings,
-        card: {
-          company: cookieSettings.card.company || supabaseSettings.card.company,
-          linkedin: cookieSettings.card.linkedin || supabaseSettings.card.linkedin,
-          phone: cookieSettings.card.phone || supabaseSettings.card.phone,
-          qrPreference: cookieSettings.card.qrPreference,
-        },
-        defaultTemplateId: cookieSettings.defaultTemplateId,
-        extraCards: mergedExtraCards,
-        notifications: cookieSettings.notifications,
-        profile: {
-          email: cookieSettings.profile.email || supabaseSettings.profile.email,
-          name: cookieSettings.profile.name || supabaseSettings.profile.name,
-          title: cookieSettings.profile.title || supabaseSettings.profile.title,
-          website: cookieSettings.profile.website || supabaseSettings.profile.website,
-          avatarUrl: cookieSettings.profile.avatarUrl || supabaseSettings.profile.avatarUrl,
-        },
-        sectionUpdatedAt: cookieSettings.sectionUpdatedAt,
-        updatedAt: cookieSettings.updatedAt,
-      });
-    }
-
-    return supabaseSettings;
-  } catch (error) {
-    console.error("Failed to load workspace settings from Supabase. Falling back to cookies.", error);
-    return cookieSettings;
-  }
+  if (!supabaseEnabled || user.isPreview) return cookieSettings;
+  // A failed read must never turn into an empty workspace that overwrites saved data.
+  const profile = (await getSupabaseProfileByUserId(user.id))
+    ?? (await getSupabaseProfileByOwnerEmail(getWorkspaceOwner(user)));
+  if (!profile) return cookieSettings;
+  const cards = await getSupabaseWorkspaceCardsByProfileId(profile.id);
+  return mapSupabaseProfileToWorkspaceSettings(user, profile, cards.map(mapSupabaseWorkspaceCardToExtraCard));
 }
 
 function validateWorkspaceProfileInput(input: {
@@ -772,6 +689,10 @@ function validateWorkspaceProfileInput(input: {
       "Enter a valid phone number or leave it blank.",
       { phone: "Use a phone number with 10 to 15 digits." },
     );
+  }
+
+  if ((qrPreference === "website" && !website) || (qrPreference === "linkedin" && !linkedin) || (qrPreference === "phone" && !phone)) {
+    throw new WorkspaceSettingsValidationError("qr-invalid", "Add the contact detail selected for your QR destination.", { [qrPreference]: "This detail is required for your QR code." });
   }
 
   return {
@@ -994,7 +915,7 @@ export async function saveWorkspaceExtraCard(
 
   const validated = validateWorkspaceProfileInput({ ...input, avatarUrl: "", qrPreference });
 
-  if (!input.id || input.id === "new") {
+  if (!/^[a-zA-Z0-9_-]{1,80}$/.test(input.id) || input.id === "new" || input.id === "primary") {
     throw new WorkspaceSettingsValidationError(
       "card-invalid",
       "Invalid card ID.",
@@ -1035,65 +956,30 @@ export async function saveWorkspaceExtraCard(
   const persistResult = await persistWorkspaceSettings(
     user,
     { ...current, extraCards: nextExtraCards },
-    { touchedSections: ["cards"] },
+    { touchedSections: ["cards"], cardMutation: { save: updatedCard } },
   );
-  let storageStatus = persistResult.storageStatus;
-
-  if (supabaseEnabled && persistResult.profileId) {
-    try {
-      await upsertSupabaseWorkspaceCard({
-        company: updatedCard.card.company,
-        created_at: updatedCard.createdAt,
-        email: updatedCard.profile.email,
-        id: updatedCard.id,
-        label: updatedCard.label,
-        linkedin: updatedCard.card.linkedin,
-        name: updatedCard.profile.name,
-        phone: updatedCard.card.phone,
-        profile_id: persistResult.profileId,
-        qr_preference: updatedCard.card.qrPreference,
-        template_id: updatedCard.templateId,
-        title: updatedCard.profile.title,
-        updated_at: updatedCard.updatedAt,
-        user_id: user.id,
-        website: updatedCard.profile.website,
-      });
-    } catch (error) {
-      storageStatus = "degraded";
-      console.error("Failed to persist workspace extra card to Supabase.", error);
-    }
-  }
 
   return {
     settings: persistResult.settings,
-    storageStatus,
+    storageStatus: persistResult.storageStatus,
   };
 }
 
 export async function deleteWorkspaceExtraCard(user: WorkspaceUser, cardId: string) {
   const current = await getWorkspaceSettings(user);
+  if (!current.extraCards.some(card => card.id === cardId)) throw new WorkspaceSettingsValidationError("card-invalid", "This card could not be found in your workspace.");
   const persistResult = await persistWorkspaceSettings(
     user,
     {
       ...current,
       extraCards: current.extraCards.filter((c) => c.id !== cardId),
     },
-    { touchedSections: ["cards"] },
+    { touchedSections: ["cards"], cardMutation: { delete: cardId } },
   );
-  let storageStatus = persistResult.storageStatus;
-
-  if (supabaseEnabled && persistResult.profileId) {
-    try {
-      await deleteSupabaseWorkspaceCard(cardId);
-    } catch (error) {
-      storageStatus = "degraded";
-      console.error("Failed to delete workspace extra card from Supabase.", error);
-    }
-  }
 
   return {
     settings: persistResult.settings,
-    storageStatus,
+    storageStatus: persistResult.storageStatus,
   };
 }
 
@@ -1144,22 +1030,12 @@ export async function clearWorkspaceCards(user: WorkspaceUser): Promise<Workspac
         avatarUrl: current.profile.avatarUrl,
       },
     },
-    { touchedSections: ["cards", "profile"] },
+    { touchedSections: ["cards", "profile"], cardMutation: { clear: true } },
   );
-  let storageStatus = persistResult.storageStatus;
-
-  if (supabaseEnabled && persistResult.profileId) {
-    try {
-      await deleteSupabaseWorkspaceCardsByProfileId(persistResult.profileId);
-    } catch (error) {
-      storageStatus = "degraded";
-      console.error("Failed to clear workspace cards from Supabase.", error);
-    }
-  }
 
   return {
     settings: persistResult.settings,
-    storageStatus,
+    storageStatus: persistResult.storageStatus,
   };
 }
 

@@ -10,7 +10,7 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { navigationItems } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/ui/brand-mark";
@@ -41,6 +41,27 @@ export function MobileNav({
   userName,
 }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const panelRef = useRef<HTMLElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const trigger = triggerRef.current;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    panelRef.current?.focus();
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setIsOpen(false);
+      if (event.key !== "Tab") return;
+      const items = Array.from(panelRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? []);
+      const first = items[0], last = items[items.length - 1];
+      if (!first) return;
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === panelRef.current)) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && (document.activeElement === last || document.activeElement === panelRef.current)) { event.preventDefault(); first.focus(); }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => { document.body.style.overflow = overflow; document.removeEventListener("keydown", onKeyDown); trigger?.focus(); };
+  }, [isOpen]);
 
   return (
     <div className={cn("w-full min-w-0 max-w-full", className)}>
@@ -48,6 +69,9 @@ export function MobileNav({
         <BrandMark markClassName="h-9 w-9 rounded-xl" />
         <button
           type="button"
+          ref={triggerRef}
+          aria-expanded={isOpen}
+          aria-controls="workspace-navigation"
           aria-label="Open navigation"
           onClick={() => setIsOpen(true)}
           className="flex h-9 w-9 items-center justify-center rounded-xl border border-[rgba(25,35,61,0.08)] text-[var(--ink)] transition hover:bg-[var(--soft)]"
@@ -65,7 +89,13 @@ export function MobileNav({
           />
 
           <aside
-            className="mobile-nav-panel fixed inset-y-0 left-0 z-50 flex w-[min(85vw,20rem)] flex-col border-r border-[rgba(82,103,217,0.08)] bg-white p-5 shadow-[18px_0_48px_rgba(15,23,42,0.12)]"
+            ref={panelRef}
+            id="workspace-navigation"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Workspace navigation"
+            tabIndex={-1}
+            className="mobile-nav-panel fixed inset-y-0 left-0 z-50 flex w-[min(85vw,20rem)] flex-col overflow-y-auto border-r border-[rgba(82,103,217,0.08)] bg-white p-5 shadow-[18px_0_48px_rgba(15,23,42,0.12)]"
           >
             <div className="flex items-center justify-between border-b border-[rgba(82,103,217,0.1)] pb-5">
               <BrandMark />
@@ -88,6 +118,7 @@ export function MobileNav({
                   <Link
                     key={item.label}
                     href={item.href}
+                    aria-current={isActive ? "page" : undefined}
                     prefetch
                     onClick={() => setIsOpen(false)}
                     className={cn(

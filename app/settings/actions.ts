@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import type { SettingsActionState } from "@/app/settings/action-state";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
 import {
@@ -25,6 +26,8 @@ function getValidationMessage(error: WorkspaceSettingsValidationError) {
     case "phone-invalid":
     case "linkedin-invalid":
     case "template-invalid":
+    case "storage-full":
+    case "avatar-unavailable":
       return error.message;
     default:
       return "Please review the highlighted fields and try again.";
@@ -32,6 +35,7 @@ function getValidationMessage(error: WorkspaceSettingsValidationError) {
 }
 
 function buildErrorState(error: unknown): SettingsActionState {
+  if (isRedirectError(error)) throw error;
   if (error instanceof WorkspaceSettingsValidationError) {
     return {
       fieldErrors: error.fieldErrors,

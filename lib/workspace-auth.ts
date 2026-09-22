@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth, devAuthBypassEnabled } from "@/auth";
+import { getSafeCallbackUrl } from "@/lib/login-flow";
 
 export type WorkspaceUser = {
   authDescription: string;
@@ -10,10 +11,6 @@ export type WorkspaceUser = {
   isPreview: boolean;
   name: string;
 };
-
-function getSafeCallbackUrl(callbackUrl: string) {
-  return callbackUrl.startsWith("/") ? callbackUrl : "/dashboard";
-}
 
 function getAuthCopy(provider: string) {
   switch (provider) {
@@ -46,7 +43,7 @@ export async function requireWorkspaceUser(callbackUrl = "/dashboard"): Promise<
   const sessionUser = session?.user;
   const provider = sessionUser?.authProvider ?? "session";
 
-  if (sessionUser && (sessionUser.email || sessionUser.name || sessionUser.id)) {
+  if (sessionUser?.email && sessionUser.id) {
     const authCopy = getAuthCopy(provider);
 
     return {

@@ -6,16 +6,16 @@ import { HomeAuthModal } from "@/components/login/home-auth-modal";
 type PremiumHeaderProps = {
   children: ReactNode;
   showAuthModal: boolean;
+  signedIn?: boolean;
 };
 
 const navLinks = [
   { href: "#live-preview", label: "Preview" },
-  { href: "#why-it-matters", label: "Why it matters" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#use-cases", label: "Use cases" },
 ] as const;
 
-export function PremiumHeader({ children, showAuthModal }: PremiumHeaderProps) {
+export function PremiumHeader({ children, showAuthModal, signedIn = false }: PremiumHeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4">
@@ -29,7 +29,7 @@ export function PremiumHeader({ children, showAuthModal }: PremiumHeaderProps) {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-2 lg:flex">
+        <nav aria-label="Main navigation" className="hidden items-center gap-2 lg:flex">
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -42,18 +42,18 @@ export function PremiumHeader({ children, showAuthModal }: PremiumHeaderProps) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <HomeAuthModal
+          {!signedIn ? <HomeAuthModal
             initiallyOpen={showAuthModal}
             buttonClassName="inline-flex min-h-[38px] items-center rounded-full px-3 py-2 text-sm font-semibold text-[var(--muted)] transition hover:bg-[var(--soft)] hover:text-[var(--ink)] sm:min-h-[44px] sm:px-4"
             callbackUrl="/dashboard"
           >
             {children}
-          </HomeAuthModal>
+          </HomeAuthModal> : null}
           <Link
             href="/dashboard"
-            className="hidden rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg sm:inline-flex"
+            className="inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--brand-dark)]"
           >
-            Create my card
+            {signedIn ? "My workspace" : "Get started"}
           </Link>
         </div>
       </div>

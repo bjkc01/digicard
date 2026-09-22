@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { notFound } from "next/navigation";
 import { CreateCardForm } from "@/components/create-card/create-card-form";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { requireWorkspaceUser } from "@/lib/workspace-auth";
@@ -60,6 +61,7 @@ export default async function CreateCardPage({ searchParams }: CreateCardPagePro
     cardId && cardId !== "new"
       ? workspaceView.settings.extraCards.find((c) => c.id === cardId) ?? null
       : null;
+  if (cardId && cardId !== "new" && cardId !== "primary" && !extraCard) notFound();
 
   // Determine initial form data: extra card fields vs primary card fields
   const isExtraCardMode = cardId === "new" || extraCard !== null;
