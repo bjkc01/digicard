@@ -115,15 +115,15 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
         ) : null}
       </PremiumHeader>
 
-      <section className="mx-auto max-w-7xl px-5 pb-16 pt-10 sm:px-8 lg:py-16">
-        <div className="grid gap-10 lg:grid-cols-[1fr_0.96fr] lg:items-center">
+      <section className="mx-auto max-w-7xl px-5 pb-16 pt-8 sm:px-8 lg:pt-10">
+        <div className="grid gap-10 lg:grid-cols-[1fr_0.96fr] lg:items-start">
           <div>
             <h1 className="anim-2 max-w-[34rem] text-[2.35rem] font-semibold leading-[1.08] tracking-[-0.06em] text-[var(--ink)] sm:text-[3.25rem] lg:text-[4rem]">
               Stop spelling your email out loud.
             </h1>
 
             <p className="anim-3 mt-5 max-w-[32rem] text-[0.98rem] leading-7 text-[var(--muted)] sm:text-[1.02rem]">
-              Make a card with your name, your school or job, and a QR code that goes wherever you want: LinkedIn, your portfolio, your phone number. Show it on your phone at the career fair.
+              Put your name, what you do, and your key links on one digital card. Connect your QR code to LinkedIn, your portfolio, your website, or your phone number. Share it with clients, colleagues, and new connections, whatever your profession, wherever you meet.
             </p>
 
             <div className="anim-4 mt-6 grid gap-4 border-t border-[rgba(25,35,61,0.12)] pt-4 text-sm leading-6 text-[var(--ink)] sm:grid-cols-3">
