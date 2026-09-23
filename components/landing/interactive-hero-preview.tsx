@@ -184,7 +184,7 @@ export function InteractiveHeroPreview() {
                     <div className={styles.qr} aria-label="Sample QR code linking to the DigiCard homepage" role="img">
                       <QRCode aria-hidden="true" bgColor="#ffffff" fgColor="#19233d" size={72} value={siteConfig.url} />
                     </div>
-                    <div><p>One scan.<br />A new connection.</p><span>Sample QR · DigiCard home</span></div>
+                    <div><p>Scan to save {parts[0]}&apos;s details.</p><span>Sample QR · DigiCard home</span></div>
                   </div>
                 </div>
                 <div className={styles.homeIndicator} aria-hidden="true" />

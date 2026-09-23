@@ -8,10 +8,8 @@ import type { LoginSearchParams } from "@/lib/login-flow";
 import {
   ArrowRight,
   BriefcaseBusiness,
-  Check,
   GraduationCap,
   QrCode,
-  Sparkles,
   SquareArrowOutUpRight,
   UserRound,
 } from "lucide-react";
@@ -35,9 +33,9 @@ const steps = [
 ];
 
 const quickPoints = [
-  "Choose a QR code for your website, LinkedIn, or phone",
-  "Make a better first impression in short conversations",
-  "Give recruiters and professionals an easy way to remember you",
+  "Make it: Add your name and where the QR should go.",
+  'Show it: A recruiter says "send me your info." You hold up your phone.',
+  "They scan it: Your details land on their phone. No typing.",
 ];
 
 const includedFeatures = [
@@ -120,33 +118,17 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
       <section className="mx-auto max-w-7xl px-5 pb-16 pt-10 sm:px-8 lg:py-16">
         <div className="grid gap-10 lg:grid-cols-[1fr_0.96fr] lg:items-center">
           <div>
-            <div className="anim-1 inline-flex min-h-[44px] max-w-full items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white/90 px-4 py-2 text-left text-sm font-semibold text-[var(--ink)] shadow-[0_10px_24px_rgba(21,32,58,0.05)]">
-              <Sparkles className="h-4 w-4 text-[var(--brand)]" />
-              A small card. A lasting connection.
-            </div>
-
-            <h1 className="anim-2 mt-5 max-w-[34rem] text-[2.35rem] font-semibold leading-[1.08] tracking-[-0.06em] text-[var(--ink)] sm:text-[3.25rem] lg:text-[4rem]">
-              Your next opportunity
-              <br />
-              <span className="text-[var(--brand)]">starts with hello.</span>
+            <h1 className="anim-2 max-w-[34rem] text-[2.35rem] font-semibold leading-[1.08] tracking-[-0.06em] text-[var(--ink)] sm:text-[3.25rem] lg:text-[4rem]">
+              Stop spelling your email out loud.
             </h1>
 
             <p className="anim-3 mt-5 max-w-[32rem] text-[0.98rem] leading-7 text-[var(--muted)] sm:text-[1.02rem]">
-              Your name, work, and contact details in one digital networking card.
-              Perfect for career fairs, campus events, and meetups.
+              Make a card with your name, your school or job, and a QR code that goes wherever you want: LinkedIn, your portfolio, your phone number. Show it on your phone at the career fair.
             </p>
 
-            <div className="anim-4 mt-6 grid gap-2.5 text-sm text-[var(--ink)]">
+            <div className="anim-4 mt-6 grid gap-4 border-t border-[rgba(25,35,61,0.12)] pt-4 text-sm leading-6 text-[var(--ink)] sm:grid-cols-3">
               {quickPoints.map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-3 rounded-2xl border border-[rgba(25,35,61,0.06)] bg-white/88 px-4 py-2.5 shadow-[0_10px_24px_rgba(21,32,58,0.04)]"
-                >
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(82,103,217,0.12)]">
-                    <Check className="h-4 w-4 text-[var(--brand)]" />
-                  </div>
-                  <span className="font-medium">{item}</span>
-                </div>
+                <p key={item}>{item}</p>
               ))}
             </div>
 
@@ -155,8 +137,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
                 href="/dashboard"
                 className="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200/50 transition hover:bg-[var(--brand-dark)] sm:w-auto"
               >
-                {signedIn ? "Open my workspace" : "Create your free card"}
-                <ArrowRight className="h-4 w-4" />
+                {signedIn ? "Open my workspace" : "Make my card"}
               </Link>
               <a
                 href="#how-it-works"
@@ -168,7 +149,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
             </div>
 
             <p className="anim-6 mt-4 text-xs text-[var(--muted)]">
-              No app download needed &middot; Works instantly at any event
+              No app to download. It&apos;s just a link.
             </p>
           </div>
 
