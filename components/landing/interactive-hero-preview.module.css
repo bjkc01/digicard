@@ -113,7 +113,7 @@
 
 .front { padding: 6px; background: #07090d; transform: translateZ(13px); box-shadow: inset 0 0 0 1px #d0e2ec, inset 0 0 0 2px #2b4558, inset 0 0 0 3px #090b10; }
 .screen { position: relative; height: 100%; overflow: hidden; border-radius: 36px; background: radial-gradient(ellipse at 15% 0%, #27365d 0%, #121d34 36%, #0b1222 75%); color: #fff; }
-.statusBar { position: absolute; top: 0; left: 0; right: 0; height: 40px; padding: 0 17px 0 20px; display: flex; justify-content: space-between; align-items: center; background: #f8f8f6; color: #111; font-size: 10px; font-weight: 600; }
+.statusBar { position: absolute; top: 0; left: 0; right: 0; height: 40px; padding: 0 17px 0 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; color: #fff; font-size: 10px; font-weight: 600; }
 .statusBar > div { display: flex; align-items: center; gap: 3px; }
 .statusBar svg { stroke-width: 2.5; }
 .island { position: absolute; z-index: 2; left: 50%; top: 9px; width: 84px; height: 23px; transform: translateX(-50%); border-radius: 20px; background: #030407; box-shadow: inset 0 0 1px #353a47; }
