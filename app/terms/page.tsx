@@ -2,20 +2,20 @@ import Link from "next/link";
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-[#0a0a0a] px-4 py-16 text-white sm:px-6">
+    <main className="min-h-screen bg-[var(--canvas)] px-4 py-16 text-[var(--ink)] sm:px-6">
       <div className="mx-auto max-w-3xl">
-        <Link href="/" className="text-sm text-white/55 transition-colors hover:text-white">
+        <Link href="/" className="text-sm text-[var(--muted)] transition-colors hover:text-[var(--brand)]">
           Back to DigiCard
         </Link>
 
-        <div className="mt-8 rounded-[2rem] border border-white/8 bg-white/[0.03] p-8 shadow-[0_24px_60px_rgba(0,0,0,0.28)] sm:p-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/35">
+        <div className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_24px_60px_rgba(21,32,58,0.05)] sm:p-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--brand)]">
             Terms
           </p>
           <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">
             Terms of Use
           </h1>
-          <div className="mt-8 space-y-6 text-sm leading-7 text-white/68 sm:text-base">
+          <div className="mt-8 space-y-6 text-sm leading-7 text-[var(--muted)] sm:text-base">
             <p>
               DigiCard is provided so users can create and share digital networking cards.
               You are responsible for the information, links, and files you choose to share.
@@ -30,7 +30,7 @@ export default function TermsPage() {
             </p>
             <p>
               Questions about these terms can be sent to{" "}
-              <a href="mailto:hello@digicard.me" className="text-white transition-colors hover:text-[#8da0ff]">
+              <a href="mailto:hello@digicard.me" className="text-[var(--brand)] transition-colors hover:text-[var(--brand-dark)]">
                 hello@digicard.me
               </a>
               .
