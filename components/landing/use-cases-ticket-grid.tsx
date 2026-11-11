@@ -1,4 +1,3 @@
-import { ArrowRight } from "lucide-react";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
 
 type UseCaseTicketGridProps = {
@@ -23,7 +22,7 @@ export function UseCasesTicketGrid({ items }: UseCaseTicketGridProps) {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[var(--brand)]/70">
-                Event pass
+                Use case
               </p>
               <p className="mt-3 text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{item.title}</p>
             </div>
@@ -34,10 +33,6 @@ export function UseCasesTicketGrid({ items }: UseCaseTicketGridProps) {
 
           <p className="mt-7 text-sm leading-7 text-[var(--muted)]">{item.copy}</p>
 
-          <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[var(--brand)]/75 transition-colors duration-300 group-hover:text-[var(--ink)]/82">
-            Designed for quick follow-up
-            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </div>
         </div>
       ))}
     </ScrollReveal>

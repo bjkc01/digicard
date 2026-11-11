@@ -18,61 +18,61 @@ const steps = [
   {
     id: "01",
     title: "Create your profile",
-    body: "Set up a clean digital card with your name, university, major, and professional identity.",
+    body: "Add your name, school or workplace, and a short description of what you do.",
   },
   {
     id: "02",
     title: "Add your links and details",
-    body: "Add your website, LinkedIn, email, and the contact information you want people to see first.",
+    body: "Choose which contact details and links to include on your card.",
   },
   {
     id: "03",
-    title: "Share it instantly with QR",
-    body: "Let someone scan your QR to open your website, LinkedIn, or phone number.",
+    title: "Choose a QR destination",
+    body: "Link your QR code to a website, LinkedIn profile, or phone number.",
   },
 ];
 
 const quickPoints = [
   "Make it: Add your name and where the QR should go.",
-  'Show it: A recruiter says "send me your info." You hold up your phone.',
-  "They scan it: Your details land on their phone. No typing.",
+  'Show it: Open your card when someone asks for your details.',
+  "Scan it: Their camera opens the destination you chose.",
 ];
 
 const includedFeatures = [
   {
-    description: "Keep your full name and the version of your professional identity you want people to remember.",
-    title: "Your introduction",
+    description: "Include your name and a short bio so people know whose card they have.",
+    title: "Name and bio",
   },
   {
-    description: "Show the school, program, and focus area that give your story immediate context.",
-    title: "Academic context",
+    description: "Add your school, major, or job title.",
+    title: "School or work",
   },
   {
-    description: "Keep your website and LinkedIn details together, ready for your next introduction.",
-    title: "Your work, within reach",
+    description: "Add links to your portfolio or LinkedIn profile so people can see your work.",
+    title: "Website and LinkedIn",
   },
   {
-    description: "Share instantly through a phone-friendly card and QR flow that feels ready for real events.",
-    title: "Fast share moment",
+    description: "Show your QR code on your phone for someone else to scan.",
+    title: "QR code",
   },
 ] as const;
 
 const useCaseDetails = [
   {
-    copy: "Open your profile before the recruiter line gets crowded and hand off your key links in one scan.",
+    copy: "Share your LinkedIn profile or portfolio with a recruiter after you talk.",
     title: "Career fairs",
   },
   {
-    copy: "Skip the awkward search step and move straight into talking about classes, projects, and goals.",
-    title: "Campus networking events",
+    copy: "Exchange contact details with someone you meet at a talk or workshop.",
+    title: "Events and conferences",
   },
   {
-    copy: "Make it easy for teammates, judges, and alumni to revisit your work after a club or hackathon conversation.",
+    copy: "Give teammates or judges a link to your project.",
     title: "Clubs and hackathons",
   },
   {
-    copy: "Share a polished student profile when speaking with mentors, alumni, or internship program reps.",
-    title: "Mentor and alumni meetups",
+    copy: "Share your contact details with a client or colleague at the end of a meeting.",
+    title: "Client meetings",
   },
 ] as const;
 
@@ -123,7 +123,7 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
             </h1>
 
             <p className="anim-3 mt-5 max-w-[32rem] text-[0.98rem] leading-7 text-[var(--muted)] sm:text-[1.02rem]">
-              Put your name, what you do, and your key links on one digital card. Connect your QR code to LinkedIn, your portfolio, your website, or your phone number. Share it with clients, colleagues, and new connections, whatever your profession, wherever you meet.
+              Make a digital card with your name, contact details, and links to your work. Choose where your QR code leads, then show your card when you meet someone who wants to keep in touch.
             </p>
 
             <div className="anim-4 mt-6 grid gap-4 border-t border-[rgba(25,35,61,0.12)] pt-4 text-sm leading-6 text-[var(--ink)] sm:grid-cols-3">
@@ -160,10 +160,10 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
       <section id="how-it-works" className="scroll-mt-24 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24 sm:scroll-mt-28">
         <ScrollReveal className="max-w-3xl">
           <h2 className="text-[2.2rem] font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-4xl lg:text-5xl">
-            Ready for your next hello.
+            How to make your card
           </h2>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
-            Set up your card once, open it in seconds, and share it when the conversation matters most.
+            Fill in your details and choose what your QR code opens.
           </p>
         </ScrollReveal>
 
@@ -194,10 +194,10 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14 lg:py-24">
           <ScrollReveal>
             <h2 className="text-[2.2rem] font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-4xl lg:text-5xl">
-              Everything needed to make a strong first impression.
+              What goes on your card
             </h2>
             <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--muted)]">
-              Keep the essentials in one place so the person who scans your code can understand who you are and how to reach you immediately.
+              Choose the information you want to share. Your card can include:
             </p>
           </ScrollReveal>
 
@@ -226,10 +226,10 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
       <section id="use-cases" className="scroll-mt-24 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24 sm:scroll-mt-28">
         <ScrollReveal className="max-w-3xl">
           <h2 className="text-[2.2rem] font-semibold tracking-[-0.05em] text-[var(--ink)] sm:text-4xl lg:text-5xl">
-            Built for the places where students meet real opportunities.
+            Where you can use it
           </h2>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
-            DigiCard is designed for fast, in-person moments where a clean profile and quick QR share can make networking easier.
+            Use your card whenever you need to exchange contact details, at work or on campus.
           </p>
         </ScrollReveal>
 
@@ -240,15 +240,15 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
         <ScrollReveal className="rounded-[2rem] border border-[rgba(255,255,255,0.18)] bg-[linear-gradient(135deg,_#172340_0%,_#2d4177_36%,_#5267d9_72%,_#8ca0ff_100%)] px-5 py-8 text-white shadow-[0_32px_80px_rgba(35,51,103,0.22)] sm:px-8 sm:py-10 md:px-12 md:py-14">
           <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/60">Build your own version</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/60">Make a card</p>
               <h2 className="mt-4 text-[2.2rem] font-semibold tracking-[-0.05em] text-white sm:text-4xl lg:text-5xl">
-                Launch a card that feels ready before the next opportunity even starts.
+                Put your details on a card.
               </h2>
               <p className="mt-5 text-lg leading-8 text-white/74">
-                Start with the same polished experience you just explored, customize it in minutes, and walk into your next event already prepared.
+                Add your information and choose a template. Open your card from your phone when you need it.
               </p>
               <div className="mt-6 flex flex-wrap gap-3 text-sm text-white/78">
-                {["Live profile", "QR share", "Resume links", "Instant follow-up"].map((item) => (
+                {["Contact details", "QR code", "Website links", "Card templates"].map((item) => (
                   <span
                     key={item}
                     className="rounded-full border border-white/18 bg-white/10 px-4 py-2 font-medium backdrop-blur"
