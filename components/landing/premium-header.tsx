@@ -25,7 +25,7 @@ export function PremiumHeader({ children, showAuthModal, signedIn = false }: Pre
           </div>
           <div className="min-w-0">
             <p className="text-base font-semibold tracking-tight text-[var(--ink)] sm:text-lg">DigiCard</p>
-            <p className="hidden text-xs font-medium text-[var(--muted)] sm:block">Student-first networking cards</p>
+            <p className="hidden text-xs font-medium text-[var(--muted)] sm:block">Digital contact cards</p>
           </div>
         </Link>
 
