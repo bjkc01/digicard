@@ -1,0 +1,721 @@
+"use client";
+
+import type { ChangeEvent } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  BellRing,
+  Camera,
+  Check,
+  CreditCard,
+  QrCode,
+  Trash2,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useFormStatus } from "react-dom";
+import { toast } from "sonner";
+import { CardPreview } from "@/frontend/cards/card-preview";
+import { Button } from "@/frontend/ui/button";
+import { ProfileAvatar } from "@/frontend/ui/profile-avatar";
+import type { WorkspaceView } from "@/backend/workspace/view";
+import type { WorkspaceUser } from "@/backend/workspace/auth";
+import { templates } from "@/backend/data";
+import { cn } from "@/frontend/utils";
+import {
+  maxWorkspaceAvatarDataUrlLength,
+  maxWorkspaceAvatarFileSizeBytes,
+  workspaceAvatarStorageKey,
+} from "@/backend/workspace/avatar";
+import {
+  manualQrPreferenceOptions,
+  notificationSettingOptions,
+  type WorkspaceNotificationKey,
+  type WorkspaceQrPreference,
+} from "@/backend/workspace/settings-options";
+import {
+  saveNotificationSettings,
+  saveProfileSettings,
+} from "@/backend/actions/settings";
+import {
+  initialSettingsActionState,
+  type SettingsActionState,
+} from "@/backend/actions/settings-state";
+
+type SettingsShellProps = {
+  user: WorkspaceUser;
+  workspaceView: WorkspaceView;
+};
+
+type ProfileFormData = {
+  avatarUrl: string;
+  company: string;
+  email: string;
+  linkedin: string;
+  name: string;
+  phone: string;
+  qrPreference: WorkspaceQrPreference;
+  title: string;
+  website: string;
+};
+
+function getActionTone(state: SettingsActionState) {
+  if (state.status === "success") {
+    return "border-[rgba(16,185,129,0.16)] bg-[rgba(236,253,245,0.92)] text-[#065f46]";
+  }
+
+  if (state.status === "warning") {
+    return "border-[rgba(245,158,11,0.18)] bg-[rgba(255,251,235,0.95)] text-[#92400e]";
+  }
+
+  if (state.status === "error") {
+    return "border-[rgba(239,68,68,0.16)] bg-[rgba(254,242,242,0.95)] text-[#991b1b]";
+  }
+
+  return "";
+}
+
+function buildPreviewCard(
+  templateId: string,
+  profile: ProfileFormData,
+  fallbackTemplateId: string,
+) {
+  const template =
+    templates.find((item) => item.id === templateId) ??
+    templates.find((item) => item.id === fallbackTemplateId) ??
+    templates[0]!;
+
+  return {
+    color: template.accent,
+    company: profile.company,
+    email: profile.email || "you@example.com",
+    id: `settings-preview-${template.id}`,
+    linkedin: profile.linkedin,
+    name: profile.name || "Your Name",
+    phone: profile.phone,
+    qrPreference: profile.qrPreference,
+    template: template.name,
+    title: profile.title || "Student or Early Professional",
+    website: profile.website,
+  };
+}
+
+async function createAvatarDataUrl(file: File) {
+  const objectUrl = URL.createObjectURL(file);
+
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const nextImage = new Image();
+      nextImage.onload = () => resolve(nextImage);
+      nextImage.onerror = () => reject(new Error("Image could not be loaded."));
+      nextImage.src = objectUrl;
+    });
+
+    const size = 320;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+      throw new Error("Image editor is unavailable.");
+    }
+
+    const sourceSize = Math.min(image.naturalWidth, image.naturalHeight);
+    const sourceX = (image.naturalWidth - sourceSize) / 2;
+    const sourceY = (image.naturalHeight - sourceSize) / 2;
+
+    context.drawImage(image, sourceX, sourceY, sourceSize, sourceSize, 0, 0, size, size);
+
+    const primaryDataUrl = canvas.toDataURL("image/webp", 0.82);
+    const fallbackDataUrl = canvas.toDataURL("image/jpeg", 0.86);
+    const chosenDataUrl =
+      primaryDataUrl.length <= maxWorkspaceAvatarDataUrlLength
+        ? primaryDataUrl
+        : fallbackDataUrl;
+
+    if (chosenDataUrl.length > maxWorkspaceAvatarDataUrlLength) {
+      throw new Error("Photo is still too large after compression.");
+    }
+
+    return chosenDataUrl;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+export function SettingsShell({ user, workspaceView }: SettingsShellProps) {
+  const router = useRouter();
+  const { settings, summary } = workspaceView;
+
+  const initialQr: WorkspaceQrPreference =
+    settings.card.qrPreference === "auto" ? "website" : settings.card.qrPreference;
+
+  const [profileForm, setProfileForm] = useState<ProfileFormData>({
+    avatarUrl: settings.profile.avatarUrl,
+    company: settings.card.company,
+    email: settings.profile.email,
+    linkedin: settings.card.linkedin,
+    name: settings.profile.name,
+    phone: settings.card.phone,
+    qrPreference: initialQr,
+    title: settings.profile.title,
+    website: settings.profile.website,
+  });
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [notificationState, setNotificationState] = useState(settings.notifications);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [profileState, profileAction] = useActionState(saveProfileSettings, initialSettingsActionState);
+  const [notificationSaveState, notificationAction] = useActionState(
+    saveNotificationSettings,
+    initialSettingsActionState,
+  );
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const qr: WorkspaceQrPreference =
+      settings.card.qrPreference === "auto" ? "website" : settings.card.qrPreference;
+    const storedAvatar =
+      typeof window === "undefined"
+        ? ""
+        : window.localStorage.getItem(workspaceAvatarStorageKey) ?? "";
+    setProfileForm({
+      avatarUrl: settings.profile.avatarUrl || storedAvatar,
+      company: settings.card.company,
+      email: settings.profile.email,
+      linkedin: settings.card.linkedin,
+      name: settings.profile.name,
+      phone: settings.card.phone,
+      qrPreference: qr,
+      title: settings.profile.title,
+      website: settings.profile.website,
+    });
+    setAvatarError(null);
+    setNotificationState(settings.notifications);
+  }, [
+    settings.card.company,
+    settings.card.linkedin,
+    settings.card.phone,
+    settings.card.qrPreference,
+    settings.notifications,
+    settings.profile.avatarUrl,
+    settings.profile.email,
+    settings.profile.name,
+    settings.profile.title,
+    settings.profile.website,
+  ]);
+
+  useEffect(() => {
+    if (
+      profileState.status === "success" ||
+      profileState.status === "warning" ||
+      notificationSaveState.status === "success" ||
+      notificationSaveState.status === "warning"
+    ) {
+      router.refresh();
+    }
+  }, [notificationSaveState.status, profileState.status, router]);
+
+  useEffect(() => {
+    if (!profileState.message || profileState.status === "idle") {
+      return;
+    }
+
+    if (profileState.status === "success") {
+      toast.success(profileState.message);
+    } else if (profileState.status === "warning") {
+      toast.warning(profileState.message);
+    } else {
+      toast.error(profileState.message);
+    }
+  }, [profileState.message, profileState.status]);
+
+  useEffect(() => {
+    if (!notificationSaveState.message || notificationSaveState.status === "idle") {
+      return;
+    }
+
+    if (notificationSaveState.status === "success") {
+      toast.success(notificationSaveState.message);
+    } else if (notificationSaveState.status === "warning") {
+      toast.warning(notificationSaveState.message);
+    } else {
+      toast.error(notificationSaveState.message);
+    }
+  }, [notificationSaveState.message, notificationSaveState.status]);
+
+  const selectedTemplate =
+    templates.find((t) => t.id === settings.defaultTemplateId) ?? templates[0]!;
+  const previewCard = buildPreviewCard(settings.defaultTemplateId, profileForm, settings.defaultTemplateId);
+  const enabledNotificationCount = Object.values(notificationState).filter(Boolean).length;
+
+  const handleProfileChange =
+    (field: keyof ProfileFormData) => (event: ChangeEvent<HTMLInputElement>) => {
+      setProfileForm((current) => ({ ...current, [field]: event.target.value }));
+    };
+
+  const handleAvatarChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      setAvatarError("Choose a PNG, JPG, or WEBP photo.");
+      return;
+    }
+
+    if (file.size > maxWorkspaceAvatarFileSizeBytes) {
+      setAvatarError("Photo must be under 5 MB.");
+      return;
+    }
+
+    try {
+      const avatarUrl = await createAvatarDataUrl(file);
+      setProfileForm((current) => ({ ...current, avatarUrl }));
+      setAvatarError(null);
+      window.localStorage.setItem(workspaceAvatarStorageKey, avatarUrl);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "We could not process that photo.";
+      setAvatarError(message);
+    } finally {
+      event.target.value = "";
+    }
+  };
+
+  const handleAvatarRemove = () => {
+    setProfileForm((current) => ({ ...current, avatarUrl: "" }));
+    setAvatarError(null);
+    window.localStorage.removeItem(workspaceAvatarStorageKey);
+
+    if (avatarInputRef.current) {
+      avatarInputRef.current.value = "";
+    }
+  };
+
+  return (
+    <section className="workspace-content space-y-4 sm:space-y-6">
+      <header className="panel border-[rgba(82,103,217,0.08)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(244,247,255,0.92))] p-5 sm:p-6">
+        <Link
+          href="/dashboard"
+          className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--brand)]"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Dashboard
+        </Link>
+        <h1 className="page-title">
+          Account settings
+        </h1>
+        <p className="mt-1.5 max-w-2xl text-[0.95rem] leading-6 text-[var(--muted)]">
+          Update your profile details, notification preferences, and card defaults.
+        </p>
+      </header>
+
+      <div className="grid min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 space-y-4 sm:space-y-6">
+
+          {/* Profile */}
+          <form action={profileAction} className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
+            <h2 className="text-lg font-semibold text-[var(--ink)]">Profile</h2>
+            <ActionBanner state={profileState} />
+
+            <input name="avatarUrl" type="hidden" value={profileForm.avatarUrl} />
+
+            <div className="mt-4 rounded-2xl border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-4 sm:p-[1.125rem]">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  className="group relative h-20 w-20 shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(82,103,217,0.18)]"
+                  aria-label={profileForm.avatarUrl ? "Change profile photo" : "Upload profile photo"}
+                >
+                  <ProfileAvatar
+                    avatarUrl={profileForm.avatarUrl}
+                    className="h-20 w-20 rounded-full shadow-[0_16px_32px_rgba(82,103,217,0.16)]"
+                    name={profileForm.name || user.name}
+                    textClassName="text-lg"
+                  />
+                  <span className="absolute bottom-0 right-0 grid h-8 w-8 place-items-center rounded-full border-2 border-white bg-[var(--brand)] text-white shadow-[0_10px_20px_rgba(82,103,217,0.24)] transition group-hover:bg-[var(--brand-dark)]">
+                    <Camera className="h-4 w-4" />
+                  </span>
+                </button>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-[var(--ink)]">Photo</p>
+                  <p className="mt-0.5 text-sm leading-5 text-[var(--muted)]">
+                    Click the avatar to upload a PNG, JPG, or WEBP image.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[rgba(82,103,217,0.14)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--ink)] shadow-[0_10px_22px_rgba(21,32,58,0.04)] transition hover:border-[rgba(82,103,217,0.24)] hover:bg-[rgba(82,103,217,0.04)]"
+                    >
+                      <Camera className="h-4 w-4" />
+                      {profileForm.avatarUrl ? "Choose another" : "Choose image"}
+                    </button>
+                    {profileForm.avatarUrl ? (
+                      <button
+                        type="button"
+                        onClick={handleAvatarRemove}
+                        className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-[var(--muted)] transition hover:bg-white hover:text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Remove photo
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+
+              <input
+                ref={avatarInputRef}
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={handleAvatarChange}
+                type="file"
+              />
+
+              {avatarError || profileState.fieldErrors.avatarUrl ? (
+                <p className="mt-2.5 text-sm text-[#991b1b]">
+                  {avatarError ?? profileState.fieldErrors.avatarUrl}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <ProfileField label="Display name" name="name" placeholder="e.g. Alex Morgan" value={profileForm.name} onChange={handleProfileChange("name")} error={profileState.fieldErrors.name} required />
+              <ProfileField label="Email" name="email" placeholder="alex@example.com" type="email" value={profileForm.email} onChange={handleProfileChange("email")} error={profileState.fieldErrors.email} required />
+              <ProfileField label="Professional title" name="title" placeholder="Product Designer" value={profileForm.title} onChange={handleProfileChange("title")} error={profileState.fieldErrors.title} required />
+              <ProfileField label="School or company" name="company" placeholder="DigiCard Studio" value={profileForm.company} onChange={handleProfileChange("company")} error={profileState.fieldErrors.company} />
+              <ProfileField label="Website" name="website" placeholder="https://yourportfolio.com" value={profileForm.website} onChange={handleProfileChange("website")} error={profileState.fieldErrors.website} />
+              <ProfileField label="LinkedIn" name="linkedin" placeholder="linkedin.com/in/alex" value={profileForm.linkedin} onChange={handleProfileChange("linkedin")} error={profileState.fieldErrors.linkedin} />
+              <ProfileField className="md:col-span-2" label="Phone" name="phone" placeholder="+1 (555) 000-0000" value={profileForm.phone} onChange={handleProfileChange("phone")} error={profileState.fieldErrors.phone} />
+            </div>
+
+            {/* QR destination */}
+            <div className="mt-4 rounded-[1.4rem] border border-[rgba(82,103,217,0.08)] bg-[var(--soft)] p-4 sm:p-[1.125rem]">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-[0_10px_20px_rgba(21,32,58,0.05)]">
+                  <QrCode className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-[var(--ink)]">QR destination</p>
+                  <p className="mt-0.5 text-sm leading-5 text-[var(--muted)]">
+                    Choose where your QR code takes people when they scan your card.
+                  </p>
+                </div>
+              </div>
+              {profileState.fieldErrors.qrPreference ? (
+                <p className="mt-2.5 text-sm text-[#991b1b]">{profileState.fieldErrors.qrPreference}</p>
+              ) : null}
+              <div className="mt-3 grid gap-2.5 md:grid-cols-3">
+                {manualQrPreferenceOptions.map((option) => {
+                  const isSelected = profileForm.qrPreference === option.key;
+                  return (
+                    <label key={option.key} className="cursor-pointer">
+                      <input
+                        className="sr-only"
+                        name="qrPreference"
+                        type="radio"
+                        value={option.key}
+                        checked={isSelected}
+                        onChange={() => setProfileForm((current) => ({ ...current, qrPreference: option.key }))}
+                      />
+                      <div className={cn("min-h-full rounded-2xl border bg-white p-3.5 transition", isSelected ? "border-[var(--brand)] bg-[var(--brand-soft)] shadow-[0_10px_24px_rgba(82,103,217,0.08)] ring-2 ring-[rgba(82,103,217,0.14)]" : "border-slate-200 hover:border-[rgba(82,103,217,0.28)] hover:bg-white")}>
+                        <div className="flex items-center gap-3">
+                          <span className={cn("grid h-5 w-5 shrink-0 place-items-center rounded-full border", isSelected ? "border-[var(--brand)] bg-[var(--brand)] text-white" : "border-slate-300 bg-white")}>
+                            {isSelected ? <Check className="h-3 w-3" /> : null}
+                          </span>
+                          <p className="text-sm font-semibold text-[var(--ink)]">{option.label}</p>
+                        </div>
+                        <p className="mt-1.5 text-xs leading-5 text-[var(--muted)]">{option.description}</p>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="sticky bottom-3 z-10 mt-5 flex justify-end rounded-2xl border border-slate-200/80 bg-white/92 p-3 shadow-[0_14px_30px_rgba(15,23,42,0.08)] backdrop-blur">
+              <FormSubmitButton label="Save profile" />
+            </div>
+          </form>
+
+          {/* Notifications */}
+          <form action={notificationAction} className="panel border-[rgba(82,103,217,0.08)] bg-white p-5 sm:p-6">
+            <SectionHeader
+              title="Notifications"
+              description="Choose which updates you'd like to receive for this account."
+              badge={`${enabledNotificationCount} of ${notificationSettingOptions.length} enabled`}
+            />
+            <ActionBanner state={notificationSaveState} />
+
+            <div className="mt-4 space-y-2.5">
+              {notificationSettingOptions.map((option) => {
+                const enabled = notificationState[option.key];
+                return (
+                  <label key={option.key} className="grid cursor-pointer grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-[1.3rem] border border-[rgba(82,103,217,0.08)] bg-white px-4 py-3.5">
+                    <div className="min-w-0 max-w-2xl">
+                      <p className="text-sm font-semibold text-[var(--ink)]">{option.label}</p>
+                      <p className="mt-0.5 text-sm leading-5 text-[var(--muted)]">{option.description}</p>
+                    </div>
+                    <span className="relative inline-flex h-11 w-14 shrink-0 items-center justify-center">
+                      <input
+                        className="peer sr-only"
+                        name="notifications"
+                        type="checkbox"
+                        value={option.key}
+                        checked={enabled}
+                        onChange={() =>
+                          setNotificationState((current) => ({
+                            ...current,
+                            [option.key]: !current[option.key as WorkspaceNotificationKey],
+                          }))
+                        }
+                      />
+                      <span className="absolute inset-x-0 top-1/2 h-8 -translate-y-1/2 rounded-full border border-slate-200 bg-slate-200 transition peer-checked:border-[var(--brand)] peer-checked:bg-[var(--brand)]" />
+                      <span className="absolute left-1 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-white shadow-[0_6px_16px_rgba(15,23,42,0.16)] transition-transform peer-checked:translate-x-6" />
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+
+            <div className="sticky bottom-3 z-10 mt-5 flex justify-end rounded-2xl border border-slate-200/80 bg-white/92 p-3 shadow-[0_14px_30px_rgba(15,23,42,0.08)] backdrop-blur">
+              <FormSubmitButton label="Save alerts" />
+            </div>
+          </form>
+
+          {/* Danger zone */}
+          <div className="panel border-[rgba(248,113,113,0.18)] bg-[linear-gradient(180deg,_rgba(255,251,251,0.96),_rgba(255,255,255,0.98))] p-5 sm:p-6">
+            <SectionHeader
+              title="Danger zone"
+              description="Permanent actions that cannot be undone."
+            />
+
+            <div className="mt-4 max-w-sm rounded-[1.45rem] border border-[rgba(248,113,113,0.24)] bg-white/88 p-[1.125rem]">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-500">
+                  <AlertTriangle className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-red-700">Delete account</p>
+                  <p className="mt-0.5 text-sm leading-5 text-red-600">
+                    Permanently removes your account and all saved cards. Contact support to request deletion.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDeleteDialog(true)}
+                className="mt-4 rounded-full bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_14px_26px_rgba(220,38,38,0.18)] transition hover:bg-red-700"
+              >
+                Delete account
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar — only visible on xl+ as a sticky panel */}
+        <aside className="hidden space-y-4 xl:block xl:sticky xl:top-6 xl:h-fit">
+          <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5">
+            <p className="text-sm font-semibold text-[var(--ink)]">Account summary</p>
+            <div className="mt-4 space-y-3">
+              <SummaryCard
+                label="Cards ready"
+                value={summary.cardStatusLabel}
+                detail="Saved cards available from your dashboard and My Cards pages."
+                icon={CreditCard}
+              />
+              <SummaryCard
+                label="Last saved"
+                value={summary.lastUpdatedLabel}
+                detail="Most recent profile, notification, or card update."
+                icon={BellRing}
+              />
+            </div>
+          </div>
+
+          <div className="panel border-[rgba(82,103,217,0.08)] bg-white p-5">
+            <p className="text-sm font-semibold text-[var(--ink)]">Selected style</p>
+            <div className="mt-4">
+              <CardPreview card={previewCard} compact fullDetailsCompact />
+            </div>
+            <p className="mt-3 text-sm leading-5 text-[var(--muted)]">{selectedTemplate.description}</p>
+            <Button href="/templates" variant="secondary" className="mt-4 w-full">
+              Change template
+            </Button>
+          </div>
+        </aside>
+      </div>
+
+      {showDeleteDialog ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 px-4 py-6 backdrop-blur-sm">
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+            aria-describedby="delete-account-description"
+            className="w-full max-w-md rounded-2xl border border-red-200 bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.22)]"
+          >
+            <div className="flex items-start gap-3">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 id="delete-account-title" className="text-lg font-semibold text-slate-950">
+                  Delete account?
+                </h2>
+                <p id="delete-account-description" className="mt-1 text-sm leading-6 text-slate-600">
+                  This action is permanent. Account deletion is handled by support so your data can be verified before removal.
+                </p>
+              </div>
+            </div>
+            <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setShowDeleteDialog(false)}
+                className="rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <a
+                href="mailto:support@digicard.app?subject=Delete%20my%20DigiCard%20account"
+                className="rounded-full bg-red-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-[0_14px_26px_rgba(220,38,38,0.18)] transition hover:bg-red-700"
+              >
+                Request deletion
+              </a>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function SectionHeader({
+  title,
+  description,
+  badge,
+}: {
+  title: string;
+  description: string;
+  badge?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-2.5 md:flex-row md:items-start md:justify-between">
+      <div>
+        <h2 className="text-lg font-semibold text-[var(--ink)]">{title}</h2>
+        <p className="mt-0.5 text-sm leading-5 text-[var(--muted)]">{description}</p>
+      </div>
+      {badge ? (
+        <span className="inline-flex h-fit w-fit rounded-full bg-[rgba(82,103,217,0.08)] px-3 py-1 text-xs font-semibold text-[var(--brand)]">
+          {badge}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+function ActionBanner({ state }: { state: SettingsActionState }) {
+  if (state.status === "idle" || !state.message) {
+    return null;
+  }
+
+  return (
+    <div className={cn("mt-4 rounded-[1.1rem] border px-4 py-2.5 text-sm font-medium", getActionTone(state))}>
+      {state.message}
+    </div>
+  );
+}
+
+function SummaryCard({
+  label,
+  value,
+  detail,
+  icon: Icon,
+}: {
+  detail: string;
+  icon: typeof CreditCard;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-[1.3rem] bg-[var(--soft)] p-3.5">
+      <div className="flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-[0_10px_20px_rgba(21,32,58,0.05)]">
+          <Icon className="h-4 w-4" />
+        </div>
+        <p className="text-sm font-semibold text-[var(--ink)]">{label}</p>
+      </div>
+      <p className="mt-2.5 text-base font-semibold leading-6 text-[var(--ink)]">{value}</p>
+      <p className="mt-1 text-sm leading-5 text-[var(--muted)]">{detail}</p>
+    </div>
+  );
+}
+
+function ProfileField({
+  className,
+  error,
+  hint,
+  label,
+  name,
+  onChange,
+  placeholder,
+  required,
+  type = "text",
+  value,
+}: {
+  className?: string;
+  error?: string;
+  hint?: string;
+  label: string;
+  name: string;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  required?: boolean;
+  type?: string;
+  value: string;
+}) {
+  const id = `settings-${name}`;
+
+  return (
+    <label className={cn("flex flex-col gap-1.5 text-sm font-medium text-slate-700", className)}>
+      {label}
+      <input
+        id={id}
+        className={cn("h-11 rounded-2xl border bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[var(--brand)] focus:ring-4 focus:ring-[rgba(82,103,217,0.12)]", error ? "border-red-300 focus:border-red-500 focus:ring-red-100" : "border-slate-200")}
+        name={name}
+        onChange={onChange}
+        placeholder={placeholder}
+        required={required}
+        type={type}
+        value={value}
+      />
+      {error ? <span className="text-xs font-normal leading-5 text-[#991b1b]">{error}</span> : null}
+      {!error && hint ? <span className="text-xs font-normal leading-5 text-[var(--muted)]">{hint}</span> : null}
+    </label>
+  );
+}
+
+function FormSubmitButton({ label, secondary = false }: { label: string; secondary?: boolean }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className={cn(
+        "min-h-11 rounded-full px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60",
+        secondary
+          ? "border border-[rgba(82,103,217,0.14)] bg-white text-[var(--ink)] hover:bg-[var(--soft)]"
+          : "bg-[var(--brand)] text-white shadow-[0_16px_34px_rgba(82,103,217,0.2)] hover:bg-[var(--brand-dark)]",
+      )}
+    >
+      {pending ? "Saving..." : label}
+    </button>
+  );
+}

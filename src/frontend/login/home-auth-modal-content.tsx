@@ -1,0 +1,67 @@
+import {
+  devAuthBypassEnabled,
+  emailAuthEnabled,
+  emailAuthUsesConsoleFallback,
+  googleAuthEnabled,
+} from "@/backend/auth/config";
+import {
+  getDestinationLabel,
+  getLoginErrorMessage,
+  getLoginNoticeMessage,
+  getSafeCallbackUrl,
+  type LoginSearchParams,
+} from "@/backend/auth/login-flow";
+import { HomeAuthModalCard, type AuthModalPanel } from "@/frontend/login/home-auth-modal-card";
+
+type HomeAuthModalContentProps = {
+  originPath?: string;
+  searchParams?: LoginSearchParams;
+};
+
+function getInitialPanel(searchParams: LoginSearchParams): AuthModalPanel {
+  if (searchParams.method === "email" && searchParams.step === "verify") {
+    return "verify";
+  }
+
+  if (
+    searchParams.error === "EmailCodeRequired" ||
+    searchParams.error === "EmailCodeInvalid" ||
+    searchParams.error === "EmailCodeExpired" ||
+    searchParams.error === "EmailSigninFailed"
+  ) {
+    return "verify";
+  }
+
+  if (searchParams.error === "EmailInvalid" || searchParams.error === "EmailSendFailed") {
+    return "email";
+  }
+
+  return "choices";
+}
+
+export function HomeAuthModalContent({
+  originPath = "/",
+  searchParams,
+}: HomeAuthModalContentProps) {
+  const resolvedSearchParams = searchParams ?? {};
+  const callbackUrl = getSafeCallbackUrl(resolvedSearchParams.callbackUrl);
+
+  return (
+    <HomeAuthModalCard
+      callbackUrl={callbackUrl}
+      destinationLabel={getDestinationLabel(callbackUrl)}
+      devAuthBypassEnabled={devAuthBypassEnabled}
+      emailAddress={resolvedSearchParams.email ?? ""}
+      emailAuthUsesConsoleFallback={emailAuthUsesConsoleFallback}
+      errorCode={resolvedSearchParams.error}
+      errorMessage={getLoginErrorMessage(resolvedSearchParams.error)}
+      googleConfigured={googleAuthEnabled}
+      hasAnySignInMethod={googleAuthEnabled || emailAuthEnabled}
+      initialPanel={getInitialPanel(resolvedSearchParams)}
+      isEmailConfigured={emailAuthEnabled}
+      noticeCode={resolvedSearchParams.notice}
+      noticeMessage={getLoginNoticeMessage(resolvedSearchParams.notice)}
+      originPath={originPath}
+    />
+  );
+}

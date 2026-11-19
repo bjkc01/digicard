@@ -1,0 +1,180 @@
+"use server";
+
+import { cookies } from "next/headers";
+import { consumeAuthLimit } from "@/backend/auth/limits";
+import { siteConfig } from "@/backend/site-config";
+import { AuthError } from "next-auth";
+import { redirect } from "next/navigation";
+import { emailAuthEnabled, googleAuthEnabled, signIn } from "@/backend/auth/config";
+import {
+  createEmailLoginToken,
+  createPendingEmailCode,
+  emailAuthCookieName,
+  getPendingEmailCodeCookieOptions,
+  normalizeEmail,
+  sendEmailSignInCode,
+  verifyPendingEmailCode,
+} from "@/backend/auth/email";
+import { getAuthView, getLoginUrl, getSafeCallbackUrl, getSafeOriginPath } from "@/backend/auth/login-flow";
+
+export async function signInWithGoogle(formData: FormData) {
+  const callbackUrl = getSafeCallbackUrl(formData.get("callbackUrl"));
+  const authView = getAuthView(formData.get("authView"));
+  const originPath = getSafeOriginPath(formData.get("originPath"));
+
+  if (!googleAuthEnabled) {
+    redirect(
+      getLoginUrl({
+        authView,
+        callbackUrl,
+        error: "GoogleOAuthNotConfigured",
+        originPath,
+      }),
+    );
+  }
+
+  await signIn("google", {
+    redirectTo: callbackUrl,
+  });
+}
+
+export async function requestEmailSignIn(formData: FormData) {
+  const callbackUrl = getSafeCallbackUrl(formData.get("callbackUrl"));
+  const authView = getAuthView(formData.get("authView"));
+  const originPath = getSafeOriginPath(formData.get("originPath"));
+  const email = normalizeEmail(formData.get("email"));
+
+  if (!email) {
+    redirect(getLoginUrl({ authView, callbackUrl, error: "EmailInvalid", originPath }));
+  }
+
+  if (!emailAuthEnabled) {
+    redirect(
+      getLoginUrl({
+        authView,
+        callbackUrl,
+        email,
+        error: "EmailSigninUnavailable",
+        originPath,
+      }),
+    );
+  }
+
+  let allowed = false;
+  try {
+    allowed = await consumeAuthLimit(`send:${email}`, 3, 15 * 60)
+      && await consumeAuthLimit(`cooldown:${email}`, 1, 60);
+  } catch {
+    redirect(getLoginUrl({ authView, callbackUrl, email, error: "EmailSigninUnavailable", originPath }));
+  }
+  if (!allowed) redirect(getLoginUrl({ authView, callbackUrl, email, error: "EmailRateLimited", originPath }));
+
+  const pendingCode = await createPendingEmailCode(email);
+  const cookieStore = await cookies();
+
+  cookieStore.set(
+    emailAuthCookieName,
+    pendingCode.cookieValue,
+    getPendingEmailCodeCookieOptions(pendingCode.expiresAt),
+  );
+
+  try {
+    const host = new URL(siteConfig.url).hostname;
+
+    await sendEmailSignInCode({
+      code: pendingCode.code,
+      email,
+      host,
+    });
+  } catch {
+    cookieStore.delete(emailAuthCookieName);
+    redirect(getLoginUrl({ authView, callbackUrl, email, error: "EmailSendFailed", originPath }));
+  }
+
+  redirect(
+    getLoginUrl({
+      authView,
+      callbackUrl,
+      email,
+      notice: "EmailCodeSent",
+      originPath,
+      step: "verify",
+    }),
+  );
+}
+
+export async function verifyEmailSignIn(formData: FormData) {
+  const callbackUrl = getSafeCallbackUrl(formData.get("callbackUrl"));
+  const authView = getAuthView(formData.get("authView"));
+  const originPath = getSafeOriginPath(formData.get("originPath"));
+  const email = normalizeEmail(formData.get("email"));
+  const submittedCode = formData.get("code");
+  const code = typeof submittedCode === "string" ? submittedCode.trim() : "";
+
+  if (!email) {
+    redirect(getLoginUrl({ authView, callbackUrl, error: "EmailInvalid", originPath }));
+  }
+
+  if (!code) {
+    redirect(
+      getLoginUrl({
+        authView,
+        callbackUrl,
+        email,
+        error: "EmailCodeRequired",
+        originPath,
+        step: "verify",
+      }),
+    );
+  }
+
+  const cookieStore = await cookies();
+  let verification;
+  try {
+    verification = await verifyPendingEmailCode(cookieStore.get(emailAuthCookieName)?.value, email, code);
+  } catch {
+    redirect(getLoginUrl({ authView, callbackUrl, email, error: "EmailSigninUnavailable", originPath, step: "verify" }));
+  }
+
+  if (!verification.ok) {
+    if (verification.reason === "EmailCodeExpired") {
+      cookieStore.delete(emailAuthCookieName);
+    }
+
+    redirect(
+      getLoginUrl({
+        authView,
+        callbackUrl,
+        email,
+        error: verification.reason,
+        originPath,
+        step: "verify",
+      }),
+    );
+  }
+
+  cookieStore.delete(emailAuthCookieName);
+
+  try {
+    await signIn("email-code", {
+      email,
+      redirectTo: callbackUrl,
+      token: await createEmailLoginToken(email),
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      redirect(
+        getLoginUrl({
+          authView,
+          callbackUrl,
+          email,
+          error: "EmailSigninFailed",
+          originPath,
+          step: "verify",
+        }),
+      );
+    }
+
+    throw error;
+  }
+}

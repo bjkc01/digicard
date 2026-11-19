@@ -12,14 +12,14 @@ function loader(overrides = {}) {
   const cache = new Map();
   const mocks = {
     'server-only': {},
-    '@/lib/auth-env': { authSecret: 'test-only-secret-never-used-in-production' },
-    '@/lib/supabase-env': { supabaseEnabled: false },
+    '@/backend/auth/env': { authSecret: 'test-only-secret-never-used-in-production' },
+    '@/backend/supabase/env': { supabaseEnabled: false },
     ...overrides,
   };
   function load(id) {
     if (Object.hasOwn(mocks, id)) return mocks[id];
     if (!id.startsWith('@/')) return require(id);
-    const file = path.resolve(id.slice(2) + '.ts');
+    const file = path.resolve('src', id.slice(2) + '.ts');
     if (cache.has(file)) return cache.get(file).exports;
     const module = { exports: {} };
     cache.set(file, module);
@@ -33,7 +33,7 @@ function loader(overrides = {}) {
 }
 
 test('redirects allow local destinations and reject external or ambiguous URLs', () => {
-  const { getSafeCallbackUrl, getSafeOriginPath } = loader()('@/lib/login-flow');
+  const { getSafeCallbackUrl, getSafeOriginPath } = loader()('@/backend/auth/login-flow');
   for (const value of ['https://evil.test', '//evil.test', '/\\evil.test', '/\tevil.test', 'javascript:alert(1)', null, new File([], 'x')]) {
     assert.equal(getSafeCallbackUrl(value), '/dashboard');
     assert.equal(getSafeOriginPath(value), '/');
@@ -42,7 +42,7 @@ test('redirects allow local destinations and reject external or ambiguous URLs',
 });
 
 test('email codes are signed, limited to five attempts, and single-use', async () => {
-  const auth = loader()('@/lib/email-auth');
+  const auth = loader()('@/backend/auth/email');
   const email = 'test@example.com';
   const pending = await auth.createPendingEmailCode(email);
   assert.equal((await auth.verifyPendingEmailCode(pending.cookieValue + '.extra', email, pending.code)).ok, false);
@@ -55,7 +55,7 @@ test('email codes are signed, limited to five attempts, and single-use', async (
 });
 
 test('login tokens reject replay, wrong email, and malformed expiry', async () => {
-  const auth = loader()('@/lib/email-auth');
+  const auth = loader()('@/backend/auth/email');
   const email = 'token@example.com';
   const token = await auth.createEmailLoginToken(email);
   assert.equal(await auth.verifyEmailLoginToken(token, 'wrong@example.com'), null);
@@ -67,7 +67,7 @@ test('login tokens reject replay, wrong email, and malformed expiry', async () =
 });
 
 test('concurrent requests cannot exceed a sign-in limit', async () => {
-  const { consumeAuthLimit } = loader()('@/lib/auth-limits');
+  const { consumeAuthLimit } = loader()('@/backend/auth/limits');
   const results = await Promise.all(Array.from({ length: 20 }, () => consumeAuthLimit('same-email', 3, 60)));
   assert.equal(results.filter(Boolean).length, 3);
 });
@@ -102,7 +102,7 @@ function fakeDatabase() {
 
 test('service-role card writes cannot overwrite or delete another owner’s card', async () => {
   const db = fakeDatabase();
-  const cards = loader({ '@/lib/supabase/server': { createSupabaseAdminClient: () => db.client } })('@/lib/supabase/workspace-cards');
+  const cards = loader({ '@/backend/supabase/server': { createSupabaseAdminClient: () => db.client } })('@/backend/supabase/workspace-cards');
   await assert.rejects(cards.upsertSupabaseWorkspaceCard({ id: 'private-card', profile_id: 'owner-a', name: 'Attacker' }));
   await cards.deleteSupabaseWorkspaceCard('private-card', 'owner-a');
   assert.equal(db.rows.get('private-card').name, 'Original');
@@ -118,16 +118,16 @@ function workspaceMocks(cloud = false) {
   const jar = new Map();
   return { jar, mocks: {
     'next/headers': { cookies: async () => ({ get: key => jar.has(key) ? { value: jar.get(key) } : undefined, set: (key, value) => jar.set(key, value) }) },
-    '@/lib/supabase-env': { supabaseEnabled: cloud },
-    '@/lib/supabase/profiles': {},
-    '@/lib/supabase/workspace-cards': {},
+    '@/backend/supabase/env': { supabaseEnabled: cloud },
+    '@/backend/supabase/profiles': {},
+    '@/backend/supabase/workspace-cards': {},
   } };
 }
 
 test('browser saves survive reload, enforce ownership, and reject an empty QR destination', async () => {
   const { mocks } = workspaceMocks();
-  const workspace = loader(mocks)('@/lib/workspace-settings');
-  const templates = loader()('@/lib/data').templates;
+  const workspace = loader(mocks)('@/backend/workspace/settings');
+  const templates = loader()('@/backend/data').templates;
   const input = { ...validCard, defaultTemplateId: templates[0].id };
   await workspace.saveWorkspaceCardSnapshot(user, input);
   assert.equal((await workspace.getWorkspaceSettings(user)).profile.title, 'Engineer');
@@ -137,8 +137,8 @@ test('browser saves survive reload, enforce ownership, and reject an empty QR de
 
 test('browser storage rejects oversized saves without replacing the previous cookie', async () => {
   const { mocks, jar } = workspaceMocks();
-  const load = loader(mocks), workspace = load('@/lib/workspace-settings');
-  const input = { ...validCard, defaultTemplateId: load('@/lib/data').templates[0].id };
+  const load = loader(mocks), workspace = load('@/backend/workspace/settings');
+  const input = { ...validCard, defaultTemplateId: load('@/backend/data').templates[0].id };
   await workspace.saveWorkspaceCardSnapshot(user, input);
   for (let i = 0; i < 20; i++) {
     const before = jar.get('digicard-workspace-settings');
@@ -154,34 +154,34 @@ test('browser storage rejects oversized saves without replacing the previous coo
 
 test('cloud read failures propagate instead of presenting an empty workspace', async () => {
   const { mocks } = workspaceMocks(true);
-  mocks['@/lib/supabase/profiles'] = { getSupabaseProfileByUserId: async () => { throw Error('database unavailable'); } };
-  await assert.rejects(loader(mocks)('@/lib/workspace-settings').getWorkspaceSettings(user), /database unavailable/);
+  mocks['@/backend/supabase/profiles'] = { getSupabaseProfileByUserId: async () => { throw Error('database unavailable'); } };
+  await assert.rejects(loader(mocks)('@/backend/workspace/settings').getWorkspaceSettings(user), /database unavailable/);
 });
 
 test('cloud write failures leave the existing browser snapshot intact', async () => {
   const { mocks, jar } = workspaceMocks(true);
-  mocks['@/lib/supabase/profiles'] = {
+  mocks['@/backend/supabase/profiles'] = {
     getSupabaseProfileByUserId: async () => null,
     getSupabaseProfileByOwnerEmail: async () => null,
     upsertSupabaseProfile: async () => { throw Error('write unavailable'); },
   };
-  const load = loader(mocks), workspace = load('@/lib/workspace-settings');
-  await assert.rejects(workspace.saveWorkspaceCardSnapshot(user, { ...validCard, defaultTemplateId: load('@/lib/data').templates[0].id }), /write unavailable/);
+  const load = loader(mocks), workspace = load('@/backend/workspace/settings');
+  await assert.rejects(workspace.saveWorkspaceCardSnapshot(user, { ...validCard, defaultTemplateId: load('@/backend/data').templates[0].id }), /write unavailable/);
   assert.equal(jar.size, 0);
 });
 
 test('local preview never calls the cloud even when it is configured', async () => {
   const { mocks } = workspaceMocks(true);
   // Missing database methods would throw if preview accidentally accessed them.
-  const load = loader(mocks), workspace = load('@/lib/workspace-settings');
+  const load = loader(mocks), workspace = load('@/backend/workspace/settings');
   const preview = { ...user, isPreview: true };
-  const result = await workspace.saveWorkspaceCardSnapshot(preview, { ...validCard, defaultTemplateId: load('@/lib/data').templates[0].id });
+  const result = await workspace.saveWorkspaceCardSnapshot(preview, { ...validCard, defaultTemplateId: load('@/backend/data').templates[0].id });
   assert.equal(result.storageStatus, 'browser');
   assert.equal((await workspace.getWorkspaceSettings(preview)).profile.title, 'Engineer');
 });
 
 test('parallel code submissions allow only one successful verification', async () => {
-  const auth = loader()('@/lib/email-auth');
+  const auth = loader()('@/backend/auth/email');
   const pending = await auth.createPendingEmailCode(user.email);
   const results = await Promise.all(Array.from({ length: 4 }, () => auth.verifyPendingEmailCode(pending.cookieValue, user.email, pending.code)));
   assert.equal(results.filter(result => result.ok).length, 1);

@@ -29,9 +29,9 @@ When Supabase is configured, profiles and cards are read from the database. Data
 
 Files added for the integration:
 
-- `lib/supabase-env.ts` for safe environment variable access
-- `lib/supabase/browser.ts` and `lib/supabase/server.ts` for typed Supabase clients
-- `lib/supabase/profiles.ts` for the first profile-table queries
+- `src/backend/supabase/env.ts` for safe environment variable access
+- `src/backend/supabase/browser.ts` and `src/backend/supabase/server.ts` for typed Supabase clients
+- `src/backend/supabase/profiles.ts` for the first profile-table queries
 - `supabase/migrations/20260413_create_profiles.sql` for the initial database table
 
 To connect your own Supabase project:
@@ -44,7 +44,7 @@ To connect your own Supabase project:
 3. Open the Supabase SQL editor and run each SQL file inside `supabase/migrations` in filename order.
 4. Restart the dev server after adding the environment variables.
 
-`SUPABASE_SERVICE_ROLE_KEY` is server-only. In this repo it is meant for server actions, route handlers, and server utilities such as `lib/supabase/profiles.ts`. The first `profiles` table is also locked behind Row Level Security, so browser-side writes are not expected until you later switch to Supabase Auth or add explicit policies.
+`SUPABASE_SERVICE_ROLE_KEY` is server-only. In this repo it is meant for server actions, route handlers, and server utilities such as `src/backend/supabase/profiles.ts`. The first `profiles` table is also locked behind Row Level Security, so browser-side writes are not expected until you later switch to Supabase Auth or add explicit policies.
 
 Without Supabase, small workspaces use a signed, HTTP-only browser cookie. Oversized saves are rejected before replacing existing data. Profile photo storage requires Supabase. Local preview users always use browser storage and never write to Supabase. Cloud data is authoritative: older browser snapshots cannot restore deleted cloud cards.
 
@@ -71,7 +71,7 @@ The app already uses Auth.js with a Google provider. To turn login on locally or
    - add your Google accounts as test users while the app is still in testing
    - publish or verify the app if you want the warning removed for everyone
 
-Protected routes are handled through `middleware.ts`, and unauthenticated visitors are redirected to `/login` before they can open the dashboard, templates, create-card flow, or settings.
+Protected routes are handled through `src/middleware.ts`, and unauthenticated visitors are redirected to `/login` before they can open the dashboard, templates, create-card flow, or settings.
 
 ## Email code login setup
 
