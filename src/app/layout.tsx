@@ -1,14 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope } from "next/font/google";
 import { Toaster } from "sonner";
 import { siteConfig } from "@/backend/site-config";
+// Manrope is bundled with the app (not downloaded from Google Fonts at build time,
+// which made Vercel builds fail randomly). The --font-manrope variable is set in globals.css.
+import "@fontsource-variable/manrope";
 import "./globals.css";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-  weight: ["400", "500", "600", "700", "800"],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -49,7 +45,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={manrope.variable}>
+      <body>
         {children}
         <Toaster
           position="bottom-right"
