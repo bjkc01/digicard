@@ -1,32 +1,66 @@
-import { Wallet } from "lucide-react";
+"use client";
 
-export function WalletComingSoon() {
+import { useState } from "react";
+import { Wallet } from "lucide-react";
+import { toast } from "sonner";
+
+type WalletSectionProps = {
+  cardId?: string;
+  cardName?: string;
+};
+
+export function WalletSection({ cardId = "primary", cardName = "digicard" }: WalletSectionProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAppleWallet = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/wallet/apple?cardId=${encodeURIComponent(cardId)}`);
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({})) as { error?: string };
+        toast.error(data.error ?? "Could not generate Apple Wallet pass.");
+        return;
+      }
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = `${cardName.toLowerCase().replace(/\s+/g, "-")}.pkpass`;
+      link.click();
+      URL.revokeObjectURL(objectUrl);
+    } catch {
+      toast.error("Could not generate Apple Wallet pass.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="w-full max-w-full overflow-hidden rounded-[1.25rem] border border-[#e2e8f0] bg-white shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
       <div className="border-b border-[#e2e8f0] px-5 py-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3.5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#dbe4ff] bg-[linear-gradient(180deg,_#ffffff,_#f4f7ff)] text-[#5267d9]">
-              <Wallet className="h-4 w-4" />
-            </div>
-            <p className="text-sm font-semibold text-[#0E1318]">Add to Wallet</p>
+        <div className="flex items-center gap-3.5">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#dbe4ff] bg-[linear-gradient(180deg,_#ffffff,_#f4f7ff)] text-[#5267d9]">
+            <Wallet className="h-4 w-4" />
           </div>
-          <span className="shrink-0 rounded-full bg-[#eef2ff] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#7c8fcf]">
-            Coming soon
-          </span>
+          <p className="text-sm font-semibold text-[#0E1318]">Add to Wallet</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-2.5 p-4 sm:gap-3">
         <button
           type="button"
-          disabled
-          title="Apple Wallet export is coming soon."
-          className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-[#e2e8f0] bg-slate-50 px-4 py-4 text-slate-400 opacity-70 disabled:cursor-not-allowed"
+          onClick={handleAppleWallet}
+          disabled={isLoading}
+          title="Download DigiCard as an Apple Wallet pass"
+          className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-[#e2e8f0] bg-slate-50 px-4 py-4 text-slate-500 transition-all duration-300 hover:border-[#5267d9] hover:bg-[rgba(82,103,217,0.04)] hover:text-[#5267d9] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <svg className="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-          </svg>
+          {isLoading ? (
+            <span className="h-7 w-7 animate-spin rounded-full border-2 border-[#5267d9]/30 border-t-[#5267d9]" />
+          ) : (
+            <svg className="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+            </svg>
+          )}
           <span className="whitespace-nowrap text-xs font-semibold">Apple Wallet</span>
         </button>
 
@@ -34,7 +68,7 @@ export function WalletComingSoon() {
           type="button"
           disabled
           title="Google Wallet export is coming soon."
-          className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-[#e2e8f0] bg-slate-50 px-4 py-4 opacity-70 grayscale disabled:cursor-not-allowed"
+          className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-[#e2e8f0] bg-slate-50 px-4 py-4 opacity-60 grayscale disabled:cursor-not-allowed"
         >
           <svg className="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
