@@ -88,7 +88,7 @@ function normalizeEmail(value: string | undefined) {
 
 export const siteConfig = {
   description:
-    "Create a digital professional card your team can share with a QR code, keep up to date in one place, and use across meetings, events, and follow-ups.",
+    "Put your name and links on a digital card. People scan its QR code to open your LinkedIn, website, or phone number.",
   name: "DigiCard",
   url: normalizeSiteUrl(process.env.NEXT_PUBLIC_APP_URL) ?? DEFAULT_SITE_URL,
 } as const;

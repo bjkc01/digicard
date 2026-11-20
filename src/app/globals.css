@@ -249,19 +249,9 @@ textarea:focus-visible {
   animation-delay: 0.18s;
 }
 
-.anim-4 {
-  animation: heroIn 1s var(--ease-snappy) both;
-  animation-delay: 0.26s;
-}
-
 .anim-5 {
   animation: heroIn 1s var(--ease-snappy) both;
   animation-delay: 0.34s;
-}
-
-.anim-6 {
-  animation: heroIn 0.9s var(--ease-snappy) both;
-  animation-delay: 0.42s;
 }
 
 .anim-card {
