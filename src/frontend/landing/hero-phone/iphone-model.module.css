@@ -1,0 +1,160 @@
+/* A Black Titanium iPhone (Pro) built from CSS 3D planes.
+   Size comes from --phone-width / --phone-height on the stage (hero-preview.module.css).
+   Front = 1.6px titanium lip + 5.9px black glass border, so the screen is the phone minus 15px. */
+
+.phone {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
+}
+/* Easing back to face the visitor after a drag (SETTLE_MS in interactive-hero-preview.tsx). */
+.phone[data-settling="true"] { transition: transform 1300ms var(--spring-soft); }
+.phone[data-settling="true"] .glass::before { transition: transform 1300ms var(--spring-soft); }
+
+.frameLayer {
+  position: absolute;
+  inset: 0;
+  border: 0.5px solid #3c3e42;
+  border-radius: 42px;
+  background: linear-gradient(115deg, #c3c5c9, #5d5f64 15%, #2b2c30 40%, #1b1c1f 66%, #56585d 86%, #cbcdd1);
+}
+
+/* ---- Front: titanium lip, black glass border, screen ---- */
+.front {
+  position: absolute;
+  inset: 0;
+  padding: 1.6px;
+  border-radius: 42px;
+  background: linear-gradient(140deg, #dcdee2, #6d6f74 13%, #2a2b2f 36%, #18191c 64%, #5c5e63 87%, #cfd1d5);
+  transform: translateZ(13px);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.bezel {
+  position: relative;
+  height: 100%;
+  padding: 5.9px;
+  border-radius: 40.4px;
+  background: #010101;
+  box-shadow: inset 0 0 0 0.75px rgba(255, 255, 255, 0.16), inset 0 0 1px 1.5px #000;
+}
+
+.screen {
+  --screen-h: calc(var(--phone-height) - 15px);
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 34.5px;
+  background: #0b1222;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.screen[data-tone="light"] { --status-color: #fff; }
+.screen[data-tone="dark"] { --status-color: #000; }
+
+.statusBar {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: 1fr 79px 1fr;
+  align-items: center;
+  height: 40.5px;
+  color: var(--status-color);
+  transition: color 380ms ease;
+  pointer-events: none;
+}
+.time { justify-self: center; padding-left: 5px; font-size: 11.5px; font-weight: 600; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.statusIcons { justify-self: center; display: flex; align-items: center; gap: 3.5px; padding-right: 3px; }
+.statusIcons svg { display: block; flex-shrink: 0; }
+
+.island { position: absolute; z-index: 21; left: 50%; top: 8.5px; width: 79px; height: 23.5px; transform: translateX(-50%); border-radius: 999px; background: #000; }
+.island > span { position: absolute; top: 50%; right: 8.5px; width: 8.5px; height: 8.5px; margin-top: -4.25px; border-radius: 50%; background: radial-gradient(circle at 38% 36%, #2a3c68, #0c1326 48%, #04060b 78%); box-shadow: 0 0 0 1.5px #08090d; }
+.island > span::after { content: ""; position: absolute; top: 2px; left: 2.2px; width: 2px; height: 1.6px; border-radius: 50%; background: rgba(150, 178, 255, 0.55); }
+
+.homeIndicator { position: absolute; z-index: 20; bottom: 6px; left: 50%; width: 88px; height: 3.5px; margin-left: -44px; border-radius: 3px; background: var(--status-color); transition: background-color 380ms ease; pointer-events: none; }
+
+/* Glass reflection: shifts with drag rotation (--glare-shift) and sways with the idle float. */
+.glass { position: absolute; inset: 1.6px; overflow: hidden; border-radius: 40.4px; pointer-events: none; }
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: -10% -80%;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.1) 46%, rgba(255, 255, 255, 0.035) 52%, transparent 60%);
+  transform: translateX(var(--glare-shift, 0%));
+  animation: glareSway 9s ease-in-out infinite alternate;
+  animation-play-state: var(--float-state, running);
+}
+.glass::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 16%); box-shadow: inset 0 0.75px 0 rgba(255, 255, 255, 0.1); }
+@keyframes glareSway { from { translate: -6% 0; } to { translate: 6% 0; } }
+
+/* ---- Back: matte glass, camera plateau, logo ---- */
+.back {
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid #4a4c51;
+  border-radius: 42px;
+  transform: rotateY(180deg) translateZ(13px);
+  transform-style: preserve-3d;
+  background: radial-gradient(120% 80% at 22% 8%, #3b3c40, #242528 55%, #1b1c1f);
+  box-shadow: inset 0 0 0 1px #8e9095, inset 0 0 0 2.5px #1d1e21, inset 0 0 0 3.2px #55575c;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.cameraPlate { position: absolute; left: 15px; top: 16px; width: 114px; height: 122px; border-radius: 27px; transform: translateZ(1px); transform-style: preserve-3d; }
+.cameraBumpLayer { position: absolute; inset: 0; border: 0.5px solid #4d4f54; border-radius: inherit; background: linear-gradient(140deg, #75777c, #36383c 55%, #1f2023); box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.3); }
+.cameraDeck { position: absolute; inset: 0; border: 1px solid #5a5c61; border-radius: inherit; background: linear-gradient(145deg, #3e4044, #27282c 50%, #1c1d20); box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.18), inset -1px -1px 1px #0b0b0d; transform: translateZ(4px); }
+
+.lens { position: absolute; width: 45px; height: 45px; border-radius: 50%; transform: translateZ(4.5px); transform-style: preserve-3d; }
+.lensBarrel { position: absolute; inset: 0; border: 0.5px solid #5d6066; border-radius: inherit; background: linear-gradient(135deg, #9a9da3, #3a3c41 30%, #121316 70%, #6d7075); box-shadow: 2px 3px 3px rgba(0, 0, 0, 0.32); }
+.lensRim { position: absolute; inset: 0; border: 0.75px solid #a9acb2; border-radius: inherit; background: conic-gradient(from 30deg, #b4b7bd, #34363b 19%, #121316 40%, #74777d 60%, #d6d8dc 78%, #47494e 92%, #b4b7bd); box-shadow: inset 0 0 0 1px #2e3035; transform: translateZ(4px); }
+.lensGlass { position: absolute; inset: 3px; overflow: hidden; border: 2px solid #0b0c10; border-radius: 50%; background: radial-gradient(ellipse at 35% 25%, #283b57, #0e192b 27%, #03070f 57%, #182333 78%, #060b13); box-shadow: inset 0 0 0 1px rgba(102, 118, 145, 0.36), inset -2px -3px 5px rgba(0, 0, 0, 0.73); }
+.lensOptics { position: absolute; inset: 8px; border: 1px solid rgba(76, 105, 144, 0.48); border-radius: 50%; background: radial-gradient(circle at 42% 37%, #244768, #040b18 42%, #121e39 64%, rgba(95, 101, 150, 0.32) 68%, #030814 75%); box-shadow: 0 0 0 2px #070d1c, 0 0 0 3px rgba(36, 54, 80, 0.5), 0 0 5px rgba(81, 116, 181, 0.3); }
+.lensReflection { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(130deg, rgba(217, 234, 255, 0.46) 0%, rgba(110, 152, 221, 0.15) 24%, transparent 33%, transparent 70%, rgba(120, 147, 214, 0.15) 87%, transparent); }
+.lensReflection::before { content: ""; position: absolute; left: 7px; top: 3px; width: 13px; height: 4px; border-radius: 50%; background: rgba(205, 228, 255, 0.61); transform: rotate(-32deg); filter: blur(0.6px); }
+.lensReflection::after { content: ""; position: absolute; right: 5px; bottom: 5px; width: 5px; height: 4px; border-radius: 50%; background: rgba(103, 139, 215, 0.31); }
+.lensOne { left: 7px; top: 7px; }
+.lensTwo { left: 7px; bottom: 7px; }
+.lensThree { right: 6px; top: 38.5px; }
+.flash { position: absolute; top: 13px; right: 19px; width: 17px; height: 17px; border: 2px solid #8a8c90; border-radius: 50%; background: repeating-radial-gradient(circle, #eee8d7 0 1px, #d7d5cc 1px 2px); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 0 2px #fff; transform: translateZ(4.6px); }
+.sensor { position: absolute; bottom: 13px; right: 21px; width: 14px; height: 14px; border: 1px solid #6f7277; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #2f3946, #0b121d 60%); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); transform: translateZ(4.6px); }
+.microphone { position: absolute; right: 12px; bottom: 37px; width: 3px; height: 3px; border-radius: 50%; background: #070809; box-shadow: 0 0 0 0.5px #6d7075; transform: translateZ(4.5px); }
+.backLogo { position: absolute; left: 50%; top: 49%; width: 48px; height: 48px; color: #111214; transform: translate(-50%, -50%) translateZ(0.2px); filter: drop-shadow(0 0.5px 0 rgba(255, 255, 255, 0.14)); }
+
+/* ---- Edges: side planes, buttons, top/bottom rails ---- */
+.side { position: absolute; top: 43px; bottom: 43px; width: 24px; background: linear-gradient(90deg, #17181a, #aeb0b5 6%, #4d4f54 14%, #2a2b2f 30%, #3c3e43 58%, #77797e 84%, #c9cbcf 94%, #1e1f22); transform-style: preserve-3d; }
+.side::before,
+.side::after { content: ""; position: absolute; left: 0; right: 0; height: 2px; background: #3a3c41; box-shadow: 0 0.5px 0 rgba(188, 195, 203, 0.35); transform: translateZ(0.3px); }
+.side::before { top: 3px; }
+.side::after { bottom: 3px; }
+.leftSide { left: -12px; transform: rotateY(-90deg); }
+.rightSide { right: -12px; transform: rotateY(90deg); }
+
+.sideButton { position: absolute; left: 7px; width: 10px; border-radius: 5px; transform: translateZ(0.4px); transform-style: preserve-3d; }
+.buttonWell { position: absolute; inset: -0.5px; border: 0.5px solid rgba(213, 219, 228, 0.3); border-radius: inherit; background: #151618; box-shadow: 0 0.5px 1px rgba(178, 186, 194, 0.5); }
+.buttonEdge { position: absolute; inset: 0.5px; border-radius: 4px; background: linear-gradient(90deg, #202125, #8a8d93 40%, #2c2e33); box-shadow: 0 1px 1px #18191c, 0 1.5px 1px #18191c; transform: translateZ(0.9px); }
+.buttonCap { position: absolute; inset: 1px; border: 0.5px solid #9a9ca1; border-radius: 4px; background: linear-gradient(90deg, #2a2b2f, #bdbfc3 18%, #6a6c71 35%, #43454a 72%, #1e1f22); box-shadow: inset 0 1px 0 rgba(236, 238, 242, 0.7), inset 0 -1px 0 #26272b, 1px 2px 2px rgba(0, 0, 0, 0.45); transform: translateZ(1.8px); }
+.actionButton { top: 45px; height: 21px; }
+.volumeUp { top: 88px; height: 38px; }
+.volumeDown { top: 140px; height: 38px; }
+.powerButton { top: 105px; height: 62px; }
+/* Camera Control: a flush sapphire button in a titanium ring. */
+.cameraControl { position: absolute; left: 6px; top: 296px; width: 12px; height: 34px; border-radius: 4px; background: linear-gradient(90deg, #0a0b0d, #2d3036 42%, #111216); box-shadow: 0 0 0 1px #8f9196, 0 0 0 1.6px #2a2b2f, inset 0 0 2px rgba(255, 255, 255, 0.22); transform: translateZ(0.3px); }
+
+.endRail { position: absolute; left: 43px; right: 43px; height: 24px; background: linear-gradient(0deg, #1b1c1f, #c4c6ca 7%, #6a6c71 17%, #3a3c40 50%, #8d8f94 85%, #d1d3d7 94%, #222326); transform-style: preserve-3d; }
+.topRail { top: -12px; transform: rotateX(90deg); }
+.bottomRail { bottom: -12px; transform: rotateX(-90deg); }
+.chargingPort { position: absolute; left: 50%; top: 8px; width: 29px; height: 9px; transform: translateX(-50%); border: 1px solid #9c9ea3; border-radius: 4px; background: #050506; box-shadow: inset 0 1px 2px #000, 0 0 0 1px #2a2b2f; }
+.speakerHoles { position: absolute; top: 10px; width: 39px; height: 5px; background: radial-gradient(circle at 2.5px 2.5px, #070708 0 1.5px, #9a9ca1 1.7px 2.2px, transparent 2.5px) 0 0 / 7px 5px; }
+.speakerLeft { left: 13px; }
+.speakerRight { right: 13px; }
+.portScrew { position: absolute; top: 11px; width: 3px; height: 3px; border-radius: 50%; background: #18191c; box-shadow: 0 0 0 1px #8a8c91; }
+.screwLeft { left: calc(50% - 24px); }
+.screwRight { right: calc(50% - 24px); }

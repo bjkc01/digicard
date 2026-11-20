@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { auth } from "@/backend/auth/config";
-import { InteractiveHeroPreview } from "@/frontend/landing/interactive-hero-preview";
+import { InteractiveHeroPreview } from "@/frontend/landing/hero-phone/interactive-hero-preview";
 import { PremiumHeader } from "@/frontend/landing/premium-header";
 import { ScrollReveal } from "@/frontend/landing/scroll-reveal";
 import { UseCasesTicketGrid } from "@/frontend/landing/use-cases-ticket-grid";

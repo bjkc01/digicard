@@ -1,0 +1,33 @@
+/* --touch-delay and --touch-ms are set on each screen's root (see TOUCH_MS in use-phone-playback.ts). */
+.dot {
+  position: absolute;
+  z-index: 30;
+  left: 50%;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border-radius: 50%;
+  background: rgba(120, 120, 128, 0.42);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.78), 0 2px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dot[data-active="true"][data-gesture="tap"] { animation: touchTap var(--touch-ms, 820ms) cubic-bezier(0.3, 0.7, 0.4, 1) var(--touch-delay, 0ms) both; }
+.dot[data-active="true"][data-gesture="swipe"] { animation: touchSwipe var(--touch-ms, 820ms) cubic-bezier(0.45, 0, 0.2, 1) var(--touch-delay, 0ms) both; }
+
+@keyframes touchTap {
+  0% { opacity: 0; transform: scale(1.4); }
+  24% { opacity: 1; transform: scale(1); }
+  46% { transform: scale(0.8); }
+  72% { opacity: 1; transform: scale(0.94); }
+  100% { opacity: 0; transform: scale(1.18); }
+}
+
+@keyframes touchSwipe {
+  0% { opacity: 0; transform: translateY(10px) scale(1.25); }
+  18% { opacity: 1; transform: translateY(0) scale(1); }
+  82% { opacity: 1; transform: translateY(-150px) scale(0.94); }
+  100% { opacity: 0; transform: translateY(-175px) scale(0.9); }
+}

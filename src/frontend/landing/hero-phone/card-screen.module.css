@@ -1,0 +1,48 @@
+/* The live DigiCard on the phone. When the Wallet app opens it shrinks back and dims, like an app behind another. */
+.card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 51px 20px 26px;
+  background: radial-gradient(ellipse at 15% 0%, #27365d 0%, #121d34 36%, #0b1222 75%);
+  color: #fff;
+  font-family: var(--font-manrope), sans-serif;
+  transition: transform 700ms var(--spring-soft) 140ms, opacity 460ms ease 140ms;
+}
+.card[data-active="false"] { transform: scale(0.92); opacity: 0.3; transition: transform 600ms var(--ease-out), opacity 500ms ease; }
+
+.cardBrand { display: flex; align-items: center; gap: 5px; color: #e5eaf7; font-size: 10px; font-weight: 700; }
+.cardBrand > span { margin-left: auto; max-width: 72px; color: #9ba8c7; font-size: 7px; line-height: 1.4; text-align: right; font-weight: 400; }
+.avatar { display: grid; place-items: center; flex-shrink: 0; width: 56px; height: 56px; margin-top: 22px; border: 1px solid rgba(180, 199, 255, 0.28); border-radius: 18px; background: linear-gradient(135deg, #5168b9, #273865); box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.17), 0 8px 20px rgba(0, 0, 0, 0.15); font-size: 20px; font-weight: 600; }
+.identity { margin-top: 18px; }
+.name { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow-wrap: anywhere; line-height: 1.05; font-weight: 600; letter-spacing: -0.06em; }
+.title { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; margin-top: 10px; color: #c8d2ea; font-size: 11px; line-height: 1.5; }
+.university { margin-top: 3px; color: #9aa9c6; font-size: 10px; }
+.contactRows { display: grid; margin-top: 15px; }
+.contactRows > div { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 9.5px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.09); color: #d3dcf0; font-size: 9px; }
+.contactRows svg { flex-shrink: 0; color: #9aaedb; }
+.contactRows span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.qrRow { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 12px; }
+.qr { flex-shrink: 0; width: 70px; height: 70px; padding: 7px; border-radius: 10px; background: #fff; }
+.qr svg { display: block; width: 100%; height: 100%; }
+.qrRow p { color: #e6ebf6; font-size: 10.5px; font-weight: 600; line-height: 1.45; }
+.qrHint { display: block; margin-top: 3px; color: #a4b1cd; font-size: 7px; }
+
+.addButton { position: relative; display: inline-flex; align-items: center; gap: 4px; margin-top: 7px; padding: 5px 9px; border-radius: 999px; background: #000; color: #fff; font-size: 7.5px; font-weight: 600; white-space: nowrap; box-shadow: 0 0 0 0.75px rgba(255, 255, 255, 0.28); }
+.card[data-touch="true"] .addButton { animation: buttonPress var(--touch-ms) ease var(--touch-delay) both; }
+@keyframes buttonPress {
+  0%, 24% { scale: 1; }
+  44%, 64% { scale: 0.9; }
+  100% { scale: 1; }
+}
+
+@media (max-width: 639px) {
+  .card { padding: 49px 18px 24px; }
+  .avatar { margin-top: 18px; width: 50px; height: 50px; }
+  .identity { margin-top: 15px; }
+  .contactRows { margin-top: 12px; }
+  .contactRows > div { padding: 8.5px 0; }
+  .qr { width: 64px; height: 64px; }
+}

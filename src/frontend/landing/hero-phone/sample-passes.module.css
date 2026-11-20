@@ -1,0 +1,45 @@
+/* Artwork for the made-up cards in the Wallet stack. Position and motion live in wallet-screen.module.css. */
+.pass {
+  overflow: hidden;
+  border-radius: 11px;
+  box-shadow: inset 0 0.75px 0 rgba(255, 255, 255, 0.22), 0 -1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.strip { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 9px 12px 0; }
+.field { display: flex; flex-direction: column; align-items: flex-end; font-size: 10px; font-weight: 600; line-height: 1.15; }
+.field > span { font-size: 6px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.72; }
+
+/* Boarding pass */
+.air { color: #2b1704; background: radial-gradient(circle at 92% 120%, rgba(255, 255, 255, 0.35), transparent 45%), linear-gradient(170deg, #ffbe45, #f4891f); }
+.airLogo { display: flex; align-items: center; gap: 4px; padding-top: 3px; font-size: 11.5px; font-weight: 800; font-style: italic; letter-spacing: 0.03em; }
+
+/* Credit card */
+.nova {
+  color: #e7efff;
+  background:
+    linear-gradient(118deg, transparent 58%, rgba(120, 190, 255, 0.55) 58.6%, transparent 59.6%),
+    linear-gradient(118deg, transparent 70%, rgba(120, 190, 255, 0.4) 70.5%, transparent 71.4%),
+    radial-gradient(ellipse at 85% 0%, rgba(58, 120, 220, 0.5), transparent 60%),
+    linear-gradient(160deg, #123270, #071636);
+}
+.novaMark { width: 17px; height: 17px; margin-top: 1px; color: #cfe0ff; filter: drop-shadow(0 0 3px rgba(140, 190, 255, 0.6)); }
+.novaName { display: flex; flex-direction: column; align-items: flex-end; font-size: 12px; font-weight: 600; letter-spacing: 0.22em; line-height: 1.1; }
+.novaName > span { font-size: 6px; letter-spacing: 0.3em; opacity: 0.7; }
+
+/* Coffee rewards */
+.brew { color: #4a2a12; background: linear-gradient(170deg, #f8eddb, #ecd8b6); box-shadow: inset 0 0 0 0.75px rgba(74, 42, 18, 0.12), 0 -1px 3px rgba(0, 0, 0, 0.08); }
+.brewLogo { display: flex; align-items: center; gap: 4px; padding-top: 3px; font-family: Georgia, "Times New Roman", serif; font-size: 12px; font-style: italic; font-weight: 700; }
+
+/* Prepaid balance */
+.orbit { color: #fff; background: radial-gradient(ellipse at 20% 0%, rgba(255, 255, 255, 0.12), transparent 55%), linear-gradient(165deg, #2c2d31, #0b0b0d); }
+.orbitLogo { display: flex; align-items: center; gap: 5px; padding-top: 2px; font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+.balance { padding-top: 2px; font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* Event ticket */
+.fair { color: #fff; background: radial-gradient(circle at 100% 0%, rgba(255, 190, 240, 0.45), transparent 50%), linear-gradient(120deg, #6a3de4, #b23bd4); }
+.fairName { font-size: 8.5px; font-weight: 800; letter-spacing: 0.06em; line-height: 1.15; text-transform: uppercase; }
+
+/* Transit card */
+.metro { color: #fff; background: repeating-linear-gradient(160deg, transparent 0 14px, rgba(255, 255, 255, 0.06) 14px 16px), linear-gradient(165deg, #15a8a2, #0a6f74); }
+.metroLogo { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 800; letter-spacing: -0.02em; }
+.metroLogo > span { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: #fff; color: #0b7d80; font-size: 9.5px; font-weight: 900; }

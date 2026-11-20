@@ -45,7 +45,7 @@ Logic and data (saving, sign-in, database) are in [BACKEND.md](BACKEND.md).
 | # | File | What it does |
 | - | ---- | ------------ |
 | 21 | `src/frontend/landing/premium-header.tsx` | Homepage top navigation bar |
-| 22 | `src/frontend/landing/interactive-hero-preview.tsx` + `.module.css` | Animated card preview in the hero |
+| 22 | `src/frontend/landing/hero-phone/` | Draggable 3D iPhone in the hero. Its screen loops like a screen recording: live card → tap "Add to Apple Wallet" → Wallet stack → DigiCard pass with QR → swipe home. Files: `interactive-hero-preview.tsx` (name inputs, stage, drag + fling), `use-phone-playback.ts` (`TIMELINE`: scene order and timing), `iphone-model.tsx` (phone body, status bar), `card-screen.tsx` (live card), `wallet-screen.tsx` (Wallet app + DigiCard pass), `sample-passes.tsx` (made-up cards in the stack), `touch-dot.tsx` (finger taps), `preview-person.ts` (sample name/initials). Components have a matching `.module.css` |
 | 23 | `src/frontend/landing/use-cases-ticket-grid.tsx` | "Built for the places where students meet…" grid |
 | 24 | `src/frontend/landing/scroll-reveal.tsx` | Fades sections in as you scroll |
 | 25 | `src/frontend/login/home-auth-modal.tsx` | Opens/closes the sign-in popup based on the URL |

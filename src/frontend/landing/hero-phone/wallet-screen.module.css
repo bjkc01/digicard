@@ -1,0 +1,104 @@
+/* The Wallet app on the phone. data-scene on .wallet drives everything:
+   "card"   → hidden; cards wait below the screen
+   "wallet" → app zooms open from the "Add to Apple Wallet" button, cards spring up into a stack
+   "pass"   → DigiCard pass lifts to the top, the other cards tuck into a pile at the bottom
+   Easings (--spring, --spring-soft, --ease-out) come from the stage; --screen-h from the phone screen. */
+
+.wallet {
+  --stack-top: 80px; /* top of the first card in the stack */
+  --strip: 36px; /* visible height of each stacked card */
+  --pass-top: 80px; /* top of the open DigiCard pass */
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 34.5px;
+  background: #f2f2f7;
+  color: #000;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.84);
+  transform-origin: 50% 100%;
+  transition: opacity 360ms ease 80ms, transform 560ms var(--ease-out), visibility 0s linear 640ms;
+  pointer-events: none;
+}
+.wallet:not([data-scene="card"]) {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transform-origin: 60% 92%;
+  transition: opacity 220ms ease, transform 720ms var(--spring), visibility 0s;
+}
+
+/* ---- Header: "Wallet" + buttons in the stack, "Done" + more on an open pass ---- */
+.homeHeader,
+.passHeader { position: absolute; z-index: 5; top: 41px; left: 14px; right: 14px; display: flex; align-items: center; gap: 6px; height: 30px; transition: opacity 280ms ease, transform 460ms var(--ease-out); }
+.largeTitle { margin-right: auto; font-size: 23px; font-weight: 700; letter-spacing: -0.025em; }
+.passHeader { justify-content: space-between; opacity: 0; transform: translateY(-5px); }
+.wallet[data-scene="pass"] .homeHeader { opacity: 0; transform: translateY(-5px); }
+.wallet[data-scene="pass"] .passHeader { opacity: 1; transform: none; }
+
+.glassButton { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 29px; min-width: 29px; padding: 0 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.92); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 3px 10px rgba(0, 0, 0, 0.07); color: #111; font-size: 11.5px; font-weight: 600; }
+.glassButton[data-shape="circle"] { width: 29px; padding: 0; }
+.glassButton svg { flex-shrink: 0; }
+
+/* ---- Card stack. --i = place from the top, --ri = place from the bottom ---- */
+.stackCard {
+  --stack-y: calc(var(--stack-top) + var(--i) * var(--strip));
+  --y: calc(var(--screen-h) + 30px + var(--i) * 28px);
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  aspect-ratio: 1.586;
+  transform: translateY(var(--y));
+  /* Leaving the Wallet: reset below the screen once the app has faded out. */
+  transition: transform 0s linear 640ms;
+}
+.wallet[data-scene="wallet"] .stackCard { --y: var(--stack-y); transition: transform 780ms var(--spring) calc(90ms + var(--i) * 50ms); }
+.wallet[data-scene="pass"] .stackCard { --y: calc(var(--screen-h) - 52px + var(--i) * 5px); transition: transform 640ms var(--spring-soft) calc(var(--ri) * 24ms); }
+
+/* ---- The DigiCard pass: front of the stack, then lifted open ---- */
+.digicard {
+  aspect-ratio: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 12px 13px 14px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, #5a6fe0, #4155c4 55%, #34449e);
+  color: #fff;
+  box-shadow: inset 0 0.75px 0 rgba(255, 255, 255, 0.28), 0 -2px 12px rgba(20, 30, 80, 0.2);
+}
+.wallet[data-scene="pass"] .digicard { --y: var(--pass-top); transition: transform 760ms var(--spring); }
+.wallet[data-scene="wallet"] .digicard[data-pressing="true"] { animation: passPress var(--touch-ms) ease var(--touch-delay) both; }
+@keyframes passPress {
+  0%, 24% { scale: 1; }
+  44%, 64% { scale: 0.97; }
+  100% { scale: 1; }
+}
+.digicard .passTouch { top: 70px; left: 58%; }
+
+.passTop { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.passLogo { display: flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+.field { min-width: 0; }
+.field > span { display: block; overflow: hidden; color: rgba(255, 255, 255, 0.72); font-size: 6.5px; font-weight: 600; letter-spacing: 0.08em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+.field > p { margin-top: 2px; overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.field[data-align="end"] { max-width: 55%; text-align: right; }
+.passPrimary { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.field > .passName { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow-wrap: anywhere; white-space: normal; line-height: 1.1; font-weight: 500; letter-spacing: -0.02em; }
+.passThumb { flex-shrink: 0; display: grid; place-items: center; width: 44px; height: 52px; border: 1px solid rgba(255, 255, 255, 0.28); border-radius: 6px; background: rgba(255, 255, 255, 0.16); font-size: 15px; font-weight: 600; }
+.passSecondary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.passBarcode { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 4px; }
+.passQr { width: 112px; height: 112px; padding: 8px; border-radius: 8px; background: #fff; scale: 0.94; transition: scale 600ms var(--spring) 160ms; }
+.wallet[data-scene="pass"] .passQr { scale: 1; }
+.passQr svg { display: block; width: 100%; height: 100%; }
+.passBarcode > span { color: rgba(255, 255, 255, 0.8); font-size: 7px; }
+
+/* Finger swiping up from the home indicator to leave the app. */
+.wallet .homeSwipe { top: auto; bottom: 2px; }
+
+@media (max-width: 639px) {
+  .wallet { --stack-top: 78px; --strip: 33px; }
+  .largeTitle { font-size: 21px; }
+}

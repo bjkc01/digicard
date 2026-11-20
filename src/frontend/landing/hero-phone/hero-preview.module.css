@@ -1,0 +1,106 @@
+.preview {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  scroll-margin-top: 110px;
+}
+
+/* ---- Name / title / email inputs ---- */
+.editor { position: relative; z-index: 2; width: min(100%, 330px); margin: 0 auto; }
+.editorHeading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 9px; font-size: 12px; font-weight: 600; }
+.live { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 10px; }
+.live > span { width: 5px; height: 5px; border-radius: 50%; background: #24a47d; }
+
+.input {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 17px;
+  border: 1px solid rgba(82, 103, 217, 0.2);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 16px;
+  box-shadow: 0 6px 22px rgba(21, 32, 58, 0.04);
+  transition: border-color 160ms, box-shadow 160ms;
+}
+.input:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(82, 103, 217, 0.08); outline: none; }
+.input::placeholder { color: #8790a3; }
+.details { margin-top: 4px; font-size: 11px; color: var(--muted); }
+.details summary { width: fit-content; min-height: 36px; padding: 10px 2px; cursor: pointer; }
+.details summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 4px; }
+.extraFields { display: grid; gap: 6px; padding: 6px 0 14px; }
+.extraFields label:not(:first-child) { margin-top: 6px; }
+
+/* ---- 3D stage ----
+   Easings shared by everything on the phone. --spring has a slight overshoot like iOS motion;
+   browsers without linear() fall back to the cubic-bezier versions. */
+.stage {
+  --phone-width: 266px;
+  --phone-height: 554px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --spring: cubic-bezier(0.3, 1.2, 0.45, 1);
+  --spring-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 595px;
+  perspective: 1200px;
+  perspective-origin: 50% 44%;
+}
+@supports (transition-timing-function: linear(0, 1)) {
+  .stage {
+    --spring: linear(0, 0.041, 0.139, 0.265, 0.396, 0.523, 0.635, 0.732, 0.81, 0.873, 0.92, 0.955, 0.98, 0.996, 1.006, 1.012, 1.015, 1.015, 1.014, 1.013, 1.011, 1.009, 1.007, 1.005, 1.004, 1.003, 1.002, 1.001, 1.001, 1);
+    --spring-soft: linear(0, 0.042, 0.14, 0.261, 0.384, 0.501, 0.603, 0.691, 0.764, 0.822, 0.868, 0.904, 0.931, 0.951, 0.966, 0.977, 0.985, 0.991, 0.994, 0.997, 0.999, 1);
+  }
+}
+/* Idle float pauses while dragging or when the phone is off screen. */
+.stage[data-float="paused"] { --float-state: paused; }
+
+.glow { position: absolute; inset: 5% -5% 3%; border-radius: 50%; background: radial-gradient(ellipse, rgba(128, 154, 247, 0.2), rgba(166, 213, 251, 0.1) 40%, transparent 69%); pointer-events: none; }
+
+.shadow {
+  position: absolute;
+  bottom: 3px;
+  width: 210px;
+  height: 25px;
+  border-radius: 50%;
+  background: #1b1d22;
+  opacity: 0.2;
+  filter: blur(15px);
+  pointer-events: none;
+  animation: shadowBob 6s ease-in-out infinite alternate;
+  animation-play-state: var(--float-state, running);
+}
+
+.dragArea {
+  position: relative;
+  width: var(--phone-width);
+  height: var(--phone-height);
+  transform-style: preserve-3d;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.dragArea[data-dragging="true"] { cursor: grabbing; }
+
+/* A gentle bob and sway so the phone feels held, not pasted on. Sways in step with the glass glare. */
+.float {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: phoneBob 6s ease-in-out infinite alternate, phoneSway 9s ease-in-out infinite alternate;
+  animation-play-state: var(--float-state, running);
+}
+@keyframes phoneBob { from { translate: 0 3px; } to { translate: 0 -7px; } }
+@keyframes phoneSway { from { rotate: y -3deg; } to { rotate: y 3deg; } }
+@keyframes shadowBob { from { scale: 1; opacity: 0.2; } to { scale: 0.88; opacity: 0.13; } }
+
+/* ---- Text under the phone ---- */
+.instructions { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 8px; color: var(--muted); font-size: 11px; }
+.note { margin-top: 10px; text-align: center; color: var(--muted); font-size: 10px; }
+
+@media (max-width: 639px) {
+  .stage { --phone-width: 250px; --phone-height: 532px; height: 570px; perspective: 1400px; }
+}
