@@ -29,7 +29,10 @@ export const metadata: Metadata = {
     title: "DigiCard - Digital Professional Cards",
   },
   icons: {
-    icon: "/favicon.svg",
+    icon: [
+      { url: "/brand/icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/icon-64.png", sizes: "64x64", type: "image/png" },
+    ],
   },
 };
 
