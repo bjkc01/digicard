@@ -61,21 +61,18 @@ Logic and data (saving, sign-in, database) are in [BACKEND.md](BACKEND.md).
 | 30 | `empty-state.tsx` | "Nothing here yet" box with icon and action |
 | 31 | `pending-submit.tsx` | Loading state while a form submits |
 | 32 | `brand-mark.tsx` | DigiCard logo |
-| 33 | `qr-code.tsx` | QR code |
-| 34 | `shine-border.tsx` | Animated shiny border |
-| 35 | `spotlight-card.tsx` | `GlowCard`: glow that follows the mouse |
-| 36 | `src/frontend/utils.ts` | `cn()`: combines Tailwind class names |
+| 33 | `src/frontend/utils.ts` | `cn()`: combines Tailwind class names |
 
 ## 5. Rarely touched
 
 | # | File | What it does |
 | - | ---- | ------------ |
-| 37 | `src/app/*/loading.tsx` | Loading skeletons for dashboard, cards, templates |
-| 38 | `src/app/error.tsx` | Shown when a page crashes |
-| 39 | `src/app/not-found.tsx` | 404 page |
-| 40 | `src/app/template.tsx` | Fade-in transition between pages |
-| 41 | `src/app/privacy/page.tsx`, `src/app/terms/page.tsx` | Privacy policy and terms |
-| 42 | `src/app/login/page.tsx` | `/login`: redirects to the homepage with the sign-in popup open |
-| 43 | `src/app/robots.ts`, `src/app/sitemap.ts` | SEO files for search engines |
-| 44 | `src/frontend/dashboard/wallet-coming-soon.tsx` | Wallet button section, **not on any page yet** (bjkc01 is working on it) |
-| 45 | `public/favicon.svg` | Browser tab icon |
+| 34 | `src/app/*/loading.tsx` | Loading skeletons for dashboard, cards, templates |
+| 35 | `src/app/error.tsx` | Shown when a page crashes |
+| 36 | `src/app/not-found.tsx` | 404 page |
+| 37 | `src/app/template.tsx` | Fade-in transition between pages |
+| 38 | `src/app/privacy/page.tsx`, `src/app/terms/page.tsx` | Privacy policy and terms |
+| 39 | `src/app/login/page.tsx` | `/login`: redirects to the homepage with the sign-in popup open |
+| 40 | `src/app/robots.ts`, `src/app/sitemap.ts` | SEO files for search engines |
+| 41 | `src/frontend/dashboard/wallet-coming-soon.tsx` | Wallet button section, **not on any page yet** (bjkc01 is working on it) |
+| 42 | `public/favicon.svg` | Browser tab icon |
