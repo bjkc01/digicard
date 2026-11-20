@@ -1,7 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
 import styles from "./iphone-model.module.css";
 
-// A CSS-3D iPhone (Pro, Black Titanium). The screen content is passed in as children.
+// A CSS-3D iPhone in the Pro Max style (full-width camera plateau, dark finish).
+// The screen content is passed in as children.
 
 const FRAME_LAYERS = 49; // closely spaced rounded planes form a solid metal frame at every angle
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
@@ -9,7 +10,7 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 function CameraLens({ className }: { className: string }) {
   return (
     <span className={`${styles.lens} ${className}`}>
-      {Array.from({ length: 8 }, (_, index) => (
+      {Array.from({ length: 12 }, (_, index) => (
         <span className={styles.lensBarrel} key={index} style={{ transform: `translateZ(${index * 0.5}px)` }} />
       ))}
       <span className={styles.lensRim}>
@@ -73,23 +74,29 @@ export function IPhoneModel({ rotation, settling, tone, children }: IPhoneModelP
   // Slide the glass reflection as the phone turns, like light catching real glass.
   const facing = (((rotation.y % 360) + 540) % 360) - 180;
   const glareShift = clamp(facing / 70, -1, 1) * 28;
+  // -1…1 as the phone turns; moves the specular highlights on the metal frame, rims and lens rings.
+  const sheen = Math.sin((rotation.y * Math.PI) / 180);
 
   return (
     <div
       className={styles.phone}
       data-settling={settling}
-      style={{ "--rotate-x": `${rotation.x}deg`, "--rotate-y": `${rotation.y}deg`, "--glare-shift": `${glareShift}%` } as CSSProperties}
+      style={{ "--rotate-x": `${rotation.x}deg`, "--rotate-y": `${rotation.y}deg`, "--glare-shift": `${glareShift}%`, "--sheen": sheen.toFixed(3) } as CSSProperties}
     >
       {Array.from({ length: FRAME_LAYERS }, (_, index) => (
         <div aria-hidden="true" className={styles.frameLayer} key={index} style={{ transform: `translateZ(${index * 0.5 - 12}px)` }} />
       ))}
 
       <div className={styles.back} aria-hidden="true">
-        <div className={styles.cameraPlate}>
+        {/* Glass panel (wireless charging area) below the camera plateau. */}
+        <div className={styles.glassPanel} />
+        {/* Full-width camera plateau, raised by stacked layers: lenses sit directly on it at the left;
+            flash, mic and LiDAR form a column at the right. */}
+        <div className={styles.plateau}>
           {Array.from({ length: 8 }, (_, index) => (
-            <span className={styles.cameraBumpLayer} key={index} style={{ transform: `translateZ(${index * 0.5}px)` }} />
+            <span className={styles.plateauLayer} key={index} style={{ transform: `translateZ(${index * 0.5}px)` }} />
           ))}
-          <span className={styles.cameraDeck} />
+          <span className={styles.plateauTop} />
           <CameraLens className={styles.lensOne} />
           <CameraLens className={styles.lensTwo} />
           <CameraLens className={styles.lensThree} />
@@ -103,11 +110,13 @@ export function IPhoneModel({ rotation, settling, tone, children }: IPhoneModelP
       </div>
 
       <div className={`${styles.side} ${styles.leftSide}`} aria-hidden="true">
+        <span className={styles.sideGlint} />
         <SideButton className={styles.actionButton} />
         <SideButton className={styles.volumeUp} />
         <SideButton className={styles.volumeDown} />
       </div>
       <div className={`${styles.side} ${styles.rightSide}`} aria-hidden="true">
+        <span className={styles.sideGlint} />
         <SideButton className={styles.powerButton} />
         <span className={styles.cameraControl} />
       </div>

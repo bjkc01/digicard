@@ -1,6 +1,14 @@
-/* A Black Titanium iPhone (Pro) built from CSS 3D planes.
+/* A dark iPhone Pro Max–style phone built from CSS 3D planes.
    Size comes from --phone-width / --phone-height on the stage (hero-preview.module.css).
-   Front = 1.6px titanium lip + 5.9px black glass border, so the screen is the phone minus 15px. */
+   Front = 2px polished titanium lip + 5.5px black glass border, so the screen is the phone minus 15px.
+   --sheen (-1…1, set from the rotation) slides the specular highlights on every metal surface. */
+
+/* Registered so it can animate smoothly when the phone settles back after a drag. */
+@property --sheen {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
 
 .phone {
   position: relative;
@@ -10,24 +18,25 @@
   transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
 }
 /* Easing back to face the visitor after a drag (SETTLE_MS in interactive-hero-preview.tsx). */
-.phone[data-settling="true"] { transition: transform 1300ms var(--spring-soft); }
+.phone[data-settling="true"] { transition: transform 1300ms var(--spring-soft), --sheen 1300ms var(--spring-soft); }
 .phone[data-settling="true"] .glass::before { transition: transform 1300ms var(--spring-soft); }
 
 .frameLayer {
   position: absolute;
   inset: 0;
-  border: 0.5px solid #3c3e42;
+  border: 0.5px solid #26272a;
   border-radius: 42px;
-  background: linear-gradient(115deg, #c3c5c9, #5d5f64 15%, #2b2c30 40%, #1b1c1f 66%, #56585d 86%, #cbcdd1);
+  background: linear-gradient(115deg, #9fa1a6, #4a4c51 10%, #1a1b1e 30%, #0b0c0e 56%, #222327 74%, #7e8085 90%, #aaacb1);
 }
 
-/* ---- Front: titanium lip, black glass border, screen ---- */
+/* ---- Front: polished titanium lip, black glass border, screen ---- */
 .front {
   position: absolute;
   inset: 0;
-  padding: 1.6px;
+  padding: 2px;
   border-radius: 42px;
-  background: linear-gradient(140deg, #dcdee2, #6d6f74 13%, #2a2b2f 36%, #18191c 64%, #5c5e63 87%, #cfd1d5);
+  /* Conic gradient = bright reflections on opposite corners; it rotates with --sheen as the phone turns. */
+  background: conic-gradient(from calc(210deg + var(--sheen) * 55deg), #141517, #c6c8cc 5%, #55575c 10%, #18191b 22%, #0b0c0e 34%, #36383c 45%, #8c8e93 50%, #2a2b2f 56%, #0f1012 70%, #1c1d20 82%, #b2b4b9 90%, #414348 95%, #141517);
   transform: translateZ(13px);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -36,10 +45,11 @@
 .bezel {
   position: relative;
   height: 100%;
-  padding: 5.9px;
-  border-radius: 40.4px;
+  padding: 5.5px;
+  border-radius: 40px;
   background: #010101;
-  box-shadow: inset 0 0 0 0.75px rgba(255, 255, 255, 0.16), inset 0 0 1px 1.5px #000;
+  /* Curved glass edge: a fine bright line, then black. */
+  box-shadow: inset 0 0 0 0.75px rgba(255, 255, 255, 0.22), inset 0 0 1px 1.5px #000;
 }
 
 .screen {
@@ -81,7 +91,7 @@
 .homeIndicator { position: absolute; z-index: 20; bottom: 6px; left: 50%; width: 88px; height: 3.5px; margin-left: -44px; border-radius: 3px; background: var(--status-color); transition: background-color 380ms ease; pointer-events: none; }
 
 /* Glass reflection: shifts with drag rotation (--glare-shift) and sways with the idle float. */
-.glass { position: absolute; inset: 1.6px; overflow: hidden; border-radius: 40.4px; pointer-events: none; }
+.glass { position: absolute; inset: 2px; overflow: hidden; border-radius: 40px; pointer-events: none; }
 .glass::before {
   content: "";
   position: absolute;
@@ -94,53 +104,149 @@
 .glass::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 16%); box-shadow: inset 0 0.75px 0 rgba(255, 255, 255, 0.1); }
 @keyframes glareSway { from { translate: -6% 0; } to { translate: 6% 0; } }
 
-/* ---- Back: matte glass, camera plateau, logo ---- */
+/* ---- Back: anodized metal body, full-width camera plateau, frosted glass panel with logo ----
+   --grain is a tiny SVG noise tile that gives matte metal and frosted glass their texture. */
 .back {
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.14 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   position: absolute;
   inset: 0;
-  border: 1.5px solid #4a4c51;
+  border: 1.5px solid #2c2d31;
   border-radius: 42px;
   transform: rotateY(180deg) translateZ(13px);
   transform-style: preserve-3d;
-  background: radial-gradient(120% 80% at 22% 8%, #3b3c40, #242528 55%, #1b1c1f);
-  box-shadow: inset 0 0 0 1px #8e9095, inset 0 0 0 2.5px #1d1e21, inset 0 0 0 3.2px #55575c;
+  background: var(--grain), linear-gradient(165deg, #212226, #141517 38%, #0e0f11 70%, #18191c);
+  /* Polished edge where the back meets the frame. */
+  box-shadow: inset 0 0 0 1px #5d5f64, inset 0 0 0 2.5px #0f1012, inset 0 0 0 3.2px #36383c, inset 2px 3px 6px rgba(255, 255, 255, 0.06);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
+/* Polished rim: a thin gradient ring that catches light on two corners, like a machined edge. */
+.back::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border: 1.5px solid transparent;
+  border-radius: 42px;
+  background: conic-gradient(from calc(140deg - var(--sheen) * 55deg), rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.08) 12%, transparent 25%, rgba(255, 255, 255, 0.22) 45%, transparent 58%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.42) 92%, rgba(255, 255, 255, 0.55)) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
 
-.cameraPlate { position: absolute; left: 15px; top: 16px; width: 114px; height: 122px; border-radius: 27px; transform: translateZ(1px); transform-style: preserve-3d; }
-.cameraBumpLayer { position: absolute; inset: 0; border: 0.5px solid #4d4f54; border-radius: inherit; background: linear-gradient(140deg, #75777c, #36383c 55%, #1f2023); box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.3); }
-.cameraDeck { position: absolute; inset: 0; border: 1px solid #5a5c61; border-radius: inherit; background: linear-gradient(145deg, #3e4044, #27282c 50%, #1c1d20); box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.18), inset -1px -1px 1px #0b0b0d; transform: translateZ(4px); }
+/* Inset frosted-glass panel below the plateau, softly shaded by the plateau above it. */
+.glassPanel {
+  position: absolute;
+  left: 9px;
+  right: 9px;
+  top: 170px;
+  bottom: 9px;
+  border-radius: 20px 20px 33px 33px;
+  background: var(--grain), linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 14%), radial-gradient(130% 60% at 28% 0%, #1b1c1f, #0f1012 58%, #0a0b0c);
+  box-shadow: inset 0 0 0 0.75px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+  transform: translateZ(0.1px);
+}
+/* Soft sheen that slides across the glass as the phone turns (mirrors the front's --glare-shift). */
+.glassPanel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 36%, rgba(255, 255, 255, 0.07) 47%, rgba(255, 255, 255, 0.02) 55%, transparent 64%) calc(50% - var(--glare-shift, 0%)) 0 / 260% 100% no-repeat;
+}
+.phone[data-settling="true"] .glassPanel::after { transition: background-position 1300ms var(--spring-soft); }
 
-.lens { position: absolute; width: 45px; height: 45px; border-radius: 50%; transform: translateZ(4.5px); transform-style: preserve-3d; }
-.lensBarrel { position: absolute; inset: 0; border: 0.5px solid #5d6066; border-radius: inherit; background: linear-gradient(135deg, #9a9da3, #3a3c41 30%, #121316 70%, #6d7075); box-shadow: 2px 3px 3px rgba(0, 0, 0, 0.32); }
-.lensRim { position: absolute; inset: 0; border: 0.75px solid #a9acb2; border-radius: inherit; background: conic-gradient(from 30deg, #b4b7bd, #34363b 19%, #121316 40%, #74777d 60%, #d6d8dc 78%, #47494e 92%, #b4b7bd); box-shadow: inset 0 0 0 1px #2e3035; transform: translateZ(4px); }
-.lensGlass { position: absolute; inset: 3px; overflow: hidden; border: 2px solid #0b0c10; border-radius: 50%; background: radial-gradient(ellipse at 35% 25%, #283b57, #0e192b 27%, #03070f 57%, #182333 78%, #060b13); box-shadow: inset 0 0 0 1px rgba(102, 118, 145, 0.36), inset -2px -3px 5px rgba(0, 0, 0, 0.73); }
-.lensOptics { position: absolute; inset: 8px; border: 1px solid rgba(76, 105, 144, 0.48); border-radius: 50%; background: radial-gradient(circle at 42% 37%, #244768, #040b18 42%, #121e39 64%, rgba(95, 101, 150, 0.32) 68%, #030814 75%); box-shadow: 0 0 0 2px #070d1c, 0 0 0 3px rgba(36, 54, 80, 0.5), 0 0 5px rgba(81, 116, 181, 0.3); }
-.lensReflection { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(130deg, rgba(217, 234, 255, 0.46) 0%, rgba(110, 152, 221, 0.15) 24%, transparent 33%, transparent 70%, rgba(120, 147, 214, 0.15) 87%, transparent); }
-.lensReflection::before { content: ""; position: absolute; left: 7px; top: 3px; width: 13px; height: 4px; border-radius: 50%; background: rgba(205, 228, 255, 0.61); transform: rotate(-32deg); filter: blur(0.6px); }
-.lensReflection::after { content: ""; position: absolute; right: 5px; bottom: 5px; width: 5px; height: 4px; border-radius: 50%; background: rgba(103, 139, 215, 0.31); }
-.lensOne { left: 7px; top: 7px; }
-.lensTwo { left: 7px; bottom: 7px; }
-.lensThree { right: 6px; top: 38.5px; }
-.flash { position: absolute; top: 13px; right: 19px; width: 17px; height: 17px; border: 2px solid #8a8c90; border-radius: 50%; background: repeating-radial-gradient(circle, #eee8d7 0 1px, #d7d5cc 1px 2px); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 0 2px #fff; transform: translateZ(4.6px); }
-.sensor { position: absolute; bottom: 13px; right: 21px; width: 14px; height: 14px; border: 1px solid #6f7277; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #2f3946, #0b121d 60%); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); transform: translateZ(4.6px); }
-.microphone { position: absolute; right: 12px; bottom: 37px; width: 3px; height: 3px; border-radius: 50%; background: #070809; box-shadow: 0 0 0 0.5px #6d7075; transform: translateZ(4.5px); }
-.backLogo { position: absolute; left: 50%; top: 49%; width: 48px; height: 48px; color: #111214; transform: translate(-50%, -50%) translateZ(0.2px); filter: drop-shadow(0 0.5px 0 rgba(255, 255, 255, 0.14)); }
+/* The plateau spans the full width; its top corners follow the phone's corners.
+   Stacked layers give it thickness; the bottom layer casts its shadow onto the body. */
+.plateau { position: absolute; left: 2px; right: 2px; top: 2px; height: 154px; border-radius: 39px 39px 24px 24px; transform: translateZ(0.5px); transform-style: preserve-3d; }
+.plateauLayer { position: absolute; inset: 0; border: 0.5px solid #2a2b2f; border-radius: inherit; background: linear-gradient(180deg, #4d4f54, #1e1f22 50%, #0e0f11); }
+.plateauLayer:first-child { box-shadow: 0 7px 14px rgba(0, 0, 0, 0.55), 0 2px 3px rgba(0, 0, 0, 0.5); }
+/* Top face with a bevelled, light-catching edge (gradient border). */
+.plateauTop {
+  position: absolute;
+  inset: 0;
+  border: 1.6px solid transparent;
+  border-radius: inherit;
+  background:
+    var(--grain) padding-box,
+    linear-gradient(162deg, #27282b, #18191b 40%, #111214 78%, #1a1b1e) padding-box,
+    linear-gradient(calc(150deg - var(--sheen) * 40deg), #aeb0b5, #45474c 18%, #0e0f11 50%, #2a2b2f 76%, #888a8f) border-box;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+  transform: translateZ(4px);
+}
+
+/* Each lens: a deep polished barrel and ring in the body's metal, a black bezel, then near-black glass
+   with faint coating tints and one sharp highlight. */
+.lens { position: absolute; width: 58px; height: 58px; border-radius: 50%; transform: translateZ(4.5px); transform-style: preserve-3d; }
+/* Barrel and ring are anodized to match the dark body (not bare silver); light only catches a thin edge. */
+.lensBarrel { position: absolute; inset: 0; border: 0.5px solid #2c2d31; border-radius: inherit; background: linear-gradient(135deg, #4b4d52, #232428 28%, #0d0e10 66%, #2c2e32); }
+.lensBarrel:first-child { box-shadow: 3px 5px 7px rgba(0, 0, 0, 0.5); }
+.lensRim {
+  position: absolute;
+  inset: 0;
+  border: 0.75px solid #45474c;
+  border-radius: inherit;
+  background: conic-gradient(from calc(25deg - var(--sheen) * 70deg), #3e4045, #1d1e21 14%, #0c0d0f 36%, #232428 56%, #7c7e83 72%, #1a1b1e 84%, #3e4045);
+  box-shadow: inset 0 0 0 1px #232428, inset 0 0 0 2px rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.45);
+  transform: translateZ(6px);
+}
+.lensGlass { position: absolute; inset: 6px; overflow: hidden; border: 2.5px solid #000; border-radius: 50%; background: radial-gradient(circle at 50% 50%, #0a0c12 0 40%, #040508 62%, #000 100%); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07), inset -2px -3px 6px rgba(0, 0, 0, 0.8); }
+.lensOptics { position: absolute; inset: 8.5px; border-radius: 50%; background: radial-gradient(circle at 46% 42%, rgba(84, 104, 190, 0.55) 0 7%, rgba(48, 36, 110, 0.45) 17%, #06070d 42%, #0d1120 60%, #020306 76%); box-shadow: 0 0 0 1px rgba(110, 128, 190, 0.16), 0 0 0 3px #020305, 0 0 0 4px rgba(90, 100, 150, 0.12); }
+.lensReflection { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 30%, transparent 72%, rgba(140, 160, 230, 0.08)); }
+.lensReflection::before { content: ""; position: absolute; left: 39%; top: 33%; width: 4px; height: 4px; border-radius: 50%; background: #eef4ff; box-shadow: 0 0 4px 1px rgba(150, 185, 255, 0.75); }
+.lensReflection::after { content: ""; position: absolute; inset: 2px; border-radius: 50%; border-top: 1.5px solid rgba(255, 255, 255, 0.2); border-left: 1px solid rgba(255, 255, 255, 0.08); transform: rotate(-20deg); }
+/* Lenses in a tight triangle: two stacked on the left, one nestled between them on the right. */
+.lensOne { left: 14px; top: 16px; }
+.lensTwo { left: 14px; bottom: 16px; }
+.lensThree { left: 68px; top: 48px; }
+/* Right-hand column, all centred 40px from the plateau's right edge. */
+.flash { position: absolute; top: 25px; right: 30px; width: 20px; height: 20px; border: 1.5px solid #6f7176; border-radius: 50%; background: repeating-linear-gradient(0deg, transparent 0 1.5px, rgba(120, 110, 80, 0.12) 1.5px 2px), repeating-linear-gradient(90deg, transparent 0 1.5px, rgba(120, 110, 80, 0.12) 1.5px 2px), radial-gradient(circle, #f6efd9 0 32%, #ddd3b6 48%, #b9b4a6 58%, #ececef 66%, #9da0a5 82%, #d8d9dd); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.35); transform: translateZ(4.6px); }
+.sensor { position: absolute; bottom: 25px; right: 30.5px; width: 19px; height: 19px; border-radius: 50%; background: radial-gradient(circle at 37% 33%, #474a53 0 7%, #101115 30%, #000 70%); box-shadow: 0 0 0 1.5px #3a3c41, 0 0 0 2.2px #121315, 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05); transform: translateZ(4.6px); }
+.microphone { position: absolute; right: 38.25px; top: 75px; width: 3.5px; height: 3.5px; border-radius: 50%; background: #050506; box-shadow: 0 0 0 0.5px #75777c, inset 0 1px 1px #000; transform: translateZ(4.5px); }
+.backLogo { position: absolute; left: 50%; top: 55%; width: 48px; height: 48px; color: #2a2b2f; transform: translate(-50%, -50%) translateZ(0.2px); filter: drop-shadow(0 0.5px 0 rgba(255, 255, 255, 0.14)) drop-shadow(0 -0.5px 0 rgba(0, 0, 0, 0.6)); }
 
 /* ---- Edges: side planes, buttons, top/bottom rails ---- */
-.side { position: absolute; top: 43px; bottom: 43px; width: 24px; background: linear-gradient(90deg, #17181a, #aeb0b5 6%, #4d4f54 14%, #2a2b2f 30%, #3c3e43 58%, #77797e 84%, #c9cbcf 94%, #1e1f22); transform-style: preserve-3d; }
+/* Side rails: a specular stripe that slides across the rail with --sheen, fine brushed grain along
+   the length, and a base gradient with bright chamfers at both edges. */
+.side {
+  --side-dir: 1;
+  position: absolute;
+  top: 43px;
+  bottom: 43px;
+  width: 24px;
+  background:
+    linear-gradient(90deg, transparent 22%, rgba(255, 255, 255, 0.42) 46%, rgba(255, 255, 255, 0.58) 50%, rgba(255, 255, 255, 0.42) 54%, transparent 78%) calc(50% + var(--sheen) * var(--side-dir) * 62%) 0 / 70% 100% no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 0.5px, transparent 0.5px 1.5px),
+    linear-gradient(90deg, #070809, #8f9196 5%, #393b40 12%, #141517 26%, #1a1b1e 50%, #36383c 74%, #a5a7ac 92%, #0d0e10);
+  transform-style: preserve-3d;
+}
+.phone[data-settling="true"] .side { transition: background-position 1300ms var(--spring-soft); }
+/* A soft glint drifting along the rail while the phone floats, like light running down polished metal. */
+.sideGlint {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 6%;
+  height: 30%;
+  border-radius: 6px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.16) 40%, rgba(255, 255, 255, 0.26) 50%, rgba(255, 255, 255, 0.16) 60%, transparent);
+  transform: translateZ(0.2px);
+  animation: glintDrift 9s ease-in-out infinite alternate;
+  animation-play-state: var(--float-state, running);
+  pointer-events: none;
+}
+@keyframes glintDrift { from { translate: 0 0; } to { translate: 0 190%; } }
 .side::before,
-.side::after { content: ""; position: absolute; left: 0; right: 0; height: 2px; background: #3a3c41; box-shadow: 0 0.5px 0 rgba(188, 195, 203, 0.35); transform: translateZ(0.3px); }
+.side::after { content: ""; position: absolute; left: 0; right: 0; height: 2px; background: #232428; box-shadow: 0 0.5px 0 rgba(188, 195, 203, 0.22); transform: translateZ(0.3px); }
 .side::before { top: 3px; }
 .side::after { bottom: 3px; }
-.leftSide { left: -12px; transform: rotateY(-90deg); }
+.leftSide { --side-dir: -1; left: -12px; transform: rotateY(-90deg); }
 .rightSide { right: -12px; transform: rotateY(90deg); }
 
 .sideButton { position: absolute; left: 7px; width: 10px; border-radius: 5px; transform: translateZ(0.4px); transform-style: preserve-3d; }
 .buttonWell { position: absolute; inset: -0.5px; border: 0.5px solid rgba(213, 219, 228, 0.3); border-radius: inherit; background: #151618; box-shadow: 0 0.5px 1px rgba(178, 186, 194, 0.5); }
-.buttonEdge { position: absolute; inset: 0.5px; border-radius: 4px; background: linear-gradient(90deg, #202125, #8a8d93 40%, #2c2e33); box-shadow: 0 1px 1px #18191c, 0 1.5px 1px #18191c; transform: translateZ(0.9px); }
-.buttonCap { position: absolute; inset: 1px; border: 0.5px solid #9a9ca1; border-radius: 4px; background: linear-gradient(90deg, #2a2b2f, #bdbfc3 18%, #6a6c71 35%, #43454a 72%, #1e1f22); box-shadow: inset 0 1px 0 rgba(236, 238, 242, 0.7), inset 0 -1px 0 #26272b, 1px 2px 2px rgba(0, 0, 0, 0.45); transform: translateZ(1.8px); }
+.buttonEdge { position: absolute; inset: 0.5px; border-radius: 4px; background: linear-gradient(90deg, #121315, #55575c 40%, #1b1c1f); box-shadow: 0 1px 1px #0b0c0d, 0 1.5px 1px #0b0c0d; transform: translateZ(0.9px); }
+.buttonCap { position: absolute; inset: 1px; border: 0.5px solid #57595e; border-radius: 4px; background: linear-gradient(90deg, #141517, #a6a8ad 16%, #46484d 34%, #202124 70%, #0e0f11); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 #121315, 1px 2px 2px rgba(0, 0, 0, 0.45); transform: translateZ(1.8px); }
 .actionButton { top: 45px; height: 21px; }
 .volumeUp { top: 88px; height: 38px; }
 .volumeDown { top: 140px; height: 38px; }
@@ -148,7 +254,7 @@
 /* Camera Control: a flush sapphire button in a titanium ring. */
 .cameraControl { position: absolute; left: 6px; top: 296px; width: 12px; height: 34px; border-radius: 4px; background: linear-gradient(90deg, #0a0b0d, #2d3036 42%, #111216); box-shadow: 0 0 0 1px #8f9196, 0 0 0 1.6px #2a2b2f, inset 0 0 2px rgba(255, 255, 255, 0.22); transform: translateZ(0.3px); }
 
-.endRail { position: absolute; left: 43px; right: 43px; height: 24px; background: linear-gradient(0deg, #1b1c1f, #c4c6ca 7%, #6a6c71 17%, #3a3c40 50%, #8d8f94 85%, #d1d3d7 94%, #222326); transform-style: preserve-3d; }
+.endRail { position: absolute; left: 43px; right: 43px; height: 24px; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 0.5px, transparent 0.5px 1.5px), linear-gradient(0deg, #0a0b0c, #9b9da2 7%, #3c3e43 17%, #161719 42%, #8a8c91 52%, #25262a 62%, #4c4e53 85%, #a8aaaf 94%, #0f1012); transform-style: preserve-3d; }
 .topRail { top: -12px; transform: rotateX(90deg); }
 .bottomRail { bottom: -12px; transform: rotateX(-90deg); }
 .chargingPort { position: absolute; left: 50%; top: 8px; width: 29px; height: 9px; transform: translateX(-50%); border: 1px solid #9c9ea3; border-radius: 4px; background: #050506; box-shadow: inset 0 1px 2px #000, 0 0 0 1px #2a2b2f; }
