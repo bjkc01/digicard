@@ -5,33 +5,6 @@
   scroll-margin-top: 110px;
 }
 
-/* ---- Name / title / email inputs ---- */
-.editor { position: relative; z-index: 2; width: min(100%, 330px); margin: 0 auto; }
-.editorHeading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 9px; font-size: 12px; font-weight: 600; }
-.live { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 10px; }
-.live > span { width: 5px; height: 5px; border-radius: 50%; background: #24a47d; }
-
-.input {
-  display: block;
-  width: 100%;
-  min-height: 48px;
-  padding: 10px 17px;
-  border: 1px solid rgba(82, 103, 217, 0.2);
-  border-radius: 14px;
-  background: #fff;
-  color: var(--ink);
-  font-size: 16px;
-  box-shadow: 0 6px 22px rgba(21, 32, 58, 0.04);
-  transition: border-color 160ms, box-shadow 160ms;
-}
-.input:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(82, 103, 217, 0.08); outline: none; }
-.input::placeholder { color: #8790a3; }
-.details { margin-top: 4px; font-size: 11px; color: var(--muted); }
-.details summary { width: fit-content; min-height: 36px; padding: 10px 2px; cursor: pointer; }
-.details summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 4px; }
-.extraFields { display: grid; gap: 6px; padding: 6px 0 14px; }
-.extraFields label:not(:first-child) { margin-top: 6px; }
-
 /* ---- 3D stage ----
    Easings shared by everything on the phone. --spring has a slight overshoot like iOS motion;
    browsers without linear() fall back to the cubic-bezier versions. */
@@ -100,6 +73,16 @@
 /* ---- Text under the phone ---- */
 .instructions { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 8px; color: var(--muted); font-size: 11px; }
 .note { margin-top: 10px; text-align: center; color: var(--muted); font-size: 10px; }
+/* Appears once a name is typed: the moment the visitor likes what they see. */
+.noteLink { display: inline-flex; align-items: center; gap: 3px; margin-left: 6px; color: var(--brand); font-weight: 700; animation: noteLinkIn 320ms var(--ease-snappy, ease) both; }
+.noteLink:hover { color: var(--brand-dark); }
+.noteLink:hover svg { transform: translateX(2px); }
+.noteLink svg { transition: transform 160ms ease; }
+.noteLink:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 4px; }
+@keyframes noteLinkIn {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: none; }
+}
 
 @media (max-width: 639px) {
   .stage { --phone-width: 250px; --phone-height: 532px; height: 570px; perspective: 1400px; }

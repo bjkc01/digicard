@@ -86,7 +86,11 @@
 .field > p { margin-top: 2px; overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
 .field[data-align="end"] { max-width: 55%; text-align: right; }
 .passPrimary { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.field > .passName { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow-wrap: anywhere; white-space: normal; line-height: 1.1; font-weight: 500; letter-spacing: -0.02em; }
+.field > .passName { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow-wrap: anywhere; white-space: normal; line-height: 1.1; font-weight: 500; letter-spacing: -0.02em; animation: passNameUpdated 750ms ease-out; }
+@keyframes passNameUpdated {
+  from { text-shadow: 0 0 12px rgba(255, 255, 255, 0.8); }
+  to { text-shadow: 0 0 0 rgba(255, 255, 255, 0); }
+}
 .passThumb { flex-shrink: 0; display: grid; place-items: center; width: 44px; height: 52px; border: 1px solid rgba(255, 255, 255, 0.28); border-radius: 6px; background: rgba(255, 255, 255, 0.16); font-size: 15px; font-weight: 600; }
 .passSecondary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .passBarcode { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 4px; }

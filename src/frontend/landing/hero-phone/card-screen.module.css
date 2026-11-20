@@ -16,7 +16,12 @@
 .cardBrand > span { margin-left: auto; max-width: 72px; color: #9ba8c7; font-size: 7px; line-height: 1.4; text-align: right; font-weight: 400; }
 .avatar { display: grid; place-items: center; flex-shrink: 0; width: 56px; height: 56px; margin-top: 22px; border: 1px solid rgba(180, 199, 255, 0.28); border-radius: 18px; background: linear-gradient(135deg, #5168b9, #273865); box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.17), 0 8px 20px rgba(0, 0, 0, 0.15); font-size: 20px; font-weight: 600; }
 .identity { margin-top: 18px; }
-.name { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow-wrap: anywhere; line-height: 1.05; font-weight: 600; letter-spacing: -0.06em; }
+.name { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow-wrap: anywhere; line-height: 1.05; font-weight: 600; letter-spacing: -0.06em; animation: nameUpdated 750ms ease-out; }
+/* Soft glow each time the visitor's typing changes the name. */
+@keyframes nameUpdated {
+  from { color: #e3e9ff; text-shadow: 0 0 14px rgba(140, 165, 255, 0.85); }
+  to { color: #fff; text-shadow: 0 0 0 rgba(140, 165, 255, 0); }
+}
 .title { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; margin-top: 10px; color: #c8d2ea; font-size: 11px; line-height: 1.5; }
 .university { margin-top: 3px; color: #9aa9c6; font-size: 10px; }
 .contactRows { display: grid; margin-top: 15px; }

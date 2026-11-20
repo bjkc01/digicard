@@ -1,10 +1,11 @@
 import { memo, type CSSProperties } from "react";
-import { AtSign, CreditCard, Globe, Mail, Wallet } from "lucide-react";
+import { AtSign, Globe, Mail, Wallet } from "lucide-react";
 import QRCode from "react-qr-code";
 import { siteConfig } from "@/backend/site-config";
 import type { PreviewPerson } from "@/frontend/landing/hero-phone/preview-person";
 import { TouchDot } from "@/frontend/landing/hero-phone/touch-dot";
 import { TOUCH_MS } from "@/frontend/landing/hero-phone/use-phone-playback";
+import { LogoMark } from "@/frontend/ui/brand-mark";
 import styles from "./card-screen.module.css";
 
 type CardScreenProps = {
@@ -26,10 +27,11 @@ export const CardScreen = memo(function CardScreen({ person, active, touching, t
       data-touch={touching}
       style={{ "--touch-delay": `${touchDelayMs}ms`, "--touch-ms": `${TOUCH_MS}ms` } as CSSProperties}
     >
-      <div className={styles.cardBrand}><CreditCard size={14} /> DigiCard <span>Your digital introduction</span></div>
+      <div className={styles.cardBrand}><LogoMark size={14} /> DigiCard <span>Your digital introduction</span></div>
       <div className={styles.avatar} aria-hidden="true">{person.initials}</div>
       <div className={styles.identity}>
-        <p className={styles.name} style={{ fontSize: person.cardNameSize }}>{person.name}</p>
+        {/* Keyed on the name so the "just updated" glow replays on every change. */}
+        <p className={styles.name} key={person.name} style={{ fontSize: person.cardNameSize }}>{person.name}</p>
         <p className={styles.title}>{person.title}</p>
         <p className={styles.university}>State University</p>
       </div>

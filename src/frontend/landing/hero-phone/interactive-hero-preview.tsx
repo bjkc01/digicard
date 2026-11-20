@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
-import { ArrowLeftRight } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeftRight, ArrowRight } from "lucide-react";
 import { CardScreen } from "@/frontend/landing/hero-phone/card-screen";
 import { IPhoneModel } from "@/frontend/landing/hero-phone/iphone-model";
+import { PreviewEditor } from "@/frontend/landing/hero-phone/preview-editor";
 import { getPreviewPerson } from "@/frontend/landing/hero-phone/preview-person";
 import { usePhonePlayback } from "@/frontend/landing/hero-phone/use-phone-playback";
 import { WalletScreen } from "@/frontend/landing/hero-phone/wallet-screen";
@@ -16,6 +18,7 @@ const INITIAL_ROTATION = { x: 5, y: -18 };
 const DRAG_DEGREES_PER_PX = 0.65;
 const SETTLE_DELAY_MS = 2600; // after a drag, wait this long before turning back to face the visitor
 const SETTLE_MS = 1300; // keep in sync with .phone[data-settling] in iphone-model.module.css
+const TYPING_HOLD_MS = 2500; // after the last keystroke, how long the phone stays on the live card
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 type Drag = { id: number; x: number; y: number; rotation: typeof INITIAL_ROTATION; lastX: number; lastTime: number; velocity: number };
@@ -27,7 +30,16 @@ export function InteractiveHeroPreview() {
   const person = useMemo(() => getPreviewPerson(name, title, email), [name, title, email]);
 
   const stageRef = useRef<HTMLDivElement>(null);
-  const { step, scene, running, touchDelayMs } = usePhonePlayback(stageRef);
+  // While the visitor types, the phone holds on their live card; the loop resumes once they pause.
+  const [typing, setTyping] = useState(false);
+  const typingTimer = useRef(0);
+  const { step, scene, running, playing, touchDelayMs } = usePhonePlayback(stageRef, typing);
+
+  function noteTyping() {
+    setTyping(true);
+    window.clearTimeout(typingTimer.current);
+    typingTimer.current = window.setTimeout(() => setTyping(false), TYPING_HOLD_MS);
+  }
   const showWallet = scene !== "card";
 
   const [rotation, setRotation] = useState(INITIAL_ROTATION);
@@ -38,9 +50,11 @@ export function InteractiveHeroPreview() {
 
   useEffect(() => {
     const pending = motion.current;
+    const typingTimeout = typingTimer;
     return () => {
       cancelAnimationFrame(pending.frame);
       window.clearTimeout(pending.timer);
+      window.clearTimeout(typingTimeout.current);
     };
   }, []);
 
@@ -120,31 +134,15 @@ export function InteractiveHeroPreview() {
 
   return (
     <div className={`anim-card ${styles.preview}`} id="live-preview">
-      <div className={styles.editor}>
-        <div className={styles.editorHeading}>
-          <label htmlFor="preview-name">Try it with your name</label>
-          <span className={styles.live}><span /> Live preview</span>
-        </div>
-        <input
-          id="preview-name"
-          autoComplete="off"
-          className={styles.input}
-          maxLength={60}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Your name"
-          type="text"
-          value={name}
-        />
-        <details className={styles.details}>
-          <summary>Add your title &amp; email</summary>
-          <div className={styles.extraFields}>
-            <label htmlFor="preview-title">Title or major</label>
-            <input id="preview-title" className={styles.input} maxLength={70} onChange={(event) => setTitle(event.target.value)} placeholder="Computer Science Student" value={title} />
-            <label htmlFor="preview-email">Email</label>
-            <input id="preview-email" autoComplete="off" className={styles.input} maxLength={100} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" type="email" value={email} />
-          </div>
-        </details>
-      </div>
+      <PreviewEditor
+        name={name}
+        title={title}
+        email={email}
+        initials={name.trim() ? person.initials : null}
+        onNameChange={(value) => { setName(value); noteTyping(); }}
+        onTitleChange={(value) => { setTitle(value); noteTyping(); }}
+        onEmailChange={(value) => { setEmail(value); noteTyping(); }}
+      />
 
       <div className={styles.stage} ref={stageRef} data-float={running && !dragging ? "running" : "paused"}>
         <div className={styles.glow} aria-hidden="true" />
@@ -163,15 +161,22 @@ export function InteractiveHeroPreview() {
         >
           <div className={styles.float}>
             <IPhoneModel rotation={rotation} settling={settling} tone={showWallet ? "dark" : "light"}>
-              <CardScreen person={person} active={!showWallet} touching={running && step === 0} touchDelayMs={touchDelayMs} />
-              <WalletScreen person={person} scene={scene} step={step} running={running} touchDelayMs={touchDelayMs} />
+              <CardScreen person={person} active={!showWallet} touching={playing && step === 0} touchDelayMs={touchDelayMs} />
+              <WalletScreen person={person} scene={scene} step={step} running={playing} touchDelayMs={touchDelayMs} />
             </IPhoneModel>
           </div>
         </div>
       </div>
 
       <p className={styles.instructions} id="phone-instructions"><ArrowLeftRight size={14} /> Drag the phone to look around</p>
-      <p className={styles.note}>Try it out. Your preview details aren&apos;t saved.</p>
+      <p className={styles.note}>
+        Nothing you type here is saved.
+        {name.trim() ? (
+          <Link href="/dashboard" className={styles.noteLink}>
+            Make the real one <ArrowRight aria-hidden="true" size={11} />
+          </Link>
+        ) : null}
+      </p>
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {showWallet ? "Apple Wallet pass preview" : "Card preview"}: {person.name}, {person.title}, {person.email}.
       </p>

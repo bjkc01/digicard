@@ -1,11 +1,12 @@
 import { memo, type CSSProperties } from "react";
-import { CreditCard, Ellipsis, Plus, Search } from "lucide-react";
+import { Ellipsis, Plus, Search } from "lucide-react";
 import QRCode from "react-qr-code";
 import { siteConfig } from "@/backend/site-config";
 import type { PreviewPerson } from "@/frontend/landing/hero-phone/preview-person";
 import { SAMPLE_PASS_COUNT, SamplePasses } from "@/frontend/landing/hero-phone/sample-passes";
 import { TouchDot } from "@/frontend/landing/hero-phone/touch-dot";
 import { TOUCH_MS, type Scene } from "@/frontend/landing/hero-phone/use-phone-playback";
+import { LogoMark } from "@/frontend/ui/brand-mark";
 import styles from "./wallet-screen.module.css";
 
 type WalletScreenProps = {
@@ -49,13 +50,13 @@ export const WalletScreen = memo(function WalletScreen({ person, scene, step, ru
       >
         <TouchDot active={running && step === 1} className={styles.passTouch} />
         <div className={styles.passTop}>
-          <span className={styles.passLogo}><CreditCard size={12} /> DigiCard</span>
+          <span className={styles.passLogo}><LogoMark size={14} /> DigiCard</span>
           <div className={styles.field} data-align="end"><span>Website</span><p>{person.handle}.example.com</p></div>
         </div>
         <div className={styles.passPrimary}>
           <div className={styles.field}>
             <span>{person.title}</span>
-            <p className={styles.passName} style={{ fontSize: person.passNameSize }}>{person.name}</p>
+            <p className={styles.passName} key={person.name} style={{ fontSize: person.passNameSize }}>{person.name}</p>
           </div>
           <div className={styles.passThumb} aria-hidden="true">{person.initials}</div>
         </div>

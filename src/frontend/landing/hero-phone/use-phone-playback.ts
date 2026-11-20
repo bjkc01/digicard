@@ -17,12 +17,19 @@ export const TOUCH_MS = 820;
 /**
  * Plays the phone demo on a loop, always. It only holds still when the visitor's device
  * asks for reduced motion (stays on the live card) or while the phone is scrolled out of view.
+ * `holdOnCard` (the visitor is typing) jumps to the live card and waits there until it's released.
  */
-export function usePhonePlayback(stageRef: RefObject<HTMLElement | null>) {
+export function usePhonePlayback(stageRef: RefObject<HTMLElement | null>, holdOnCard = false) {
   const [step, setStep] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [inView, setInView] = useState(true);
+  // `running`: ambient motion is allowed. `playing`: the screen-recording loop is advancing.
   const running = inView && !reducedMotion;
+  const playing = running && !holdOnCard;
+
+  useEffect(() => {
+    if (holdOnCard) setStep(0);
+  }, [holdOnCard]);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -44,15 +51,16 @@ export function usePhonePlayback(stageRef: RefObject<HTMLElement | null>) {
   }, [stageRef]);
 
   useEffect(() => {
-    if (!running) return;
+    if (!playing) return;
     const timer = window.setTimeout(() => setStep((current) => (current + 1) % TIMELINE.length), TIMELINE[step].ms);
     return () => window.clearTimeout(timer);
-  }, [step, running]);
+  }, [step, playing]);
 
   return {
     step,
     scene: TIMELINE[step].scene,
     running,
+    playing,
     // When the finger gesture of the current step begins.
     touchDelayMs: TIMELINE[step].ms - TOUCH_MS,
   };
